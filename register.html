@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Register - Fabzia</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Utility styles -->
+    <link rel="stylesheet" href="utility.css">
+    <style>
+        :root {
+            --primary: var(--primary-blue);
+            --error: var(--error-red);
+        }
+        body {
+            background-color: #FFFEFE;
+            color: var(--text-primary);
+            font-family: 'Lato', sans-serif;
+            height: 100%;
+            overflow: hidden;
+        }
+        html {
+            height: 100%;
+        }
+        .input-focus:focus-within {
+            border-color: var(--primary-blue) !important;
+        }
+        .border-error {
+            border-color: var(--error-red) !important;
+        }
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        /* Dropdown transition */
+        .dropdown-menu {
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateY(-10px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .dropdown-menu.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* Selected Pill style */
+        .sport-pill {
+            background-color: #F0F4FF;
+            color: var(--primary-blue);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center h-[100dvh]">
+    <div class="w-full max-w-[430px] flex flex-col h-full overflow-hidden">
+        
+        <!-- ── Sticky Header ── -->
+        <div class="flex flex-col gap-2 px-5 pt-10 pb-4 bg-[#FFFEFE] shrink-0">
+            <!-- Back button -->
+            <button onclick="history.back()" type="button" aria-label="Go back" 
+                class="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--bg-soft)] focus:outline-none active:bg-gray-200 transition-colors">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 6L9 12L15 18" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <div class="mt-2 flex flex-col gap-1">
+                <h1 class="text-[32px] font-semibold leading-[40px] tracking-[0.04px] text-[var(--text-primary)]">
+                    Register your Turf
+                </h1>
+                <p class="text-[14px] font-normal leading-[150%] tracking-[0.04px] text-[var(--text-secondary)]">
+                    Enter details to start accepting online bookings.
+                </p>
+            </div>
+        </div>
+
+        <!-- ── Scrollable Form Body ── -->
+        <div class="flex-1 overflow-y-auto no-scrollbar px-5 pb-4">
+            <form id="register-form" class="flex flex-col gap-4">
+                <!-- Name -->
+                <div class="flex flex-col gap-2 field-group">
+                    <label class="text-[14px] font-semibold leading-[160%] tracking-[0.04px] text-[var(--text-primary)]">Name</label>
+                    <div class="flex h-[52px] items-center rounded-[8px] border border-[var(--border-light)] bg-white px-3 transition-colors input-focus container-el">
+                        <input type="text" id="reg-name" placeholder="Name" class="flex-1 bg-transparent text-[16px] outline-none placeholder:text-[var(--text-placeholder)]">
+                        <!-- Error icon -->
+                        <div class="error-icon hidden flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[var(--error-red)]">
+                            <span class="text-[10px] font-bold leading-none text-white">!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Venue Name -->
+                <div class="flex flex-col gap-2 field-group">
+                    <label class="text-[14px] font-semibold leading-[160%] tracking-[0.04px] text-[var(--text-primary)]">Venue Name</label>
+                    <div class="flex h-[52px] items-center rounded-[8px] border border-[var(--border-light)] bg-white px-3 transition-colors input-focus container-el">
+                        <input type="text" id="reg-venue" placeholder="Venue Name" class="flex-1 bg-transparent text-[16px] outline-none placeholder:text-[var(--text-placeholder)]">
+                        <div class="error-icon hidden flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[var(--error-red)]">
+                            <span class="text-[10px] font-bold leading-none text-white">!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="flex flex-col gap-2 field-group">
+                    <label class="text-[14px] font-semibold leading-[160%] tracking-[0.04px] text-[var(--text-primary)]">Enter Phone number</label>
+                    <div class="flex h-14 items-center gap-4 rounded-[8px] border border-[var(--border-light)] bg-white px-3 transition-colors input-focus container-el" id="phone-container">
+                        <div class="flex items-center gap-1 px-1">
+                            <span class="text-[16px] font-normal leading-6 tracking-[0.5px] text-[#0F0F0F]">+91</span>
+                        </div>
+                        <div class="h-6 w-px bg-[var(--border-light)]"></div>
+                        <input type="tel" id="phone-input" placeholder="Phone number" inputmode="numeric" maxlength="11"
+                            class="flex-1 bg-transparent text-[16px] outline-none placeholder:text-[var(--text-placeholder)]">
+                        <div class="error-icon hidden flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[var(--error-red)]">
+                            <span class="text-[10px] font-bold leading-none text-white">!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Venue City -->
+                <div class="flex flex-col gap-2 field-group">
+                    <label class="text-[14px] font-semibold leading-[160%] tracking-[0.04px] text-[var(--text-primary)]">Venue City</label>
+                    <div class="flex h-[52px] items-center rounded-[8px] border border-[var(--border-light)] bg-white px-3 transition-colors input-focus container-el">
+                        <input type="text" id="reg-city" placeholder="Venue City" class="flex-1 bg-transparent text-[16px] outline-none placeholder:text-[var(--text-placeholder)]">
+                        <div class="error-icon hidden flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[var(--error-red)]">
+                            <span class="text-[10px] font-bold leading-none text-white">!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sports Available (Multi-select Dropdown) -->
+                <div class="flex flex-col gap-2 field-group relative h-full">
+                    <label class="text-[14px] font-semibold leading-[160%] tracking-[0.04px] text-[var(--text-primary)]">Sports Available</label>
+                    <div id="sports-dropdown-btn" class="flex min-h-[52px] items-center rounded-[8px] border border-[var(--border-light)] bg-white px-3 transition-colors input-focus container-el cursor-pointer">
+                        <div id="selected-sports-container" class="flex flex-wrap gap-2 flex-1 py-1">
+                            <span class="text-[16px] text-[var(--text-placeholder)]">Select Sports</span>
+                        </div>
+                        <svg class="shrink-0 transition-transform duration-200" id="dropdown-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M6 9L12 15L18 9" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="error-icon hidden flex h-5 w-5 ml-2 flex-shrink-0 items-center justify-center rounded-full bg-[var(--error-red)]">
+                            <span class="text-[10px] font-bold leading-none text-white">!</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="sports-menu" class="dropdown-menu absolute z-50 top-[calc(100%+4px)] left-0 w-full bg-white border border-[var(--border-light)] rounded-[8px] shadow-lg overflow-hidden flex flex-col">
+                        <div class="flex flex-col overflow-y-auto max-h-[260px] no-scrollbar">
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors">
+                                <input type="checkbox" value="Football" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Football</span>
+                            </label>
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors">
+                                <input type="checkbox" value="Cricket" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Cricket</span>
+                            </label>
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors">
+                                <input type="checkbox" value="Badminton" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Badminton</span>
+                            </label>
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors">
+                                <input type="checkbox" value="Tennis" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Tennis</span>
+                            </label>
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors">
+                                <input type="checkbox" value="Pickleball" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Pickleball</span>
+                            </label>
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors">
+                                <input type="checkbox" value="Basketball" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Basketball</span>
+                            </label>
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors">
+                                <input type="checkbox" value="Volleyball" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Volleyball</span>
+                            </label>
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors">
+                                <input type="checkbox" value="Table Tennis" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Table Tennis</span>
+                            </label>
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors">
+                                <input type="checkbox" value="Squash" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Squash</span>
+                            </label>
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors">
+                                <input type="checkbox" value="Kabaddi" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Kabaddi</span>
+                            </label>
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors">
+                                <input type="checkbox" value="Hockey" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Hockey</span>
+                            </label>
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors">
+                                <input type="checkbox" value="Padel" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Padel</span>
+                            </label>
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors">
+                                <input type="checkbox" value="Skating" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Skating</span>
+                            </label>
+                            <label class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors">
+                                <input type="checkbox" value="Athletics" class="sport-checkbox w-5 h-5 accent-[var(--primary-blue)] mr-3">
+                                <span class="text-[16px] text-[var(--text-primary)]">Athletics</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div class="flex flex-col gap-2 field-group">
+                    <label class="text-[14px] font-semibold leading-[160%] tracking-[0.04px] text-[var(--text-primary)]">Address</label>
+                    <div class="flex min-h-[124px] rounded-[8px] border border-[var(--border-light)] bg-white px-3 py-3 transition-colors input-focus container-el">
+                        <textarea id="reg-address" placeholder="Enter Address" class="flex-1 bg-transparent text-[16px] outline-none placeholder:text-[var(--text-placeholder)] resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- Other Info -->
+                <div class="flex flex-col gap-2 field-group">
+                    <label class="text-[14px] font-semibold leading-[160%] tracking-[0.04px] text-[var(--text-primary)]">Other Information (optional)</label>
+                    <div class="flex min-h-[124px] rounded-[8px] border border-[var(--border-light)] bg-white px-3 py-3 transition-colors input-focus container-el">
+                        <textarea id="reg-other" placeholder="" class="flex-1 bg-transparent text-[16px] outline-none placeholder:text-[var(--text-placeholder)] resize-none"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- ── Sticky Bottom Button ── -->
+        <div class="px-5 pb-8 pt-4 bg-[#FFFEFE] shrink-0">
+            <div class="flex flex-col gap-1">
+                <button type="button" onclick="validateForm()"
+                    class="flex h-[52px] w-full items-center justify-center rounded-[8px] bg-[var(--primary-blue)] px-4 text-[16px] font-semibold leading-7 text-[#F9F6F3] transition-opacity active:opacity-80">
+                    Register
+                </button>
+                <div class="px-3 py-2 text-center">
+                    <p class="text-[12px] font-normal leading-[150%] text-[var(--text-secondary)]">
+                        By continuing you agree with our 
+                        <a href="terms.html" class="underline underline-offset-1">Terms of Services</a> 
+                        & 
+                        <a href="privacy.html" class="underline underline-offset-1">Privacy Policy</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const phoneInput = document.getElementById('phone-input');
+        const dropdownBtn = document.getElementById('sports-dropdown-btn');
+        const dropdownMenu = document.getElementById('sports-menu');
+        const selectedContainer = document.getElementById('selected-sports-container');
+        const checkboxes = document.querySelectorAll('.sport-checkbox');
+        const chevron = document.getElementById('dropdown-chevron');
+        
+        let selectedSports = [];
+
+        // Formatting
+        function formatPhoneNumber(value) {
+            let digits = value.replace(/\D/g, '');
+            if (value.includes('+91')) {
+                const after91 = value.split('+91')[1] || '';
+                digits = after91.replace(/\D/g, '');
+            } else if (digits.startsWith('91') && digits.length > 10) {
+                digits = digits.substring(2);
+            }
+            digits = digits.substring(0, 10);
+            if (digits.length > 5) {
+                return digits.substring(0, 5) + ' ' + digits.substring(5);
+            }
+            return digits;
+        }
+
+        phoneInput.addEventListener('input', (e) => {
+            e.target.value = formatPhoneNumber(e.target.value);
+            clearError(phoneInput);
+        });
+
+        phoneInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+            let pasteData = (e.clipboardData || window.clipboardData).getData('text');
+            phoneInput.value = formatPhoneNumber(pasteData);
+            clearError(phoneInput);
+        });
+
+        // Dropdown Logic
+        dropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isActive = dropdownMenu.classList.contains('active');
+            if (isActive) {
+                closeDropdown();
+            } else {
+                openDropdown();
+            }
+        });
+
+        function openDropdown() {
+            dropdownMenu.classList.add('active');
+            chevron.classList.add('rotate-180');
+            clearError(dropdownBtn);
+        }
+
+        function closeDropdown() {
+            dropdownMenu.classList.remove('active');
+            chevron.classList.remove('rotate-180');
+        }
+
+        window.addEventListener('click', () => closeDropdown());
+        dropdownMenu.addEventListener('click', (e) => e.stopPropagation());
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                const val = cb.value;
+                if (cb.checked) {
+                    selectedSports.push(val);
+                } else {
+                    selectedSports = selectedSports.filter(s => s !== val);
+                }
+                updateSportsDisplay();
+            });
+        });
+
+        function updateSportsDisplay() {
+            if (selectedSports.length === 0) {
+                selectedContainer.innerHTML = '<span class="text-[16px] text-[var(--text-placeholder)]">Select Sports</span>';
+            } else {
+                selectedContainer.innerHTML = selectedSports.map(s => `
+                    <div class="sport-pill">
+                        ${s}
+                        <svg onclick="removeSport(event, '${s}')" class="cursor-pointer" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </div>
+                `).join('');
+            }
+        }
+
+        window.removeSport = (e, sport) => {
+            e.stopPropagation();
+            selectedSports = selectedSports.filter(s => s !== sport);
+            const cb = Array.from(checkboxes).find(c => c.value === sport);
+            if (cb) cb.checked = false;
+            updateSportsDisplay();
+        };
+
+        // Focus Scroll
+        const allInteractive = document.querySelectorAll('input, textarea, #sports-dropdown-btn');
+        allInteractive.forEach(el => {
+            el.addEventListener('focus', () => handleFocus(el));
+            if(el.id === 'sports-dropdown-btn') {
+                el.addEventListener('click', () => handleFocus(el));
+            }
+        });
+
+        function handleFocus(el) {
+            setTimeout(() => {
+                el.closest('.field-group').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
+
+        // Error State Logic
+        function setError(el) {
+            const group = el.closest('.field-group');
+            const container = group.querySelector('.container-el');
+            const icon = group.querySelector('.error-icon');
+            container.classList.add('border-error');
+            if(icon) icon.classList.remove('hidden');
+        }
+
+        function clearError(el) {
+            const group = el.closest('.field-group');
+            const container = group.querySelector('.container-el');
+            const icon = group.querySelector('.error-icon');
+            container.classList.remove('border-error');
+            if(icon) icon.classList.add('hidden');
+        }
+
+        function validateForm() {
+            let isValid = true;
+            const name = document.getElementById('reg-name');
+            const venue = document.getElementById('reg-venue');
+            const phone = document.getElementById('phone-input');
+            const city = document.getElementById('reg-city');
+            const address = document.getElementById('reg-address');
+
+            [name, venue, phone, city, address].forEach(el => {
+                if (!el.value.trim() || (el.id === 'phone-input' && el.value.replace(/\s/g, '').length < 10)) {
+                    setError(el);
+                    isValid = false;
+                }
+            });
+
+            if (selectedSports.length === 0) {
+                setError(dropdownBtn);
+                isValid = false;
+            }
+
+            if (isValid) {
+                alert('Registration Successful!');
+                window.location.href = 'Login.html';
+            }
+        }
+    </script>
+</body>
+</html>

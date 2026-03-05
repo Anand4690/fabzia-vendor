@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Fabzia</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Utility styles -->
+    <link rel="stylesheet" href="utility.css">
+    <style>
+        /* Using the variables from utility.css */
+        :root {
+            --primary: var(--primary-blue);
+            --error: var(--error-red);
+        }
+        body {
+            background-color: #FFFEFE;
+            color: var(--text-primary);
+            font-family: 'Lato', sans-serif;
+        }
+        /* Override Tailwind's default focus ring to match primary color */
+        .input-focus:focus-within {
+            border-color: var(--primary-blue) !important;
+        }
+        /* Custom class for error borders */
+        .border-error {
+            border-color: var(--error-red) !important;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen items-start justify-center">
+    <div class="w-full max-w-[430px] flex flex-col px-5 pb-10 pt-10">
+        <!-- ── Header ── -->
+        <div class="flex flex-col gap-2">
+            <div class="mt-2 flex flex-col gap-1">
+                <h1 class="text-[32px] font-semibold leading-[40px] tracking-[0.04px] text-[var(--text-primary)]">
+                    Welcome back
+                </h1>
+                <p class="text-[14px] font-normal leading-[150%] tracking-[0.04px] text-[var(--text-secondary)]">
+                    Enter your phone number and password to sign in.
+                </p>
+            </div>
+        </div>
+
+        <!-- ── Form ── -->
+        <form id="login-form" class="mt-6 flex flex-col gap-4">
+            <!-- Phone Field -->
+            <div class="flex flex-col gap-2">
+                <label class="text-[14px] font-semibold leading-[160%] tracking-[0.04px] text-[var(--text-primary)]">
+                    Enter Phone number
+                </label>
+                <div class="flex h-14 items-center gap-4 rounded-[8px] border border-[var(--border-light)] bg-white px-3 transition-colors input-focus" id="phone-container">
+                    <div class="flex items-center gap-1 px-1">
+                        <span class="text-[16px] font-normal leading-6 tracking-[0.5px] text-[#0F0F0F]">
+                            +91
+                        </span>
+                    </div>
+                    <div class="h-6 w-px bg-[var(--border-light)]"></div>
+                    <input type="tel" id="phone-input" placeholder="Phone number" 
+                        inputmode="numeric" maxlength="11"
+                        class="flex-1 bg-transparent text-[16px] font-normal leading-6 tracking-[0.5px] text-[#0F0F0F] outline-none placeholder:text-[var(--text-placeholder)]">
+                    <div id="phone-error-icon" class="hidden flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[var(--error-red)]">
+                        <span class="text-[12px] font-bold leading-none text-white">!</span>
+                    </div>
+                </div>
+                <p id="phone-error-text" class="hidden text-[13px] font-normal leading-[150%] text-[var(--error-red)]">
+                    Invalid Phone number
+                </p>
+            </div>
+
+            <!-- Password Field -->
+            <div class="flex flex-col gap-2">
+                <label class="text-[14px] font-semibold leading-[160%] tracking-[0.04px] text-[var(--text-primary)]">
+                    Enter Password
+                </label>
+                <div class="flex h-[52px] items-center gap-4 rounded-[8px] border border-[var(--border-light)] bg-white px-3 transition-colors input-focus" id="password-container">
+                    <input type="password" id="password-input" placeholder="Password" 
+                        class="flex-1 bg-transparent text-[16px] font-normal leading-6 tracking-[0.5px] text-[#0F0F0F] outline-none placeholder:text-[var(--text-placeholder)]">
+                    <button type="button" id="password-toggle" class="flex-shrink-0 p-0.5 focus:outline-none" aria-label="Toggle password visibility">
+                        <svg id="eye-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M4.5 12.5C7.5 6 16.5 6 19.5 12.5" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 16C10.8954 16 10 15.1046 10 14C10 12.8954 10.8954 12 12 12C13.1046 12 14 12.8954 14 14C14 15.1046 13.1046 16 12 16Z" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <div id="password-error-icon" class="hidden flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[var(--error-red)]">
+                        <span class="text-[12px] font-bold leading-none text-white">!</span>
+                    </div>
+                </div>
+                <p id="password-error-text" class="hidden text-[13px] font-normal leading-[150%] text-[var(--error-red)]">
+                    Invalid password
+                </p>
+                <div class="flex justify-end px-0.5">
+                    <a href="forgot-password.html" class="text-[14px] font-medium leading-[150%] tracking-[0.04px] text-[var(--text-secondary)] underline underline-offset-2">
+                        Forget Password?
+                    </a>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-2 flex flex-col gap-1">
+                <button type="submit" 
+                    class="flex h-[52px] w-full items-center justify-center rounded-[8px] bg-[var(--primary-blue)] px-4 text-[16px] font-semibold leading-7 text-[#F9F6F3] transition-opacity active:opacity-80">
+                    Login
+                </button>
+                <div class="flex h-[52px] items-center justify-center">
+                    <span class="text-[16px] font-semibold leading-7 text-[var(--text-primary)]">
+                        Own a turf?&nbsp;
+                    </span>
+                    <a href="register.html" class="text-[16px] font-semibold leading-7 text-[var(--text-primary)] underline underline-offset-2">
+                        Register now
+                    </a>
+                </div>
+                <div class="px-3 py-2 text-center">
+                    <p class="text-[12px] font-normal leading-[150%] text-[var(--text-secondary)]">
+                        By continuing you agree with our 
+                        <a href="terms.html" class="underline underline-offset-1">Terms of Services</a> 
+                        & 
+                        <a href="privacy.html" class="underline underline-offset-1">Privacy Policy</a>
+                    </p>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const phoneInput = document.getElementById('phone-input');
+        const phoneContainer = document.getElementById('phone-container');
+        const phoneErrorIcon = document.getElementById('phone-error-icon');
+        const phoneErrorText = document.getElementById('phone-error-text');
+
+        const passwordInput = document.getElementById('password-input');
+        const passwordContainer = document.getElementById('password-container');
+        const passwordToggle = document.getElementById('password-toggle');
+        const eyeIcon = document.getElementById('eye-icon');
+        const passwordErrorIcon = document.getElementById('password-error-icon');
+        const passwordErrorText = document.getElementById('password-error-text');
+
+        const eyeOpen = `<path d="M4.5 12.5C7.5 6 16.5 6 19.5 12.5" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 16C10.8954 16 10 15.1046 10 14C10 12.8954 10.8954 12 12 12C13.1046 12 14 12.8954 14 14C14 15.1046 13.1046 16 12 16Z" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+        const eyeClosed = `<path d="M3 3L21 21" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.58 10.58A2 2 0 0 0 14 14" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.88 5.17A10.7 10.7 0 0 1 12 5c4.97 0 8.7 3.93 9.5 7.5-.37 1.64-1.16 3.14-2.24 4.36" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.61 6.61A10.48 10.48 0 0 0 2.5 12.5C3.3 16.07 7.03 20 12 20c1.7 0 3.3-.42 4.72-1.17" stroke="#4D4D4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+        function formatPhoneNumber(value) {
+            let digits = value.replace(/\D/g, '');
+            if (value.includes('+91')) {
+                const after91 = value.split('+91')[1] || '';
+                digits = after91.replace(/\D/g, '');
+            } else if (digits.startsWith('91') && digits.length > 10) {
+                digits = digits.substring(2);
+            }
+            digits = digits.substring(0, 10);
+            if (digits.length > 5) {
+                return digits.substring(0, 5) + ' ' + digits.substring(5);
+            }
+            return digits;
+        }
+
+        phoneInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+            let pasteData = (e.clipboardData || window.clipboardData).getData('text');
+            phoneInput.value = formatPhoneNumber(pasteData);
+        });
+
+        phoneInput.addEventListener('input', (e) => {
+            const cursorPosition = e.target.selectionStart;
+            const oldValue = e.target.value;
+            const formatted = formatPhoneNumber(rawValue = oldValue);
+            e.target.value = formatted;
+            
+            phoneContainer.classList.remove('border-error');
+            phoneErrorIcon.classList.add('hidden');
+            phoneErrorText.classList.add('hidden');
+        });
+
+        passwordToggle.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            eyeIcon.innerHTML = isPassword ? eyeClosed : eyeOpen;
+        });
+
+        passwordInput.addEventListener('input', () => {
+            passwordContainer.classList.remove('border-error');
+            passwordErrorIcon.classList.add('hidden');
+            passwordErrorText.classList.add('hidden');
+            passwordToggle.classList.remove('hidden');
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let hasError = false;
+            const rawPhone = phoneInput.value.replace(/\s/g, '');
+            if (rawPhone.length < 10) {
+                phoneContainer.classList.add('border-error');
+                phoneErrorIcon.classList.remove('hidden');
+                phoneErrorText.classList.remove('hidden');
+                hasError = true;
+            }
+            if (!passwordInput.value.trim()) {
+                passwordContainer.classList.add('border-error');
+                passwordErrorIcon.classList.remove('hidden');
+                passwordErrorText.classList.remove('hidden');
+                passwordToggle.classList.add('hidden');
+                hasError = true;
+            }
+            if (!hasError) alert('Success! Form is valid.');
+        });
+    </script>
+</body>
+</html>
