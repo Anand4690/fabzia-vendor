@@ -32,7 +32,7 @@
             align-items: center;
             gap: 6px;
             padding: 6px 12px;
-            background-color: var(--green);
+            background-color: var(--primary-blue);
             color: white;
             border-radius: 16px;
             font-size: 14px;
@@ -41,7 +41,7 @@
         }
 
         .sport-chip:hover {
-            background-color: var(--green-dark);
+            background-color: var(--primary-blue-active);
         }
 
         .sport-chip button {
@@ -69,7 +69,7 @@
             content: '✓';
             position: absolute;
             right: 16px;
-            color: var(--green);
+            color: var(--primary-blue);
             font-weight: bold;
         }
 
@@ -149,8 +149,8 @@
             <!-- Profile Image Section (Moved inside scrollable area) -->
             <div class="flex justify-center items-center h-[141px] flex-shrink-0 relative">
                 <div class="relative group cursor-pointer">
-                    <img src="https://api.builder.io/api/v1/image/assets/TEMP/8d54f6aaa86b6c16bda6d9dd49e1a354fc7aff74?width=192" alt="Profile" class="w-24 h-24 rounded-full object-cover border-2 border-transparent group-hover:border-[var(--green)] transition-all">
-                    <button class="absolute bottom-0 right-0 bg-[var(--green)] rounded-full p-2 shadow-lg hover:brightness-110 transition-all" aria-label="Edit profile picture">
+                    <img src="https://api.builder.io/api/v1/image/assets/TEMP/8d54f6aaa86b6c16bda6d9dd49e1a354fc7aff74?width=192" alt="Profile" class="w-24 h-24 rounded-full object-cover border-2 border-transparent group-hover:border-[var(--primary-blue)] transition-all">
+                    <button class="absolute bottom-0 right-0 bg-[var(--primary-blue)] rounded-full p-2 shadow-lg hover:brightness-110 transition-all" aria-label="Edit profile picture">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M23 19C23 19.5304 22.7893 20.0391 22.4142 20.4142C22.0391 20.7893 21.5304 21 21 21H3C2.46957 21 1.96086 20.7893 1.58579 20.4142C1.21071 20.0391 1 19.5304 1 19V8C1 7.46957 1.21071 6.96086 1.58579 6.58579C1.96086 6.21071 2.46957 6 3 6H7L9 3H15L17 6H21C21.5304 6 22.0391 6.21071 22.4142 6.58579C22.7893 6.96086 23 7.46957 23 8V19Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M12 17C14.2091 17 16 15.2091 16 13C16 10.7909 14.2091 9 12 9C9.79086 9 8 10.7909 8 13C8 15.2091 9.79086 17 12 17Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -163,7 +163,7 @@
                 
                 <!-- Name Input -->
                 <div class="flex flex-col">
-                    <div id="nameInputGroup" class="input-group flex h-12 px-[10px] items-center gap-[10px] rounded-[4px] border border-[var(--black-700)] bg-[var(--white-pure)] transition-colors focus-within:border-[var(--green)] focus-within:ring-1 focus-within:ring-[var(--green)]">
+                    <div id="nameInputGroup" class="input-group flex h-12 px-[10px] items-center gap-[10px] rounded-[4px] border border-[var(--black-700)] bg-[var(--white-pure)] transition-colors focus-within:border-[var(--primary-blue)] focus-within:ring-1 focus-within:ring-[var(--primary-blue)]">
                         <input type="text" id="nameInput" value="Anand" class="flex-1 text-[var(--text-body)] font-inter text-[16px] font-medium leading-[28px] outline-none bg-transparent placeholder-[var(--text-placeholder)]">
                     </div>
                     <span id="nameError" class="error-message">
@@ -174,7 +174,7 @@
 
                 <!-- Email Input -->
                 <div class="flex flex-col">
-                    <div id="emailInputGroup" class="input-group flex h-12 px-[10px] items-center gap-[10px] rounded-[4px] border border-[var(--black-700)] bg-[var(--white-pure)] transition-colors focus-within:border-[var(--green)] focus-within:ring-1 focus-within:ring-[var(--green)]">
+                    <div id="emailInputGroup" class="input-group flex h-12 px-[10px] items-center gap-[10px] rounded-[4px] border border-[var(--black-700)] bg-[var(--white-pure)] transition-colors focus-within:border-[var(--primary-blue)] focus-within:ring-1 focus-within:ring-[var(--primary-blue)]">
                         <input type="email" id="emailInput" value="anand@gmail.com" class="flex-1 text-[var(--text-body)] font-inter text-[16px] font-medium leading-[28px] outline-none bg-transparent placeholder-[var(--text-placeholder)]">
                     </div>
                     <span id="emailError" class="error-message">
@@ -223,7 +223,7 @@
                 </div>
 
                 <!-- Address Input -->
-                <div class="input-group flex min-h-[140px] px-[10px] items-start py-3 gap-[10px] rounded-[4px] border border-[var(--black-700)] bg-[var(--white-pure)] transition-colors focus-within:border-[var(--green)] focus-within:ring-1 focus-within:ring-[var(--green)]">
+                <div class="input-group flex min-h-[140px] px-[10px] items-start py-3 gap-[10px] rounded-[4px] border border-[var(--black-700)] bg-[var(--white-pure)] transition-colors focus-within:border-[var(--primary-blue)] focus-within:ring-1 focus-within:ring-[var(--primary-blue)]">
                     <textarea id="addressInput" placeholder="Enter Address" class="flex-1 text-[var(--text-body)] font-inter text-[16px] font-medium leading-[28px] outline-none bg-transparent placeholder-[var(--text-placeholder)] resize-none h-full"></textarea>
                 </div>
 
@@ -260,7 +260,7 @@
                     cancel
                 </span>
             </button>
-            <button id="updateBtn" class="flex w-[162px] h-12 px-[10px] justify-center items-center gap-[10px] rounded-lg bg-[var(--green)] hover:opacity-90 transition-opacity shadow-md">
+            <button id="updateBtn" class="flex w-[162px] h-12 px-[10px] justify-center items-center gap-[10px] rounded-lg bg-[var(--primary-blue)] hover:opacity-90 transition-opacity shadow-md">
                 <span class="text-[var(--white-pure)] font-roboto text-[16px] font-normal leading-[24px] tracking-[0.5px]">
                     Update
                 </span>

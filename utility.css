@@ -13,7 +13,7 @@
   --primary-blue: #125dcd;
   --primary-blue-active: #1052b5;
   --primary-blue-dark: #1a4fa0; /* darker blue – borders, rings, buttons */
-  --green: hsl(145, 92%, 33%);
+  --green: var(--primary-blue);
   --black-300: hsl(0, 0%, 30%);
   --black-700: hsl(0, 0%, 70%);
 
@@ -25,7 +25,7 @@
   --error-red: #c0392b;
   --bg-soft: #f5f5f5;
 
-  --green-dark: #046c4e;
+  --green-dark: var(--primary-blue-dark);
   --bg-light: #f5f5f5;
   --bg-container: #e5e5e5;
   --white-pure: #ffffff;
