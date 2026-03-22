@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Download Report - Fabzia Turf</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Utility CSS (design tokens) -->
+  <link rel="stylesheet" href="utility.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'primary-blue':     'var(--primary-blue)',
+            'text-heading':     'var(--text-heading)',
+            'text-body':        'var(--text-body)',
+            'text-placeholder': 'var(--text-placeholder)',
+            'border-light':     'var(--border-light)',
+            'bg-light':         'var(--bg-light)',
+            'bg-soft':          'var(--bg-soft)',
+            'bg-container':     'var(--bg-container)',
+            'slate-900':        'var(--text-slate-900)',
+            'slate-700':        'var(--text-slate-700)',
+            'slate-500':        'var(--text-slate-500)',
+          },
+          fontFamily: {
+            lato: ['Lato', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ─── Reset & base ─── */
+    html, body {
+      height: 100%;
+      background-color: var(--bg-container);
+      font-family: 'Lato', sans-serif;
+    }
+
+    /* ─── Mobile shell ─── */
+    .mobile-shell {
+      max-width: 430px;
+      min-height: 100vh;
+      margin: 0 auto;
+      background-color: var(--white-pure);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Top nav ─── */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--white-pure);
+      border-bottom: 1px solid var(--border-light);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 4px;
+    }
+    .top-nav .back-btn {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-radius: 50%;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .top-nav .back-btn:active { background: var(--bg-soft); }
+    .top-nav .nav-title {
+      flex: 1;
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 28px;
+      letter-spacing: 0.04px;
+      color: var(--text-heading);
+      white-space: nowrap;
+    }
+
+    /* ─── Page content ─── */
+    .page-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding: 20px;
+    }
+
+    /* ─── Section label ─── */
+    .field-label {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.6;
+      letter-spacing: 0.04px;
+      color: var(--text-heading);
+    }
+
+    /* ─── Input field (button-like) ─── */
+    .input-field {
+      width: 100%;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 12px;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      background: var(--white-pure);
+      cursor: pointer;
+      transition: border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .input-field:focus,
+    .input-field:active {
+      border-color: var(--primary-blue);
+      outline: none;
+    }
+    .input-field .field-text {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+      letter-spacing: 0.5px;
+      color: var(--text-placeholder);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: left;
+    }
+    .input-field .field-text.has-value {
+      color: var(--text-heading);
+    }
+
+    /* ─── Date row ─── */
+    .date-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .date-row .date-btn {
+      flex: 1;
+    }
+    .date-divider {
+      width: 24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-placeholder);
+      font-size: 18px;
+      font-weight: 300;
+      user-select: none;
+    }
+
+    /* ─── Dropdown ─── */
+    .dropdown-wrapper {
+      position: relative;
+    }
+    .dropdown-list {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: var(--white-pure);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      z-index: 50;
+      max-height: 260px;
+      overflow-y: auto;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    }
+    .dropdown-list.open { display: block; }
+    .dropdown-option {
+      padding: 13px 12px;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-heading);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-light);
+      transition: background 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .dropdown-option:last-child { border-bottom: none; }
+    .dropdown-option:active,
+    .dropdown-option:hover { background: var(--bg-soft); }
+    .dropdown-option.selected {
+      color: var(--primary-blue);
+      font-weight: 600;
+    }
+
+    /* ─── Email text input ─── */
+    .text-input {
+      width: 100%;
+      height: 52px;
+      padding: 8px 12px;
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+      letter-spacing: 0.5px;
+      color: var(--text-heading);
+      font-family: 'Lato', sans-serif;
+      background: var(--white-pure);
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    .text-input::placeholder { color: var(--text-placeholder); }
+    .text-input:focus { border-color: var(--primary-blue); }
+    .text-input.error {
+      border-color: var(--error-red) !important;
+    }
+    .field-error-msg {
+      display: none;
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--error-red);
+      letter-spacing: 0.04px;
+    }
+    .field-error-msg.visible { display: block; }
+
+    /* ─── Primary Button ─── */
+    .btn-primary {
+      width: 100%;
+      height: 52px;
+      background: var(--primary-blue);
+      color: var(--white-pure);
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 28px;
+      letter-spacing: 0.04px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s, opacity 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-primary:active { background: var(--primary-blue-active); }
+
+    /* ─── Date Picker Overlay ─── */
+    .datepicker-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0,0,0,0.45);
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .datepicker-overlay.open {
+      display: flex;
+    }
+    .datepicker-sheet {
+      width: 100%;
+      max-width: 430px;
+      background: var(--white-pure);
+      border-radius: 20px 20px 0 0;
+      padding: 20px 16px 32px;
+      animation: slideUp 0.28s ease-out forwards;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+    .datepicker-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .datepicker-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-heading);
+    }
+    .datepicker-close {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--text-body);
+      font-size: 20px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .datepicker-close:active { background: var(--bg-soft); }
+
+    /* Calendar nav */
+    .cal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .cal-nav-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cal-nav-btn:active { background: var(--bg-soft); }
+    .cal-month-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-heading);
+    }
+
+    /* Calendar grid */
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .cal-day-header {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-placeholder);
+      padding: 4px 0;
+    }
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-heading);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.12s, color 0.12s;
+    }
+    .cal-day:hover:not(.cal-empty):not(.cal-past) { background: var(--bg-soft); }
+    .cal-day.cal-today { font-weight: 700; }
+    .cal-day.cal-today::after {
+      content: '';
+      display: block;
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--primary-blue);
+      bottom: 3px;
+    }
+    .cal-day.cal-today { position: relative; }
+    .cal-day.cal-selected {
+      background: var(--primary-blue);
+      color: var(--white-pure);
+      font-weight: 700;
+    }
+    .cal-day.cal-past {
+      color: var(--text-placeholder);
+      cursor: default;
+      pointer-events: none;
+    }
+    .cal-day.cal-empty { pointer-events: none; }
+
+    /* Date confirm button */
+    .datepicker-confirm {
+      width: 100%;
+      height: 48px;
+      background: var(--primary-blue);
+      color: var(--white-pure);
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .datepicker-confirm:active { background: var(--primary-blue-active); }
+  </style>
+</head>
+<body>
+
+  <!-- ════════ Mobile Shell ════════ -->
+  <div class="mobile-shell">
+
+    <!-- ── Top Nav ── -->
+    <nav class="top-nav" aria-label="Page navigation">
+      <button class="back-btn" onclick="history.back()" aria-label="Go back">
+        <!-- chevron-back -->
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 18L9 12L15 6" stroke="var(--text-heading)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <span class="nav-title">Download Report</span>
+    </nav>
+
+    <!-- ── Page Content ── -->
+    <main class="page-content">
+
+      <!-- ── Select Date ── -->
+      <section aria-labelledby="label-date">
+        <p id="label-date" class="field-label mb-2">Select Date</p>
+        <div class="date-row">
+
+          <!-- From date button -->
+          <div class="date-btn">
+            <button
+              id="btn-from"
+              class="input-field"
+              aria-label="Select from date"
+              onclick="openDatePicker('from')"
+              type="button"
+            >
+              <span id="from-display" class="field-text">From</span>
+            </button>
+          </div>
+
+          <!-- Divider -->
+          <div class="date-divider" aria-hidden="true">—</div>
+
+          <!-- To date button -->
+          <div class="date-btn">
+            <button
+              id="btn-to"
+              class="input-field"
+              aria-label="Select to date"
+              onclick="openDatePicker('to')"
+              type="button"
+            >
+              <span id="to-display" class="field-text">To</span>
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Select Your Turf ── -->
+      <section aria-labelledby="label-turf">
+        <p id="label-turf" class="field-label mb-2">Select Your Turf</p>
+        <div class="dropdown-wrapper" id="turf-wrapper">
+
+          <button
+            id="turf-btn"
+            class="input-field"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="turf-list"
+            onclick="toggleDropdown()"
+            type="button"
+          >
+            <span id="turf-display" class="field-text">Select</span>
+            <!-- chevron down -->
+            <svg id="turf-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 xmlns="http://www.w3.org/2000/svg"
+                 style="flex-shrink:0; transition: transform 0.2s;">
+              <path d="M6 9L12 15L18 9" stroke="var(--text-placeholder)" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <ul id="turf-list" role="listbox" aria-label="Turf options" class="dropdown-list">
+            <li class="dropdown-option" role="option" onclick="selectTurf(this)">The Multisports Turf (TMT)</li>
+            <li class="dropdown-option" role="option" onclick="selectTurf(this)">Ultimate Powerplay Turf</li>
+            <li class="dropdown-option" role="option" onclick="selectTurf(this)">Universal Turf</li>
+            <li class="dropdown-option" role="option" onclick="selectTurf(this)">Battlefield Delhi Vaishali Nagar By Fabzia</li>
+            <li class="dropdown-option" role="option" onclick="selectTurf(this)">Battlefield Sion By Fabzia</li>
+            <li class="dropdown-option" role="option" onclick="selectTurf(this)">BattleField Pushkar Road Ajmer by Fabzia</li>
+            <li class="dropdown-option" role="option" onclick="selectTurf(this)">The Grounds - Tribe</li>
+            <li class="dropdown-option" role="option" onclick="selectTurf(this)">Kes Turf</li>
+            <li class="dropdown-option" role="option" onclick="selectTurf(this)">Strike Hill Side Turf</li>
+            <li class="dropdown-option" role="option" onclick="selectTurf(this)">Maestro Turf</li>
+            <li class="dropdown-option" role="option" onclick="selectTurf(this)">Navkis Kogilu Turf - Fabzia Sports</li>
+          </ul>
+
+        </div>
+      </section>
+
+      <!-- ── Email Address ── -->
+      <section aria-labelledby="label-email">
+        <p id="label-email" class="field-label mb-2">Email Address</p>
+        <input
+          id="email-input"
+          type="email"
+          class="text-input"
+          placeholder="example@gmail.com"
+          autocomplete="email"
+          inputmode="email"
+          aria-label="Email Address"
+          aria-describedby="email-error"
+          oninput="clearEmailError()"
+          onblur="validateEmailField()"
+        />
+        <p id="email-error" class="field-error-msg" role="alert"></p>
+      </section>
+
+      <!-- ── Download Button ── -->
+      <button
+        id="download-btn"
+        class="btn-primary"
+        type="button"
+        onclick="handleDownload()"
+        aria-label="Download Report"
+      >
+        Download Report
+      </button>
+
+    </main>
+  </div><!-- /mobile-shell -->
+
+  <!-- ════════ Date Picker Overlay ════════ -->
+  <div id="datepicker-overlay" class="datepicker-overlay" role="dialog" aria-modal="true" aria-label="Date picker">
+    <div class="datepicker-sheet">
+
+      <div class="datepicker-header">
+        <p class="datepicker-title" id="dp-label">Select Date</p>
+        <button class="datepicker-close" onclick="closeDatePicker()" aria-label="Close date picker">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6l12 12" stroke="var(--text-body)" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Calendar navigation -->
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)" aria-label="Previous month">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M15 18L9 12L15 6" stroke="var(--text-heading)" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span class="cal-month-label" id="cal-month-label">March 2026</span>
+        <button class="cal-nav-btn" onclick="changeMonth(1)" aria-label="Next month">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M9 6L15 12L9 18" stroke="var(--text-heading)" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Calendar grid -->
+      <div class="cal-grid" id="cal-grid">
+        <!-- Day headers -->
+        <div class="cal-day-header">Su</div>
+        <div class="cal-day-header">Mo</div>
+        <div class="cal-day-header">Tu</div>
+        <div class="cal-day-header">We</div>
+        <div class="cal-day-header">Th</div>
+        <div class="cal-day-header">Fr</div>
+        <div class="cal-day-header">Sa</div>
+        <!-- Days injected by JS -->
+      </div>
+
+      <button class="datepicker-confirm" onclick="confirmDate()" id="dp-confirm-btn">Confirm</button>
+
+    </div>
+  </div>
+
+  <script>
+    /* ════════════════════════════════
+       State
+    ════════════════════════════════ */
+    const state = {
+      fromDate: null,  // Date object or null
+      toDate:   null,
+      activePicker: null, // 'from' | 'to'
+      calYear: 0,
+      calMonth: 0,
+      tempDate: null,  // Date being picked in the calendar
+    };
+
+    const MONTH_NAMES = [
+      'January','February','March','April','May','June',
+      'July','August','September','October','November','December'
+    ];
+
+    /* ════════════════════════════════
+       Helpers
+    ════════════════════════════════ */
+    function formatDate(d) {
+      if (!d) return '';
+      const day   = String(d.getDate()).padStart(2, '0');
+      const month = d.toLocaleString('en-US', { month: 'short' });
+      const year  = d.getFullYear();
+      return `${day} ${month} ${year}`;
+    }
+
+    function today() {
+      const d = new Date();
+      d.setHours(0,0,0,0);
+      return d;
+    }
+
+    /* ════════════════════════════════
+       Turf Dropdown
+    ════════════════════════════════ */
+    let dropdownOpen = false;
+
+    function toggleDropdown() {
+      dropdownOpen = !dropdownOpen;
+      const list    = document.getElementById('turf-list');
+      const chevron = document.getElementById('turf-chevron');
+      const btn     = document.getElementById('turf-btn');
+
+      list.classList.toggle('open', dropdownOpen);
+      chevron.style.transform = dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+      btn.setAttribute('aria-expanded', String(dropdownOpen));
+    }
+
+    function selectTurf(el) {
+      const value = el.textContent.trim();
+      document.getElementById('turf-display').textContent = value;
+      document.getElementById('turf-display').classList.add('has-value');
+
+      // mark selected
+      document.querySelectorAll('.dropdown-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+
+      // close
+      dropdownOpen = true;
+      toggleDropdown();
+    }
+
+    // Close dropdown on outside click
+    document.addEventListener('click', (e) => {
+      if (dropdownOpen && !document.getElementById('turf-wrapper').contains(e.target)) {
+        dropdownOpen = true;
+        toggleDropdown();
+      }
+    });
+
+    /* ════════════════════════════════
+       Date Picker
+    ════════════════════════════════ */
+    function openDatePicker(which) {
+      state.activePicker = which;
+      const now = today();
+      state.calYear  = now.getFullYear();
+      state.calMonth = now.getMonth();
+
+      // Pre-select existing value
+      state.tempDate = (which === 'from') ? state.fromDate : state.toDate;
+
+      document.getElementById('dp-label').textContent =
+        which === 'from' ? 'Select From Date' : 'Select To Date';
+
+      renderCalendar();
+      document.getElementById('datepicker-overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDatePicker() {
+      document.getElementById('datepicker-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+      state.activePicker = null;
+    }
+
+    function confirmDate() {
+      if (!state.tempDate) return;
+
+      if (state.activePicker === 'from') {
+        state.fromDate = state.tempDate;
+        const el = document.getElementById('from-display');
+        el.textContent = formatDate(state.fromDate);
+        el.classList.add('has-value');
+      } else {
+        state.toDate = state.tempDate;
+        const el = document.getElementById('to-display');
+        el.textContent = formatDate(state.toDate);
+        el.classList.add('has-value');
+      }
+
+      closeDatePicker();
+    }
+
+    function changeMonth(delta) {
+      state.calMonth += delta;
+      if (state.calMonth < 0)  { state.calMonth = 11; state.calYear--; }
+      if (state.calMonth > 11) { state.calMonth = 0;  state.calYear++; }
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      document.getElementById('cal-month-label').textContent =
+        `${MONTH_NAMES[state.calMonth]} ${state.calYear}`;
+
+      const grid = document.getElementById('cal-grid');
+
+      // Remove previous day cells (keep the 7 header divs)
+      const children = Array.from(grid.children);
+      children.slice(7).forEach(c => c.remove());
+
+      const todayDate = today();
+
+      // First day of month weekday
+      const firstDay = new Date(state.calYear, state.calMonth, 1).getDay();
+      // Days in month
+      const daysInMonth = new Date(state.calYear, state.calMonth + 1, 0).getDate();
+
+      // Empty cells before first day
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'cal-day cal-empty';
+        grid.appendChild(empty);
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const cellDate = new Date(state.calYear, state.calMonth, d);
+        const cell = document.createElement('div');
+        cell.className = 'cal-day';
+        cell.textContent = d;
+        cell.setAttribute('role', 'button');
+        cell.setAttribute('aria-label', cellDate.toDateString());
+
+        const isPast = cellDate < todayDate;
+        const isToday = cellDate.getTime() === todayDate.getTime();
+        const isSelected = state.tempDate &&
+          cellDate.getTime() === state.tempDate.getTime();
+
+        if (isPast)     cell.classList.add('cal-past');
+        if (isToday)    cell.classList.add('cal-today');
+        if (isSelected) cell.classList.add('cal-selected');
+
+        if (!isPast) {
+          cell.addEventListener('click', () => {
+            state.tempDate = cellDate;
+            renderCalendar(); // re-render to update selection
+          });
+        }
+
+        grid.appendChild(cell);
+      }
+    }
+
+    /* ════════════════════════════════
+       Email validation
+    ════════════════════════════════ */
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function validateEmailField() {
+      const input = document.getElementById('email-input');
+      const errEl = document.getElementById('email-error');
+      const val   = input.value.trim();
+
+      if (!val) {
+        showEmailError('Email address is required.');
+        return false;
+      }
+      if (!EMAIL_REGEX.test(val)) {
+        showEmailError('Please enter a valid email address (e.g. user@example.com).');
+        return false;
+      }
+
+      clearEmailError();
+      return true;
+    }
+
+    function showEmailError(msg) {
+      const input = document.getElementById('email-input');
+      const errEl = document.getElementById('email-error');
+      input.classList.add('error');
+      errEl.textContent = msg;
+      errEl.classList.add('visible');
+    }
+
+    function clearEmailError() {
+      const input = document.getElementById('email-input');
+      const errEl = document.getElementById('email-error');
+      input.classList.remove('error');
+      errEl.classList.remove('visible');
+    }
+
+    /* ════════════════════════════════
+       Download
+    ════════════════════════════════ */
+    function handleDownload() {
+      let hasError = false;
+
+      if (!state.fromDate || !state.toDate) {
+        alert('Please select both From and To dates.');
+        hasError = true;
+      } else if (state.fromDate > state.toDate) {
+        alert('From date must be before or equal to To date.');
+        hasError = true;
+      }
+
+      if (!document.getElementById('turf-display').classList.contains('has-value')) {
+        if (!hasError) alert('Please select a turf.');
+        hasError = true;
+      }
+
+      const emailOk = validateEmailField();
+      if (!emailOk) hasError = true;
+
+      if (hasError) return;
+
+      const email = document.getElementById('email-input').value.trim();
+
+      // Show success feedback
+      const btn = document.getElementById('download-btn');
+      btn.textContent = 'Downloading…';
+      btn.style.opacity = '0.7';
+
+      setTimeout(() => {
+        btn.textContent = 'Download Report';
+        btn.style.opacity = '1';
+        alert(`Report will be sent to ${email}`);
+      }, 1800);
+    }
+
+    /* Close date picker on overlay backdrop click */
+    document.getElementById('datepicker-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closeDatePicker();
+    });
+
+    /* Initial calendar render */
+    const _now = today();
+    state.calYear  = _now.getFullYear();
+    state.calMonth = _now.getMonth();
+    renderCalendar();
+  </script>
+
+</body>
+</html>

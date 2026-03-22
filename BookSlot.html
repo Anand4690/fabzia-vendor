@@ -1,547 +1,1035 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Slot - The Multisports Turf</title>
-    
-    <!-- Utility CSS -->
-    <link rel="stylesheet" href="utility.css">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- Tailwind Config -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'text-heading': 'var(--text-heading)',
-                        'text-body': 'var(--text-body)',
-                        'text-inverse': 'var(--text-placeholder)',
-                        'text-brand': 'var(--primary-blue)',
-                        'brand-blue': 'var(--primary-blue)',
-                        'brand-blue-dark': 'var(--primary-blue)',
-                        'bg-page': 'var(--white-pure)',
-                        'container-border': 'var(--bg-container)',
-                        'partial': 'hsl(43, 94%, 47%)',
-                        'available': 'hsl(75, 99%, 34%)',
-                        'sold': 'hsl(0, 0%, 93%)',
-                        'selected': 'var(--primary-blue)',
-                    },
-                    fontFamily: {
-                        'inter': ['Inter', 'sans-serif'],
-                        'lato': ['Lato', 'sans-serif'],
-                    },
-                    maxWidth: {
-                        'booking': '430px',
-                    },
-                    boxShadow: {
-                        'filter': '0 2px 4px 0 rgba(0,0,0,0.2)',
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Slot – Fabzia Turf</title>
+  <link rel="stylesheet" href="utility.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-    <style>
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-light);
-        }
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { inter: ['Inter','sans-serif'], lato: ['Lato','sans-serif'] },
+          maxWidth: { mobile: '430px' },
+        },
+      },
+    };
+  </script>
 
-        /* Blocked slot: diagonal red stripe pattern */
-        .slot-blocked {
-            background-color: #f5f5f5;
-            background-image: repeating-linear-gradient(
-                -45deg,
-                #d1d5db 0px,
-                #d1d5db 2px,
-                transparent 2px,
-                transparent 10px
-            );
-            cursor: not-allowed;
-        }
-    </style>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: 'Inter','Lato',sans-serif; background-color:#f5f5f5; margin:0; padding:0; }
+    .scrollbar-hide::-webkit-scrollbar { display:none; }
+    .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
+
+    /* STABILIZED HEADERS */
+    .sticky-nav        { height:64px; }
+    .sticky-month      { height:37px; }
+    .sticky-cal        { height:86px; }
+    .sticky-squad      { height:88px; }
+    .sticky-slots-header { height:45px; }
+
+    /* CALENDAR DAY BUTTON */
+    .day-btn { display:flex; flex-direction:column; align-items:center; flex:1 0 0; min-width:54px; max-width:54px; gap:4px; padding:4px 8px; height:70px; cursor:pointer; border:none; background:transparent; transition:all 0.2s; }
+    .day-name { font-size:12px; font-weight:600; line-height:1.6; letter-spacing:-0.12px; color:var(--text-primary); }
+    .day-btn.rest .day-name { color:var(--text-secondary); }
+    .day-btn.current .day-name { color:var(--primary-blue); }
+    .day-btn.selected-day .day-name { color:var(--primary-blue); }
+    .date-circle { display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:14px; font-size:14px; font-weight:500; letter-spacing:0.04px; }
+    .date-filled { background:var(--primary-blue); color:var(--white-pure); }
+    .date-ring   { border:1px solid var(--primary-blue-dark); color:var(--primary-blue-dark); }
+    .date-plain  { color:var(--text-primary); line-height:1.5; font-size:14px; font-weight:500; }
+    .today-dot   { width:5px; height:5px; border-radius:50%; background:var(--primary-blue); margin-top:-2px; }
+
+    /* SQUAD PILLS */
+    .squad-pill { height:36px; padding:4px 16px; border-radius:4px; font-size:12px; font-weight:400; line-height:1.5; white-space:nowrap; cursor:pointer; transition:all 0.15s; }
+    .squad-pill.unselected { background:var(--slot-sq-unsel-bg); border:1px solid var(--slot-border-light); color:var(--text-primary); }
+    .squad-pill.selected   { background:var(--primary-blue); border:1px solid var(--primary-blue); color:var(--white-pure); }
+    #squad-row { min-width:max-content; }
+
+    /* SLOT CARDS */
+    .slot-card {
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:4px; height:48px; border-radius:4px; padding:8px 16px;
+      cursor:pointer; transition:all 0.15s ease; border:1px solid var(--slot-border-default);
+      position:relative; overflow:hidden;
+    }
+
+    /* Available */
+    .slot-card.available { background:transparent; }
+    .slot-card.available .slot-time { color:#1a1a1a; font-weight:600; }
+
+    /* Selected (clicked available) – light blue bg + blue border */
+    .slot-card.selected { border:2px solid #125dcd; background:#e8f0fe; }
+    .slot-card.selected .slot-time { color:#125dcd; font-weight:600; }
+    .slot-card.selected .slot-price { color:#125dcd; }
+
+    /* Booked – light green bg + green border */
+    .slot-card.booked { background:#e8f5e9; border:1.5px solid #2e7d32; cursor:pointer; }
+    .slot-card.booked .slot-time { color:#2e7d32; font-weight:600; }
+    .slot-card.booked .slot-price { color:#2e7d32; font-size:11px; }
+
+    /* Cancelled – light red bg + red border */
+    .slot-card.cancelled { background:#fdecea; border:1.5px solid #b3261e; cursor:pointer; }
+    .slot-card.cancelled .slot-time { color:#b3261e; font-weight:600; }
+    .slot-card.cancelled .slot-price { color:#b3261e; font-size:11px; }
+
+    /* Blocked – diagonal stripes, shows "Blocked" label */
+    .slot-card.blocked { cursor:pointer; background:transparent; border:1px solid var(--slot-border-default); }
+    .slot-card.blocked .slot-time { color:var(--slot-text-blocked); font-weight:600; }
+    .slot-card.blocked .slot-price { color:var(--slot-text-blocked); font-weight:600; font-size:11px; }
+    .slot-card.blocked::before {
+      content:''; position:absolute; inset:0;
+      background-image:repeating-linear-gradient(-45deg,transparent,transparent 5px,rgba(0,0,0,0.08) 5px,rgba(0,0,0,0.08) 9px);
+      border-radius:4px; pointer-events:none;
+    }
+
+    /* Disabled */
+    .slot-card.disabled { background:transparent; cursor:not-allowed; }
+    .slot-card.disabled .slot-time { color:var(--slot-text-muted); font-weight:600; }
+
+    /* Partial */
+    .slot-card.partial { border:2px solid var(--slot-partial); border-left-width:6px; background:transparent; }
+    .slot-card.partial .slot-time { font-weight:600; color:var(--text-primary); }
+    .slot-card.partial-selected { background:var(--slot-selected-bg); border:2px solid var(--primary-blue-dark); border-left-width:6px; }
+    .slot-card.partial-selected .slot-time { font-weight:600; color:var(--text-primary); }
+
+    .slot-time  { font-size:12px; line-height:1.6; letter-spacing:-0.12px; }
+    .slot-price { font-size:12px; line-height:1.5; font-weight:500; color:var(--slot-price-label); }
+
+    /* BOTTOM SHEETS */
+    .bs-overlay { position:fixed; inset:0; z-index:60; background:rgba(0,0,0,0.45); display:none; align-items:flex-end; justify-content:center; }
+    .bs-overlay.open { display:flex; }
+    .bs-panel { position:relative; width:100%; max-width:430px; background:#fff; border-radius:8px 8px 0 0; animation:bsSlideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
+    @keyframes bsSlideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+
+    .bs-header { height:45px; display:flex; align-items:center; justify-content:space-between; padding:8px 16px; background:#f5f5f5; border-radius:8px 8px 0 0; }
+    .bs-title { font-size:14px; font-weight:400; color:var(--text-primary); letter-spacing:0.04px; }
+
+    .radio-btn { width:24px; height:24px; border-radius:50%; border:1.5px solid var(--slot-border-light); display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+    .radio-btn.active { border-color:var(--primary-blue); background:var(--primary-blue); }
+    .radio-btn.active::after { content:''; width:8px; height:8px; border-radius:50%; background:var(--white-pure); }
+
+    .legend-blocked { width:20px; height:20px; border-radius:4px; border:1px solid var(--slot-border-default); background-image:repeating-linear-gradient(-45deg,transparent,transparent 4px,rgba(0,0,0,0.08) 4px,rgba(0,0,0,0.08) 7px); }
+
+    /* Detail row */
+    .detail-row { display:flex; align-items:center; justify-content:space-between; padding:6px 0; }
+    .detail-label { font-size:14px; color:#3d3d3d; }
+    .detail-value { font-size:14px; font-weight:500; color:#1a1a1a; }
+    .detail-divider { border:none; border-top:1px solid #d7d7d7; margin:8px 0; }
+
+    /* Input field */
+    .slot-input-wrap { display:flex; align-items:center; border:1px solid #d7d7d7; border-radius:8px; height:52px; padding:0 12px; gap:12px; background:#fff; }
+    .slot-input-wrap input { border:none; outline:none; flex:1; font-size:16px; font-family:'Inter',sans-serif; color:#1a1a1a; background:transparent; }
+    .slot-input-symbol { font-size:16px; color:#3d3d3d; }
+
+    /* Calendar popup */
+    .calendar-popup { display:none; position:absolute; background:#fff; border:1px solid #d7d7d7; border-radius:12px; padding:16px; z-index:200; box-shadow:0 8px 24px rgba(0,0,0,0.15); left:0; right:0; margin:0 16px; }
+    .calendar-popup.open { display:block; }
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-top:12px; }
+    .cal-cell { text-align:center; padding:6px 4px; font-size:13px; cursor:pointer; border-radius:6px; }
+    .cal-cell.selected { background:#125dcd; color:#fff; font-weight:600; }
+    .cal-cell.today { font-weight:700; color:#125dcd; }
+    .cal-cell.other-month { color:#bbb; }
+    .cal-cell:hover:not(.selected) { background:#e8f0fe; }
+    .cal-header { display:flex; align-items:center; justify-content:space-between; }
+    .cal-header span { font-size:15px; font-weight:600; color:#1a1a1a; }
+  </style>
 </head>
 <body>
 
-    <div class="min-h-screen bg-white max-w-booking mx-auto relative flex flex-col shadow-2xl">
-        
-        <!-- Top Navigation - Sticky -->
-        <div class="sticky top-0 z-50 bg-white border-b border-container-border px-1 py-2 flex items-center gap-2">
-            <button onclick="window.location.href='TurfDetails.html'" class="w-12 h-12 flex items-center justify-center hover:bg-gray-50 rounded-full transition-colors">
-                <i data-lucide="chevron-left" class="w-6 h-6 text-text-heading"></i>
-            </button>
-            <div class="flex-1">
-                <h1 class="text-lg font-normal text-text-heading leading-7">
-                    The Multisports Turf
-                </h1>
-                <p class="text-xs text-text-body leading-tight">
-                    Manpada, Thane west , Mumbai
-                </p>
-            </div>
-        </div>
+<div id="app" class="w-full max-w-mobile mx-auto bg-white min-h-screen flex flex-col relative"
+     style="box-shadow:0 0 50px rgba(0,0,0,0.12);">
 
-        <!-- Month Display - Sticky -->
-        <div class="sticky top-[64px] z-40 bg-white py-2 text-center border-b border-container-border">
-            <span class="text-sm font-semibold text-text-heading capitalize">December</span>
-        </div>
-
-        <!-- Calendar - Sticky -->
-        <div class="sticky top-[105px] z-40 bg-white py-2 px-2 flex items-center gap-1 h-[74px]">
-            <button class="flex-shrink-0 w-8 h-full flex items-center justify-center">
-                <i data-lucide="chevron-left" class="w-6 h-6 text-text-heading" stroke-width="1.5"></i>
-            </button>
-
-            <div id="days-container" class="flex-1 flex gap-1 overflow-x-auto scrollbar-hide">
-                <!-- Days will be injected here by JS -->
-            </div>
-
-            <button class="flex-shrink-0 w-8 h-full flex items-center justify-center">
-                <i data-lucide="chevron-right" class="w-6 h-6 text-text-heading" stroke-width="1.5"></i>
-            </button>
-        </div>
-
-        <!-- Squad Size Selector - Sticky -->
-        <div class="sticky top-[178px] z-30 bg-[#FAFAFA] border-b border-container-border">
-            <button
-                onclick="toggleSquadSelector()"
-                class="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
-            >
-                <div class="flex items-center gap-2">
-                    <span class="text-sm font-medium text-text-heading whitespace-nowrap">
-                        Select Squad Size
-                    </span>
-                    <div id="selected-squad-display" class="px-4 py-1 rounded-2xl border border-[#B2B2B2] text-xs text-text-brand">
-                        8v8
-                    </div>
-                </div>
-                <i id="squad-chevron" data-lucide="chevron-down" class="w-4 h-4 flex-shrink-0" stroke-width="1.5"></i>
-            </button>
-
-            <!-- Squad Size Options -->
-            <div id="squad-options" class="hidden px-4 pb-6 pt-4 flex justify-between gap-4 bg-white border-b border-container-border animate-in slide-in-from-top duration-200">
-                <div id="squad-buttons-container" class="flex flex-col gap-3 w-fit">
-                    <!-- Squad buttons injected by JS -->
-                </div>
-                <!-- Mini Pitch Visualizer -->
-                <div class="relative w-40 h-40 bg-[var(--primary-blue)] rounded-[9px] flex-shrink-0 overflow-hidden border-2 border-blue-800 shadow-inner">
-                    <!-- Field boundary lines -->
-                    <div class="absolute inset-2 border border-white/40 rounded-sm"></div>
-                    <!-- Center line -->
-                    <div class="absolute top-1/2 left-2 right-2 h-px bg-white/40 -translate-y-1/2"></div>
-                    <!-- Center circle -->
-                    <div class="absolute top-1/2 left-1/2 w-8 h-8 -translate-x-1/2 -translate-y-1/2 border border-white/40 rounded-full"></div>
-                    <!-- Top goal box -->
-                    <div class="absolute top-2 left-1/2 -translate-x-1/2 w-8 h-2 border border-white/40 border-t-0 bg-white/10"></div>
-                    <!-- Bottom goal box -->
-                    <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-8 h-2 border border-white/40 border-b-0 bg-white/10"></div>
-                    <!-- Dynamic Selection Highlight Overlay -->
-                    <div id="turf-highlight" class="absolute bg-black/20 backdrop-blur-sm border-2 border-white transition-all duration-500 ease-out shadow-lg z-20 flex items-center justify-center text-[10px] font-bold text-white tracking-widest uppercase rounded-sm" style="top: 0; left: 0; width: 100%; height: 100%;">
-                        <div class="bg-black/15 px-2 py-0.5 rounded backdrop-blur-md">Full Pitch</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Time Filters - Sticky -->
-        <div class="sticky top-[226px] z-20 bg-white px-4 py-3 flex items-center gap-2.5 shadow-filter">
-            <div id="filters-container" class="flex gap-2.5">
-                <!-- Filters injected by JS -->
-            </div>
-        </div>
-
-        <!-- Slot Legend - Sticky -->
-        <div class="sticky top-[274px] z-20 px-4 py-3 flex items-center gap-3 bg-white border-b border-container-border overflow-x-auto scrollbar-hide">
-            <div class="flex items-center gap-2 flex-shrink-0">
-                <div class="w-5 h-5 rounded bg-partial"></div>
-                <span class="text-xs text-black whitespace-nowrap">Partial</span>
-            </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-                <div class="w-5 h-5 rounded border border-available"></div>
-                <span class="text-xs text-black whitespace-nowrap">Available</span>
-            </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-                <div class="w-5 h-5 rounded bg-sold"></div>
-                <span class="text-xs text-black whitespace-nowrap">Sold</span>
-            </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-                <div class="w-5 h-5 rounded bg-selected"></div>
-                <span class="text-xs text-black whitespace-nowrap">Selected</span>
-            </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-                <div class="w-5 h-5 rounded slot-blocked"></div>
-                <span class="text-xs text-black whitespace-nowrap">Blocked</span>
-            </div>
-        </div>
-
-        <!-- Time Slots Grid - Scrollable -->
-        <div class="flex-1 overflow-y-auto pb-24 px-4 pt-4">
-            <div id="slots-grid" class="grid grid-cols-2 gap-4">
-                <!-- Slots injected by JS -->
-            </div>
-        </div>
-
-        <!-- Bottom Bar - Sticky -->
-        <div class="sticky bottom-0 z-50 bg-white border-t border-container-border px-4 py-3 flex items-center justify-between gap-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-            <button
-                onclick="openBottomSheet()"
-                class="flex items-center gap-1 text-text-heading hover:opacity-80 transition-opacity"
-            >
-                <span class="font-semibold">3 Slots</span>
-                <i data-lucide="chevron-up" class="w-4 h-4"></i>
-            </button>
-            <button onclick="window.location.href='Checkout.html'" class="flex-1 max-w-[201px] bg-selected text-white font-semibold rounded-lg px-5 py-2.5 flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
-                <span>Pay</span>
-                <span>₹1500</span>
-            </button>
-        </div>
-
-        <!-- Bottom Sheet Overlay -->
-        <div id="bottom-sheet-overlay" onclick="closeBottomSheet()" class="fixed inset-0 bg-black/20 z-[60] hidden transition-opacity"></div>
-        
-        <!-- Bottom Sheet Content -->
-        <div id="bottom-sheet-content" class="fixed bottom-0 left-0 right-0 z-[70] max-w-booking mx-auto bg-white rounded-t-lg shadow-2xl transition-transform transform translate-y-full duration-300">
-            <div class="bg-[var(--bg-light)] px-4 py-2 flex items-center justify-between rounded-t-lg">
-                <span class="text-sm text-text-heading font-medium">Confirm Your Slot</span>
-                <button onclick="closeBottomSheet()">
-                    <i data-lucide="x" class="w-5 h-5 text-text-heading"></i>
-                </button>
-            </div>
-            
-            <div class="pb-4">
-                <div id="selected-slots-list">
-                    <!-- Selected slots static data -->
-                    <div class="px-4 py-2 border-b border-container-border">
-                        <div class="text-sm font-medium text-text-heading leading-tight">
-                            12 AM- 12.30 PM
-                        </div>
-                        <div class="text-xs text-text-body mt-1">
-                            7v7 (Half 1)
-                        </div>
-                    </div>
-                    <div class="px-4 py-2 border-b border-container-border">
-                        <div class="text-sm font-medium text-text-heading leading-tight">
-                            12 AM- 12.30 PM
-                        </div>
-                        <div class="text-xs text-text-body mt-1">
-                            7v7 (Half 2)
-                        </div>
-                    </div>
-                    <div class="px-4 py-2 border-b border-container-border">
-                        <div class="text-sm font-medium text-text-heading leading-tight">
-                            12 AM- 12.30 PM
-                        </div>
-                        <div class="text-xs text-text-body mt-1">
-                            7v7 (Half 1)
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="px-4 pt-4">
-                    <button onclick="closeBottomSheet()" class="w-full bg-[var(--primary-blue)] text-white font-semibold rounded-lg px-5 py-2.5 hover:opacity-90 transition-opacity">
-                        Close
-                    </button>
-                </div>
-            </div>
-        </div>
-
+  <!-- Top Navigation -->
+  <div class="sticky top-0 z-50 bg-white sticky-nav flex items-center px-1"
+       style="border-bottom:1px solid #d7d7d7; box-shadow:0px 1px 2px rgba(0,0,0,0.15);">
+    <button onclick="window.history.back()" class="w-12 h-12 flex items-center justify-center shrink-0">
+      <i data-lucide="chevron-left" class="w-6 h-6 text-text-heading"></i>
+    </button>
+    <div class="flex-1 flex flex-col justify-center gap-0.5 min-w-0">
+      <h1 class="text-[18px] font-normal leading-[28px] text-text-heading truncate">The Multisports Turf</h1>
+      <p class="text-[12px] font-normal leading-[1.3] text-text-body truncate">Manpada, Thane west , Mumbai</p>
     </div>
+  </div>
 
-    <!-- JavaScript Application Logic -->
-    <script>
-        // --- Data ---
-        let days = [
-            { day: "Mon", date: 10, state: "disabled" },
-            { day: "Tue", date: 11, state: "selected" },
-            { day: "Wed", date: 12, state: "rest" },
-            { day: "Thu", date: 13, state: "rest" },
-            { day: "Fri", date: 14, state: "rest" },
-            { day: "Sat", date: 15, state: "rest" },
-        ];
+  <!-- Month Header -->
+  <div class="sticky top-[64px] z-40 bg-white sticky-month border-b border-container-border py-2">
+    <p class="text-sm font-medium text-center text-text-body tracking-[0.04px]">December, 2025</p>
+  </div>
 
-        let slots = [
-            { time: "16:00 to 16:30", price: 750, state: "sold" },
-            { time: "16:30 - 17:00", price: 750, state: "sold" },
-            { time: "17:00 to 17:30", price: 750, state: "blocked" },
-            { time: "17:30 - 18:00", price: 750, state: "available" },
-            { time: "18:00 to 18:30", price: 750, state: "available" },
-            { time: "18:30 - 19:00", price: 750, state: "partial" },
-            { time: "19:00 to 19:30", price: 750, state: "available" },
-            { time: "19:30 - 20:00", price: 750, state: "selected" },
-            { time: "20:00 to 20:30", price: 750, state: "sold" },
-            { time: "20:30 - 21:00", price: 750, state: "blocked" },
-        ];
+  <!-- Calendar Strip -->
+  <div class="sticky top-[101px] z-40 bg-white sticky-cal border-b border-container-border flex items-center px-1 gap-1">
+    <button onclick="scrollCal('left')" class="w-8 h-8 flex items-center justify-center shrink-0">
+      <i data-lucide="chevron-left" class="w-6 h-6 text-text-heading"></i>
+    </button>
+    <div id="cal-strip" class="flex-1 overflow-x-auto scrollbar-hide flex gap-1 items-center"></div>
+    <button onclick="scrollCal('right')" class="w-8 h-8 flex items-center justify-center shrink-0">
+      <i data-lucide="chevron-right" class="w-6 h-6 text-text-heading"></i>
+    </button>
+  </div>
 
-        const squadSizes = [
-            "5-a-side (5v5)",
-            "7-a-side (7v7)",
-            "8v8",
-            "9-a-side (9v9)",
-        ];
+  <!-- Squad Selector -->
+  <div class="sticky top-[187px] z-30 bg-white sticky-squad border-b border-container-border">
+    <div class="flex items-center justify-between h-10 px-4">
+      <span class="text-sm font-medium text-text-heading tracking-[0.04px]">Select Squad Size</span>
+      <button onclick="openBS('preview')" class="flex items-center gap-1 text-sm font-normal text-text-heading tracking-[0.04px]">
+        <span>Preview</span>
+        <i data-lucide="chevron-right" class="w-4 h-4 mt-0.5"></i>
+      </button>
+    </div>
+    <div class="px-4 pb-3 overflow-x-auto scrollbar-hide">
+      <div id="squad-row" class="flex gap-2"></div>
+    </div>
+  </div>
 
-        const filters = ["Morning", "Afternoon", "Evening"];
-        
-        // --- State ---
-        let selectedSquad = "8v8";
-        let isSquadOpen = false;
-        let activeFilter = null;
-        let isBottomSheetOpen = false;
+  <!-- Slots Header -->
+  <div class="sticky top-[275px] z-20 bg-white sticky-slots-header border-b border-container-border flex items-center justify-between px-4">
+    <span class="text-sm font-medium text-text-heading tracking-[0.04px]">Select Slots</span>
+    <button onclick="openBS('filter')" class="w-[45px] h-[45px] flex items-center justify-center">
+      <i data-lucide="sliders-horizontal" class="w-5 h-5 text-text-heading"></i>
+    </button>
+  </div>
 
-        // --- Render Functions ---
+  <!-- Main Grid -->
+  <div class="flex-1 overflow-y-auto px-4 py-2 bg-white">
+    <div id="slot-grid" class="grid grid-cols-2 pb-16" style="gap:13px 17px;"></div>
+    <div class="h-32"></div>
+  </div>
 
-        function renderDays() {
-            const container = document.getElementById('days-container');
-            container.innerHTML = '';
-            
-            days.forEach((day, index) => {
-                const btn = document.createElement('button');
-                btn.className = "flex-1 min-w-[50px] flex flex-col items-center justify-center gap-1 py-1 px-2 transition-all";
-                if (day.state === "disabled") btn.disabled = true;
-                btn.onclick = () => handleDayClick(index);
+  <!-- Sticky Bottom -->
+  <div class="fixed bottom-0 left-0 right-0 z-50 max-w-mobile mx-auto">
+    <!-- Legend bar -->
+    <div class="bg-white border-t border-container-border flex items-center justify-between h-11 px-4">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 rounded-[4px]" style="background:#e8f5e9; border:1.5px solid #2e7d32;"></div>
+        <span class="text-xs font-normal text-black">Booked</span>
+        <div class="w-5 h-5 rounded-[4px] ml-2" style="background:#fdecea; border:1.5px solid #b3261e;"></div>
+        <span class="text-xs font-normal text-black">Cancelled</span>
+        <div class="legend-blocked ml-2"></div>
+        <span class="text-xs font-normal text-black">Blocked</span>
+      </div>
+    </div>
+    <!-- Bottom Bar -->
+    <div class="bg-white border-t border-container-border px-4 py-3 flex items-center justify-between">
+      <button id="slots-confirm-btn" class="flex items-center gap-1 px-2 py-2.5 transition-opacity opacity-50 cursor-not-allowed">
+        <span id="slots-count-text" class="text-base font-normal text-text-heading tracking-[0.5px]">0 Slots</span>
+        <i data-lucide="chevron-up" class="w-4 h-4 text-text-heading"></i>
+      </button>
+      <button id="pay-btn" class="w-[201px] h-12 rounded-lg flex items-center justify-center gap-2 px-5 py-2.5 transition-opacity opacity-50 cursor-not-allowed"
+              style="background-color:var(--primary-blue-dark);">
+        <span class="text-base font-semibold" style="color:var(--white-pure);">Book Now</span>
+        <span id="total-price-text" class="text-base font-semibold" style="color:var(--white-pure);">₹0</span>
+      </button>
+    </div>
+  </div>
+</div>
 
-                // Text Color Logic
-                let textClass = "text-text-body";
-                if (day.state === "selected") textClass = "text-text-brand";
-                else if (day.state === "disabled") textClass = "text-text-inverse";
+<!-- ═══════════════════════════════════════
+     BOTTOM SHEETS
+═══════════════════════════════════════ -->
 
-                // Number Render Logic
-                let dateHtml = '';
-                if (day.state === "selected") {
-                    dateHtml = `<div class="w-7 h-7 rounded-full bg-brand-blue flex items-center justify-center shadow-sm">
-                        <span class="text-lg font-semibold text-white leading-7">${day.date}</span>
-                    </div>`;
-                } else {
-                    let dateTextClass = "text-text-heading";
-                    if(day.state === "disabled") dateTextClass = "text-text-inverse";
-                    dateHtml = `<div class="text-lg font-semibold leading-7 ${dateTextClass}">${day.date}</div>`;
-                }
+<!-- 1. BOOKED SLOT sheet -->
+<div id="bs-booked" class="bs-overlay" onclick="closeBS('booked')">
+  <div class="bs-panel" onclick="event.stopPropagation()">
+    <div style="padding:20px 20px 0;">
+      <!-- header row: X left, Edit right -->
+      <div class="flex items-center justify-between mb-3">
+        <button onclick="closeBS('booked')" class="w-8 h-8 flex items-center justify-center">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        <button onclick="openEditFromBooked()" class="text-sm underline text-text-body">Edit</button>
+      </div>
+      <!-- Title + booking id -->
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-[20px] font-semibold text-text-heading">Fabzia Arena</span>
+        <span class="text-sm font-semibold text-text-heading" id="booked-id">#30C7</span>
+      </div>
+      <p class="text-sm text-[#4d4d4d] mb-4" id="booked-meta">12 Jan 2026 • 5-6pm • 5v5</p>
+      <!-- Details -->
+      <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value">Anand</span></div>
+      <div class="detail-row"><span class="detail-label">Total Amount</span><span class="detail-value" id="booked-total">₹2,051</span></div>
+      <div class="detail-row"><span class="detail-label">Advance Paid</span><span class="detail-value" id="booked-advance">₹600</span></div>
+      <div class="detail-row"><span class="detail-label">Promo Discount</span><span class="detail-value">-₹0</span></div>
+      <div class="detail-row"><span class="detail-label">Merchant Discount</span><span class="detail-value" id="booked-mdisc">-₹100</span></div>
+      <hr class="detail-divider">
+      <div class="detail-row">
+        <span class="detail-label font-medium">Pending Balance</span>
+        <span class="text-[16px] font-semibold text-text-heading" id="booked-pending">₹1,351</span>
+      </div>
+    </div>
+    <!-- Action buttons -->
+    <div class="flex flex-col gap-2 px-5 pt-4 pb-6">
+      <button onclick="openReschedule()" class="w-full h-[52px] rounded-lg text-base font-semibold text-white" style="background:#125dcd;">Reschedule</button>
+      <button onclick="openCancelFromBooked()" class="w-full h-[52px] flex items-center justify-center text-base font-medium underline text-text-heading">Cancel Slot</button>
+    </div>
+  </div>
+</div>
 
-                btn.innerHTML = `
-                    <div class="text-xs font-semibold leading-tight tracking-tight ${textClass}">${day.day}</div>
-                    ${dateHtml}
-                `;
-                container.appendChild(btn);
-            });
-        }
+<!-- 2. CANCEL SLOT confirmation (stacked over booked) -->
+<div id="bs-cancel-confirm" class="bs-overlay" onclick="closeBS('cancel-confirm')" style="z-index:70;">
+  <div class="bs-panel px-5 pb-6 pt-4" onclick="event.stopPropagation()">
+    <div class="flex justify-end mb-3">
+      <button onclick="closeBS('cancel-confirm')"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <h2 class="text-[20px] font-semibold text-text-heading leading-[28px] mb-1">Are you Sure you want to<br>Cancel Slot?</h2>
+    <p class="text-sm text-[#4d4d4d] mb-6" id="cancel-meta">12 Jan 2026 • 5-6pm • 5v5</p>
+    <div class="flex gap-2">
+      <button onclick="closeBS('cancel-confirm')" class="flex-1 h-[52px] rounded-lg text-base font-medium border border-[#a3a3a3] text-text-heading bg-white">Back</button>
+      <button onclick="confirmCancelSlot()" class="flex-1 h-[52px] rounded-lg text-base font-semibold text-white" style="background:#b3261e;">Cancel Slot</button>
+    </div>
+  </div>
+</div>
 
-        function renderSquadOptions() {
-            const container = document.getElementById('squad-buttons-container');
-            container.innerHTML = '';
-            
-            squadSizes.forEach(size => {
-                const btn = document.createElement('button');
-                const isSelected = selectedSquad === size;
-                btn.className = `px-4 py-1 h-7 rounded-2xl text-xs transition-all flex items-center justify-center whitespace-nowrap ${
-                    isSelected 
-                    ? "bg-brand-blue text-white" 
-                    : "border border-[#B2B2B2] text-text-heading hover:bg-gray-50 bg-white"
-                }`;
-                btn.textContent = size;
-                btn.onclick = () => selectSquad(size);
-                container.appendChild(btn);
-            });
-            
-            // Update display trigger
-            document.getElementById('selected-squad-display').textContent = selectedSquad;
-            
-            // Toggle Chevron
-            const chevron = document.getElementById('squad-chevron');
-            if (isSquadOpen) {
-                chevron.setAttribute('data-lucide', 'chevron-up');
-                document.getElementById('squad-options').classList.remove('hidden');
-            } else {
-                chevron.setAttribute('data-lucide', 'chevron-down');
-                document.getElementById('squad-options').classList.add('hidden');
-            }
-            lucide.createIcons();
-        }
+<!-- 3. EDIT DETAILS sheet (stacked over booked) -->
+<div id="bs-edit-details" class="bs-overlay" onclick="closeBS('edit-details')" style="z-index:70;">
+  <div class="bs-panel px-5 pb-6 pt-4" onclick="event.stopPropagation()">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-[20px] font-semibold text-text-heading">Edit Details</h2>
+      <button onclick="closeBS('edit-details')"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="flex flex-col gap-4 mb-4">
+      <div>
+        <label class="text-sm font-semibold text-text-heading block mb-2">Advance Amount</label>
+        <div class="slot-input-wrap">
+          <span class="slot-input-symbol">₹</span>
+          <input id="edit-advance" type="number" placeholder="Enter Amount">
+        </div>
+      </div>
+      <div>
+        <label class="text-sm font-semibold text-text-heading block mb-2">Discount Amount</label>
+        <div class="slot-input-wrap">
+          <span class="slot-input-symbol">₹</span>
+          <input id="edit-discount" type="number" placeholder="Enter Amount">
+        </div>
+      </div>
+      <div>
+        <label class="text-sm font-semibold text-text-heading block mb-2">Merchant Discount</label>
+        <div class="slot-input-wrap">
+          <span class="slot-input-symbol">₹</span>
+          <input id="edit-mdisc" type="number" placeholder="Enter Amount">
+        </div>
+      </div>
+    </div>
+    <button onclick="confirmEditDetails()" class="w-full h-[52px] rounded-lg text-base font-semibold text-white" style="background:#125dcd;">Confirm</button>
+  </div>
+</div>
 
-        function renderFilters() {
-            const container = document.getElementById('filters-container');
-            container.innerHTML = '';
-            
-            filters.forEach(filter => {
-                const btn = document.createElement('button');
-                const isActive = activeFilter === filter;
-                btn.className = `px-4 py-1 rounded-2xl text-xs whitespace-nowrap transition-all ${
-                    isActive 
-                    ? "bg-brand-blue text-white font-medium" 
-                    : "bg-white border border-[#B2B2B2] text-text-heading hover:bg-gray-50"
-                }`;
-                btn.textContent = filter;
-                btn.onclick = () => toggleFilter(filter);
-                container.appendChild(btn);
-            });
-        }
+<!-- 4. RESCHEDULE calendar sheet (stacked over booked) -->
+<div id="bs-reschedule" class="bs-overlay" onclick="closeBS('reschedule')" style="z-index:70;">
+  <div class="bs-panel px-5 pb-6 pt-4" onclick="event.stopPropagation()">
+    <div class="flex items-center justify-between mb-4">
+      <button onclick="closeBS('reschedule')"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+      <h2 class="text-[16px] font-semibold text-text-heading">Reschedule</h2>
+      <button onclick="closeBS('reschedule')"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <!-- Inline Calendar -->
+    <div class="bg-white rounded-xl border border-[#d7d7d7] p-4 mb-4">
+      <div class="cal-header mb-2">
+        <button onclick="changeCalMonth(-1)" class="w-8 h-8 flex items-center justify-center"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+        <span id="reschedule-month-label"></span>
+        <button onclick="changeCalMonth(1)" class="w-8 h-8 flex items-center justify-center"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+      </div>
+      <div class="cal-grid" id="reschedule-week-header"></div>
+      <div class="cal-grid" id="reschedule-cal-grid"></div>
+    </div>
+    <button onclick="applyReschedule()" class="w-full h-[52px] rounded-lg text-base font-semibold text-white" style="background:#125dcd;">Confirm Reschedule</button>
+  </div>
+</div>
 
-        function renderSlots() {
-            const container = document.getElementById('slots-grid');
-            container.innerHTML = '';
+<!-- 5. CANCELLED SLOT sheet (click on cancelled slot) -->
+<div id="bs-cancelled" class="bs-overlay" onclick="closeBS('cancelled')">
+  <div class="bs-panel px-5 pb-6 pt-4" onclick="event.stopPropagation()">
+    <div class="flex justify-end mb-3">
+      <button onclick="closeBS('cancelled')"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="mb-3">
+      <h2 class="text-[20px] font-semibold text-text-heading mb-1">Fabzia Arena</h2>
+      <p class="text-sm text-[#4d4d4d]" id="cancelled-meta">12 Jan 2026 • 5-6pm • 5v5</p>
+    </div>
+    <label class="text-sm font-semibold text-text-heading block mb-2">Change Slot Price</label>
+    <div class="slot-input-wrap mb-1" style="justify-content:space-between;">
+      <div class="flex items-center gap-2 flex-1">
+        <span class="slot-input-symbol">₹</span>
+        <input id="cancelled-price" type="number" style="font-weight:600; font-size:16px; color:#4d4d4d;">
+      </div>
+      <i data-lucide="pencil" class="w-5 h-5 text-text-body shrink-0"></i>
+    </div>
+    <div class="flex flex-col gap-2 mt-4">
+      <button onclick="bookFromCancelled()" class="w-full h-[52px] rounded-lg text-base font-semibold text-white" style="background:#125dcd;">Book Slot</button>
+      <button onclick="openBlockFromCancelled()" class="w-full h-[52px] flex items-center justify-center text-base font-medium underline text-text-heading">Block Slot</button>
+    </div>
+  </div>
+</div>
 
-            slots.forEach((slot, index) => {
-                const btn = document.createElement('button');
-                btn.onclick = () => handleSlotClick(index);
-                btn.disabled = slot.state === "sold";
+<!-- 6. BLOCK SLOT confirmation (stacked over cancelled) -->
+<div id="bs-block-confirm" class="bs-overlay" onclick="closeBS('block-confirm')" style="z-index:70;">
+  <div class="bs-panel px-5 pb-6 pt-4" onclick="event.stopPropagation()">
+    <div class="flex justify-end mb-3">
+      <button onclick="closeBS('block-confirm')"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <h2 class="text-[20px] font-semibold text-text-heading leading-[28px] mb-1">Are you Sure you want to<br>Block Slot?</h2>
+    <p class="text-sm text-[#4d4d4d] mb-6" id="block-meta">12 Jan 2026 • 5-6pm • 5v5</p>
+    <div class="flex gap-2">
+      <button onclick="closeBS('block-confirm')" class="flex-1 h-[52px] rounded-lg text-base font-medium border border-[#a3a3a3] text-text-heading bg-white">Back</button>
+      <button onclick="confirmBlockSlot()" class="flex-1 h-[52px] rounded-lg text-base font-semibold text-white" style="background:#b3261e;">Block Slot</button>
+    </div>
+  </div>
+</div>
 
-                let baseClasses = "flex flex-col items-center justify-center rounded-lg h-[70px] cursor-pointer transition-all border";
-                let colorClasses = "";
+<!-- 7. BLOCKED SLOT sheet (click on blocked slot) -->
+<div id="bs-blocked" class="bs-overlay" onclick="closeBS('blocked')">
+  <div class="bs-panel px-5 pb-6 pt-4" onclick="event.stopPropagation()">
+    <div class="flex justify-end mb-3">
+      <button onclick="closeBS('blocked')"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <h2 class="text-[20px] font-semibold text-text-heading mb-1">Fabzia Arena</h2>
+    <p class="text-sm text-[#4d4d4d] mb-4" id="blocked-meta">12 Jan 2026 • 5-6pm • 5v5</p>
+    <div class="detail-row"><span class="detail-label">Vendor Name</span><span class="detail-value">Kartik</span></div>
+    <div class="detail-row"><span class="detail-label">Client Name</span><span class="detail-value">Anand</span></div>
+    <div class="flex gap-2 mt-4">
+      <button onclick="closeBS('blocked')" class="flex-1 h-[52px] rounded-lg text-base font-medium border border-[#a3a3a3] text-text-heading bg-white">Cancel</button>
+      <button onclick="unblockSlot()" class="flex-1 h-[52px] rounded-lg text-base font-semibold text-white" style="background:#125dcd;">Unblock Slot</button>
+    </div>
+  </div>
+</div>
 
-                switch (slot.state) {
-                    case "available":
-                        colorClasses = "bg-white border-2 border-available hover:bg-gray-50";
-                        break;
-                    case "selected":
-                        colorClasses = "bg-selected text-white font-semibold border-selected";
-                        break;
-                    case "partial":
-                        colorClasses = "bg-white border-2 border-partial text-text-heading hover:bg-gray-50";
-                        break;
-                    case "partial-selected":
-                        colorClasses = "bg-partial text-text-heading font-semibold border-2 border-partial";
-                        break;
-                    case "sold":
-                        colorClasses = "bg-sold text-text-inverse cursor-not-allowed border-transparent";
-                        break;
-                    case "blocked":
-                        colorClasses = "slot-blocked text-gray-400 cursor-not-allowed border border-gray-300";
-                        btn.disabled = true;
-                        break;
-                    default:
-                        colorClasses = "bg-white border-container-border text-text-inverse";
-                }
-                
-                btn.className = `${baseClasses} ${colorClasses}`;
-                
-                const isBold = slot.state === "selected" || slot.state === "partial-selected";
+<!-- 8. CANCELLED STATE (4th flow) sheet -->
+<div id="bs-cancelled-state" class="bs-overlay" onclick="closeBS('cancelled-state')">
+  <div class="bs-panel px-5 pb-6 pt-4" onclick="event.stopPropagation()">
+    <div class="flex justify-end mb-3">
+      <button onclick="closeBS('cancelled-state')"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <h2 class="text-[20px] font-semibold text-text-heading mb-1">Fabzia Arena</h2>
+    <p class="text-sm text-[#4d4d4d] mb-4" id="cancelled-state-meta">12 Jan 2026 • 5-6pm • 5v5</p>
+    <div class="detail-row mb-2"><span class="detail-label">Vendor Name</span><span class="detail-value">Kartik</span></div>
+    <div class="flex gap-2 mt-4">
+      <button onclick="openBlockFromCancelledState()" class="flex-1 h-[52px] rounded-lg text-base font-medium border border-[#a3a3a3] text-text-heading bg-white">Block Slot</button>
+      <button onclick="bookFromCancelledState()" class="flex-1 h-[52px] rounded-lg text-base font-semibold text-white" style="background:#125dcd;">Book Slot</button>
+    </div>
+  </div>
+</div>
 
-                btn.innerHTML = `
-                    <div class="text-sm ${isBold ? 'font-semibold' : ''}">${slot.time}</div>
-                    <div class="text-sm ${isBold ? 'font-semibold' : ''}">₹${slot.price}</div>
-                `;
-                
-                container.appendChild(btn);
-            });
-        }
+<!-- 9. Preview Sheet -->
+<div id="bs-preview" class="bs-overlay" onclick="closeBS('preview')">
+  <div class="bs-panel" onclick="event.stopPropagation()">
+    <div class="bs-header">
+      <span class="bs-title">Preview</span>
+      <button onclick="closeBS('preview')"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="h-[189px] w-full overflow-hidden">
+      <img src="http://localhost:3845/assets/ac0590eddb2485add277822afba7d25eba758498.png"
+           class="w-full h-full object-cover"
+           onerror="this.parentElement.style.background='var(--primary-blue)'">
+    </div>
+    <div class="p-4">
+      <button onclick="closeBS('preview')" class="w-full h-12 rounded-lg text-base font-semibold"
+              style="background-color:var(--primary-blue-dark); color:var(--white-pure);">Close</button>
+    </div>
+  </div>
+</div>
 
-        // --- Actions ---
+<!-- 10. Filter Sheet -->
+<div id="bs-filter" class="bs-overlay" onclick="closeBS('filter')">
+  <div class="bs-panel" onclick="event.stopPropagation()">
+    <div class="bs-header">
+      <span class="bs-title">Select Preferred Time</span>
+      <button onclick="closeBS('filter')"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="flex flex-col pt-2">
+      <div onclick="toggleFilter('Morning')" class="flex items-center justify-between px-4 py-2 h-[50px] cursor-pointer">
+        <div class="flex flex-col">
+          <span class="text-sm font-medium text-text-heading">Morning</span>
+          <span class="text-xs text-text-body">06:00 AM - 12:00 PM</span>
+        </div>
+        <div id="chk-Morning" class="radio-btn"></div>
+      </div>
+      <div onclick="toggleFilter('Afternoon')" class="flex items-center justify-between px-4 py-2 h-[50px] cursor-pointer border-y border-container-border">
+        <div class="flex flex-col">
+          <span class="text-sm font-medium text-text-heading">Afternoon</span>
+          <span class="text-xs text-text-body">12:00 PM - 05:00 PM</span>
+        </div>
+        <div id="chk-Afternoon" class="radio-btn"></div>
+      </div>
+      <div onclick="toggleFilter('Evening')" class="flex items-center justify-between px-4 py-2 h-[50px] cursor-pointer">
+        <div class="flex flex-col">
+          <span class="text-sm font-medium text-text-heading">Evening</span>
+          <span class="text-xs text-text-body">05:00 PM - 12:00 AM</span>
+        </div>
+        <div id="chk-Evening" class="radio-btn"></div>
+      </div>
+    </div>
+    <div class="flex gap-4 p-4 mt-2">
+      <button onclick="resetFilters()" class="flex-1 h-10 rounded-[4px] text-sm font-medium" style="border:1px solid var(--primary-blue); color:var(--primary-blue-active); background:transparent;">Reset</button>
+      <button onclick="closeBS('filter')" class="flex-1 h-10 rounded-[4px] text-sm font-medium" style="background-color:var(--primary-blue-active); color:var(--white-pure);">Apply Filters</button>
+    </div>
+  </div>
+</div>
 
-        function handleDayClick(index) {
-            if (days[index].state === "disabled") return;
-            
-            days = days.map((day, i) => {
-                if (i === index) return { ...day, state: "selected" };
-                if (day.state === "selected") return { ...day, state: "rest" };
-                return day;
-            });
-            renderDays();
-        }
+<!-- AVAILABLE SLOT sheet (click on any available/selected slot) -->
+<div id="bs-available" class="bs-overlay" onclick="closeBS('available')">
+  <div class="bs-panel px-5 pb-6 pt-4" onclick="event.stopPropagation()">
+    <!-- Close -->
+    <div class="flex justify-end mb-3">
+      <button onclick="closeBS('available')"><i data-lucide="x" class="w-5 h-5 text-text-heading"></i></button>
+    </div>
+    <!-- Title + meta -->
+    <div class="mb-4">
+      <h2 class="text-[20px] font-semibold text-text-heading mb-1">Fabzia Arena</h2>
+      <p class="text-sm text-[#4d4d4d]" id="avail-meta">12 Jan 2026 • 5-6pm • 5v5</p>
+    </div>
+    <!-- Slot price field -->
+    <label class="text-sm font-semibold text-text-heading block mb-2">Slot Price</label>
+    <div class="slot-input-wrap mb-1" style="justify-content:space-between;">
+      <div class="flex items-center gap-2 flex-1">
+        <span class="slot-input-symbol">₹</span>
+        <input id="avail-price-input" type="number"
+               style="font-weight:600; font-size:16px; color:#4d4d4d;"
+               oninput="document.getElementById('avail-price-display').textContent=this.value">
+      </div>
+      <i data-lucide="pencil" class="w-5 h-5 text-text-body shrink-0"></i>
+    </div>
+    <!-- hidden display span used to sync price label -->
+    <span id="avail-price-display" style="display:none;"></span>
+    <!-- Actions -->
+    <div class="flex flex-col gap-2 mt-5">
+      <button id="avail-book-btn"
+              onclick="bookAvailableSlot()"
+              class="w-full h-[52px] rounded-lg text-base font-semibold text-white"
+              style="background:#125dcd; border:none;">
+        Book Slot
+      </button>
+      <button onclick="openBlockFromAvailable()"
+              class="w-full h-[52px] flex items-center justify-center text-base font-medium underline text-text-heading">
+        Block Slot
+      </button>
+    </div>
+  </div>
+</div>
 
-        function handleSlotClick(index) {
-            const currentState = slots[index].state;
-            
-            if (currentState === "available") {
-                slots[index].state = "selected";
-            } else if (currentState === "selected") {
-                slots[index].state = "available";
-            } else if (currentState === "partial") {
-                slots[index].state = "partial-selected";
-            } else if (currentState === "partial-selected") {
-                slots[index].state = "partial";
-            }
-            renderSlots();
-        }
+<!-- Confirm (selected slots) Sheet -->
+<div id="bs-confirm" class="bs-overlay" onclick="closeBS('confirm')">
+  <div class="bs-panel" onclick="event.stopPropagation()">
+    <div class="bs-header">
+      <span class="bs-title">Confirm Your Slot</span>
+      <button onclick="closeBS('confirm')"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div id="confirm-list" class="flex flex-col"></div>
+    <div class="p-4">
+      <button onclick="closeBS('confirm')" class="w-full h-12 rounded-lg text-base font-semibold"
+              style="background-color:var(--primary-blue-dark); color:var(--white-pure);">Close</button>
+    </div>
+  </div>
+</div>
 
-        function toggleSquadSelector() {
-            isSquadOpen = !isSquadOpen;
-            renderSquadOptions();
-        }
+<!-- Other Half popup -->
+<div id="bs-other-half" class="bs-overlay" onclick="closeBS('other-half')">
+  <div class="bs-panel px-5 py-6 flex flex-col items-center text-center" onclick="event.stopPropagation()">
+    <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4" style="background:var(--slot-partial-bg);">
+      <i data-lucide="info" class="w-6 h-6" style="color:var(--slot-partial);"></i>
+    </div>
+    <h3 class="text-base font-semibold text-text-heading mb-2">Change Venue Area?</h3>
+    <p class="text-sm text-text-body mb-6">Are you sure you want to book slot in other Available slot?</p>
+    <div class="flex gap-4 w-full">
+      <button onclick="closeBS('other-half')" class="flex-1 h-12 rounded-lg text-base font-semibold"
+              style="border:1px solid var(--primary-blue); color:var(--primary-blue-active); background:transparent;">Cancel</button>
+      <button onclick="handleOtherHalfAction()" class="flex-1 h-12 rounded-lg text-base font-semibold"
+              style="background-color:var(--primary-blue-active); color:var(--white-pure);">Yes</button>
+    </div>
+  </div>
+</div>
 
-        function selectSquad(size) {
-            selectedSquad = size;
-            renderSquadOptions(); // Re-render to show selection
-            updateTurfHighlight(size);
-        }
+<script>
+  /* ── Data ── */
+  const squadSizes = ['5-a-side (5v5)','7-a-side (7v7)','8v8','9-a-side (9v9)'];
+  const FILTER_RANGES = { Morning:{start:6,end:12}, Afternoon:{start:12,end:17}, Evening:{start:17,end:24} };
 
-        function updateTurfHighlight(size) {
-            const highlight = document.getElementById('turf-highlight');
-            if (!highlight) return;
+  // Slot statuses: disabled | available | selected | booked | cancelled | blocked | partial | partial-selected
+  function generateDefaultSlots() {
+    const slots = [];
+    let id = 1;
+    for (let h = 6; h < 24; h++) {
+      for (let m of [0, 30]) {
+        const nextH = (h + (m === 30 ? 1 : 0));
+        const nextM = m === 30 ? 0 : 30;
+        const displayH = String(h).padStart(2,'0');
+        const displayNH = nextH === 24 ? '00' : String(nextH).padStart(2,'0');
+        const displayNM = String(nextM).padStart(2,'0');
+        slots.push({
+          id: id++,
+          startTime: h, startMin: m,
+          time: `${displayH}:${String(m).padStart(2,'0')} - ${displayNH}:${displayNM}`,
+          price: 750,
+          status: 'available'
+        });
+      }
+    }
+    // Demo statuses
+    [2,8,20].forEach(i => { if(slots[i]) slots[i].status='blocked'; });
+    [4,14].forEach(i => { if(slots[i]) slots[i].status='booked'; });
+    [7,18].forEach(i => { if(slots[i]) slots[i].status='cancelled'; });
+    [5,12].forEach(i => { if(slots[i]) slots[i].status='partial'; });
+    return slots;
+  }
 
-            let width = '100%';
-            let height = '100%';
-            let text = 'Full Pitch';
+  const allDaysSlots = {};
+  for (let i = 0; i < 30; i++) allDaysSlots[i] = generateDefaultSlots();
 
-            // Map squad sizes to pitch coverage using width & height
-            switch (size) {
-                case '5-a-side (5v5)':
-                    width = '50%';
-                    height = '50%';
-                    text = 'Quarter Pitch';
-                    break;
-                case '7-a-side (7v7)':
-                    width = '50%';
-                    height = '100%';
-                    text = 'Half Pitch';
-                    break;
-                case '8v8':
-                    width = '75%';
-                    height = '100%';
-                    text = '3/4 Pitch';
-                    break;
-                case '9-a-side (9v9)':
-                default:
-                    width = '100%';
-                    height = '100%';
-                    text = 'Full Pitch';
-                    break;
-            }
+  let selectedSquad = '5-a-side (5v5)';
+  let activeFilters = new Set();
+  let selectedDateIndex = 0;
+  let pendingPartialSlotId = null;
+  let activeSlotId = null; // slot currently being acted upon
+  const calendarDates = [];
+  const todayDate = new Date();
 
-            // Apply styles - anchored to top-left corner
-            highlight.style.top = '0';
-            highlight.style.left = '0';
-            highlight.style.width = width;
-            highlight.style.height = height;
+  // Reschedule calendar state
+  let rescheduleYear = todayDate.getFullYear();
+  let rescheduleMonth = todayDate.getMonth();
+  let rescheduleSelectedDate = new Date(todayDate);
 
-            // Update label text
-            const label = highlight.querySelector('div');
-            if (label) label.textContent = text;
-        }
+  /* ── Calendar Strip ── */
+  function scrollCal(dir) {
+    document.getElementById('cal-strip').scrollBy({ left: dir==='left'?-200:200, behavior:'smooth' });
+  }
 
-        function toggleFilter(filter) {
-            activeFilter = activeFilter === filter ? null : filter;
-            renderFilters();
-        }
+  function hasSelections(index) {
+    return allDaysSlots[index].some(s => s.status==='selected'||s.status==='partial-selected');
+  }
 
-        function openBottomSheet() {
-            document.getElementById('bottom-sheet-overlay').classList.remove('hidden');
-            document.getElementById('bottom-sheet-content').classList.remove('translate-y-full');
-        }
+  function renderCalendar() {
+    const strip = document.getElementById('cal-strip');
+    const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    strip.innerHTML = '';
+    calendarDates.length = 0;
 
-        function closeBottomSheet() {
-            document.getElementById('bottom-sheet-content').classList.add('translate-y-full');
-            setTimeout(() => {
-                document.getElementById('bottom-sheet-overlay').classList.add('hidden');
-            }, 300); // Wait for transition
-        }
+    for (let i = 0; i < 30; i++) {
+      const d = new Date();
+      d.setDate(todayDate.getDate() + i);
+      calendarDates.push(d);
 
-        // --- Initialization ---
-        window.onload = () => {
-            renderDays();
-            renderSquadOptions();
-            renderFilters();
-            renderSlots();
-            updateTurfHighlight(selectedSquad);
-            lucide.createIcons();
-        };
+      const isToday   = i === 0;
+      const isViewing = i === selectedDateIndex;
+      const hasSel    = hasSelections(i);
 
-    </script>
+      const btn = document.createElement('button');
+      btn.className = 'day-btn ' + (i > 3 ? 'rest' : '');
+      if (isToday) btn.classList.add('current');
+
+      let circleClasses = 'date-plain';
+      if (isViewing)   circleClasses = 'date-circle date-filled';
+      else if (hasSel) circleClasses = 'date-circle date-ring';
+
+      btn.innerHTML = `<span class="day-name">${days[d.getDay()]}</span><div class="${circleClasses}">${d.getDate()}</div>${isToday?'<div class="today-dot"></div>':''}`;
+      btn.onclick = () => {
+        selectedDateIndex = i;
+        renderCalendar(); renderSlots();
+        document.querySelector('.sticky-month p').textContent = `${months[d.getMonth()]}, ${d.getFullYear()}`;
+      };
+      strip.appendChild(btn);
+    }
+  }
+
+  /* ── Squad ── */
+  function renderSquad() {
+    const row = document.getElementById('squad-row');
+    row.innerHTML = '';
+    squadSizes.forEach(s => {
+      const b = document.createElement('button');
+      b.className = 'squad-pill ' + (s===selectedSquad?'selected':'unselected');
+      b.textContent = s;
+      b.onclick = () => { selectedSquad=s; renderSquad(); };
+      row.appendChild(b);
+    });
+  }
+
+  /* ── Slot Grid ── */
+  function slotLabel(s) {
+    if (s.status==='booked')    return 'Booked';
+    if (s.status==='cancelled') return 'Cancelled';
+    if (s.status==='blocked')   return 'Blocked';
+    return '₹'+s.price;
+  }
+
+  function renderSlots() {
+    const grid = document.getElementById('slot-grid');
+    grid.innerHTML = '';
+    const slots = allDaysSlots[selectedDateIndex];
+
+    const filtered = slots.filter(s => {
+      if (activeFilters.size > 0) {
+        let ok = false;
+        activeFilters.forEach(f => { const r=FILTER_RANGES[f]; if(s.startTime>=r.start&&s.startTime<r.end) ok=true; });
+        if (!ok) return false;
+      }
+      return true;
+    });
+
+    if (!filtered.length) {
+      grid.innerHTML = '<div class="col-span-2 text-center py-10 text-text-label">No slots available.</div>';
+    } else {
+      filtered.forEach(s => {
+        const b = document.createElement('button');
+        b.className = `slot-card ${s.status}`;
+        b.onclick = () => handleSlotClick(s.id);
+        b.innerHTML = `<span class="slot-time">${s.time}</span><span class="slot-price">${slotLabel(s)}</span>`;
+        grid.appendChild(b);
+      });
+    }
+    updateBottom();
+  }
+
+  /* ── Slot Click Routing ── */
+  function handleSlotClick(id) {
+    const slots = allDaysSlots[selectedDateIndex];
+    const s = slots.find(x => x.id===id);
+    if (!s || s.status==='disabled') return;
+
+    activeSlotId = id;
+    const metaStr = `${calendarDates[selectedDateIndex]?.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} • ${s.time} • ${selectedSquad}`;
+
+    if (s.status==='available' || s.status==='selected') {
+      // Open the available-slot bottom sheet
+      const isSelected = s.status === 'selected';
+      document.getElementById('avail-meta').textContent = metaStr;
+      document.getElementById('avail-price-display').textContent = s.price;
+      document.getElementById('avail-price-input').value = s.price;
+      // Show Book Slot as filled-blue if already selected, outline if not
+      const bookBtn = document.getElementById('avail-book-btn');
+      if (isSelected) {
+        bookBtn.textContent = '✓ Booked';
+        bookBtn.style.background = '#e8f0fe';
+        bookBtn.style.color = '#125dcd';
+        bookBtn.style.border = '2px solid #125dcd';
+      } else {
+        bookBtn.textContent = 'Book Slot';
+        bookBtn.style.background = '#125dcd';
+        bookBtn.style.color = '#fff';
+        bookBtn.style.border = 'none';
+      }
+      openBS('available'); return;
+    }
+
+    if (s.status==='booked') {
+      document.getElementById('booked-meta').textContent = metaStr;
+      document.getElementById('cancel-meta').textContent = metaStr;
+      openBS('booked'); return;
+    }
+
+    if (s.status==='cancelled') {
+      document.getElementById('cancelled-meta').textContent = metaStr;
+      document.getElementById('cancelled-state-meta').textContent = metaStr;
+      document.getElementById('cancelled-price').value = s.price;
+      // Show the Cancelled state sheet (flow 4 — has vendor name + Block/Book)
+      openBS('cancelled-state'); return;
+    }
+
+    if (s.status==='blocked') {
+      document.getElementById('blocked-meta').textContent = metaStr;
+      openBS('blocked'); return;
+    }
+
+    if (s.status==='partial') {
+      pendingPartialSlotId = id;
+      openBS('other-half'); return;
+    }
+
+    if (s.status==='partial-selected') {
+      s.status='partial';
+      renderSlots(); renderCalendar(); return;
+    }
+  }
+
+  /* ── Booked sheet actions ── */
+  function openEditFromBooked() {
+    // pre-fill with existing values
+    document.getElementById('edit-advance').value = 600;
+    document.getElementById('edit-discount').value = 0;
+    document.getElementById('edit-mdisc').value = 100;
+    openBS('edit-details');
+  }
+
+  /* ── Available slot sheet actions ── */
+  function bookAvailableSlot() {
+    if (activeSlotId !== null) {
+      const slots = allDaysSlots[selectedDateIndex];
+      const s = slots.find(x => x.id === activeSlotId);
+      if (s) {
+        // Toggle: if already selected, unselect; otherwise select
+        s.status = s.status === 'selected' ? 'available' : 'selected';
+        // Update price if user changed it in the field
+        const newPrice = parseInt(document.getElementById('avail-price-input').value);
+        if (!isNaN(newPrice) && newPrice > 0) s.price = newPrice;
+      }
+    }
+    closeBS('available');
+    renderSlots(); renderCalendar();
+    lucide.createIcons();
+  }
+
+  function openBlockFromAvailable() {
+    if (activeSlotId !== null) {
+      const slots = allDaysSlots[selectedDateIndex];
+      const s = slots.find(x => x.id === activeSlotId);
+      if (s) {
+        const metaStr = `${calendarDates[selectedDateIndex]?.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} • ${s.time} • ${selectedSquad}`;
+        document.getElementById('block-meta').textContent = metaStr;
+      }
+    }
+    // Keep available sheet open behind; block-confirm is z-70
+    openBS('block-confirm');
+  }
+
+  function confirmEditDetails() {
+    const adv  = parseInt(document.getElementById('edit-advance').value)||0;
+    const disc = parseInt(document.getElementById('edit-discount').value)||0;
+    const md   = parseInt(document.getElementById('edit-mdisc').value)||0;
+    document.getElementById('booked-advance').textContent = '₹'+adv;
+    document.getElementById('booked-mdisc').textContent  = '-₹'+md;
+    const total = 2051;
+    document.getElementById('booked-pending').textContent = '₹'+(total-adv-md-disc);
+    closeBS('edit-details');
+    lucide.createIcons();
+  }
+
+  function openReschedule() {
+    const slotDate = calendarDates[selectedDateIndex] || todayDate;
+    rescheduleYear  = slotDate.getFullYear();
+    rescheduleMonth = slotDate.getMonth();
+    rescheduleSelectedDate = new Date(slotDate);
+    renderRescheduleCal();
+    openBS('reschedule');
+  }
+
+  function openCancelFromBooked() {
+    openBS('cancel-confirm');
+  }
+
+  function confirmCancelSlot() {
+    if (activeSlotId !== null) {
+      const slots = allDaysSlots[selectedDateIndex];
+      const s = slots.find(x => x.id===activeSlotId);
+      if (s) s.status = 'cancelled';
+    }
+    closeBS('cancel-confirm');
+    closeBS('booked');
+    renderSlots(); renderCalendar();
+    lucide.createIcons();
+  }
+
+  /* ── Cancelled state actions ── */
+  function openBlockFromCancelled() {
+    const slots = allDaysSlots[selectedDateIndex];
+    const s = slots.find(x => x.id===activeSlotId);
+    if (s) {
+      const metaStr = `${calendarDates[selectedDateIndex]?.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} • ${s.time} • ${selectedSquad}`;
+      document.getElementById('block-meta').textContent = metaStr;
+    }
+    openBS('block-confirm');
+  }
+
+  function openBlockFromCancelledState() {
+    const slots = allDaysSlots[selectedDateIndex];
+    const s = slots.find(x => x.id===activeSlotId);
+    if (s) {
+      const metaStr = `${calendarDates[selectedDateIndex]?.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} • ${s.time} • ${selectedSquad}`;
+      document.getElementById('block-meta').textContent = metaStr;
+    }
+    openBS('block-confirm');
+  }
+
+  function bookFromCancelled() {
+    if (activeSlotId !== null) {
+      const slots = allDaysSlots[selectedDateIndex];
+      const s = slots.find(x => x.id===activeSlotId);
+      if (s) s.status = 'selected';
+    }
+    closeBS('cancelled');
+    renderSlots(); renderCalendar();
+    lucide.createIcons();
+  }
+
+  function bookFromCancelledState() {
+    if (activeSlotId !== null) {
+      const slots = allDaysSlots[selectedDateIndex];
+      const s = slots.find(x => x.id===activeSlotId);
+      if (s) s.status = 'selected';
+    }
+    closeBS('cancelled-state');
+    renderSlots(); renderCalendar();
+    lucide.createIcons();
+  }
+
+  function confirmBlockSlot() {
+    if (activeSlotId !== null) {
+      const slots = allDaysSlots[selectedDateIndex];
+      const s = slots.find(x => x.id===activeSlotId);
+      if (s) s.status = 'blocked';
+    }
+    closeBS('block-confirm');
+    closeBS('cancelled');
+    closeBS('cancelled-state');
+    closeBS('available');
+    renderSlots(); renderCalendar();
+    lucide.createIcons();
+  }
+
+  /* ── Blocked sheet actions ── */
+  function unblockSlot() {
+    if (activeSlotId !== null) {
+      const slots = allDaysSlots[selectedDateIndex];
+      const s = slots.find(x => x.id===activeSlotId);
+      if (s) s.status = 'available';
+    }
+    closeBS('blocked');
+    renderSlots(); renderCalendar();
+    lucide.createIcons();
+  }
+
+  /* ── Reschedule calendar ── */
+  function renderRescheduleCal() {
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('reschedule-month-label').textContent = `${months[rescheduleMonth]} ${rescheduleYear}`;
+
+    const wh = document.getElementById('reschedule-week-header');
+    wh.innerHTML = ['Su','Mo','Tu','We','Th','Fr','Sa'].map(d=>`<div class="cal-cell text-xs font-semibold text-text-body">${d}</div>`).join('');
+
+    const grid = document.getElementById('reschedule-cal-grid');
+    grid.innerHTML = '';
+    const firstDay = new Date(rescheduleYear, rescheduleMonth, 1).getDay();
+    const daysInMonth = new Date(rescheduleYear, rescheduleMonth+1, 0).getDate();
+    const daysInPrev  = new Date(rescheduleYear, rescheduleMonth, 0).getDate();
+    const today = new Date();
+
+    // prev month padding
+    for (let i = firstDay-1; i >= 0; i--) {
+      const cell = document.createElement('div');
+      cell.className='cal-cell other-month';
+      cell.textContent = daysInPrev - i;
+      grid.appendChild(cell);
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement('div');
+      cell.className='cal-cell';
+      const isToday = d===today.getDate()&&rescheduleMonth===today.getMonth()&&rescheduleYear===today.getFullYear();
+      const isSel   = d===rescheduleSelectedDate.getDate()&&rescheduleMonth===rescheduleSelectedDate.getMonth()&&rescheduleYear===rescheduleSelectedDate.getFullYear();
+      if (isToday) cell.classList.add('today');
+      if (isSel)   cell.classList.add('selected');
+      cell.textContent = d;
+      cell.onclick = () => {
+        rescheduleSelectedDate = new Date(rescheduleYear, rescheduleMonth, d);
+        renderRescheduleCal();
+      };
+      grid.appendChild(cell);
+    }
+  }
+
+  function changeCalMonth(dir) {
+    rescheduleMonth += dir;
+    if (rescheduleMonth > 11) { rescheduleMonth=0; rescheduleYear++; }
+    if (rescheduleMonth < 0)  { rescheduleMonth=11; rescheduleYear--; }
+    renderRescheduleCal();
+    lucide.createIcons();
+  }
+
+  function applyReschedule() {
+    closeBS('reschedule');
+    closeBS('booked');
+    // Update the selected date index to the rescheduled date
+    const diff = Math.round((rescheduleSelectedDate - todayDate)/(1000*60*60*24));
+    if (diff >= 0 && diff < 30) {
+      selectedDateIndex = diff;
+      renderCalendar();
+      renderSlots();
+    }
+    lucide.createIcons();
+  }
+
+  /* ── Bottom bar ── */
+  function updateBottom() {
+    let allSelected = [];
+    for (let i=0;i<30;i++) {
+      allSelected = [...allSelected, ...allDaysSlots[i].filter(x=>x.status==='selected'||x.status==='partial-selected')];
+    }
+    document.getElementById('slots-count-text').textContent = allSelected.length+' Slots';
+    document.getElementById('total-price-text').textContent = '₹'+allSelected.reduce((a,b)=>a+b.price,0);
+
+    const scBtn=document.getElementById('slots-confirm-btn');
+    const pBtn=document.getElementById('pay-btn');
+    if (!allSelected.length) {
+      scBtn.classList.add('opacity-50','cursor-not-allowed'); scBtn.onclick=null;
+      pBtn.classList.add('opacity-50','cursor-not-allowed');  pBtn.onclick=null;
+    } else {
+      scBtn.classList.remove('opacity-50','cursor-not-allowed'); scBtn.onclick=()=>openBS('confirm');
+      pBtn.classList.remove('opacity-50','cursor-not-allowed');  pBtn.onclick=handlePay;
+    }
+  }
+
+  /* ── BS helpers ── */
+  function openBS(id) {
+    if (id==='confirm') renderConfirm();
+    document.getElementById('bs-'+id).classList.add('open');
+    lucide.createIcons();
+  }
+  function closeBS(id) {
+    document.getElementById('bs-'+id).classList.remove('open');
+  }
+
+  function renderConfirm() {
+    const list=document.getElementById('confirm-list');
+    list.innerHTML='';
+    for (let i=0;i<30;i++) {
+      const d=calendarDates[i];
+      allDaysSlots[i].filter(x=>x.status==='selected'||x.status==='partial-selected').forEach((s,idx)=>{
+        const row=document.createElement('div');
+        row.className='px-4 py-2 border-b border-container-border flex flex-col gap-1';
+        const dateStr = d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+        row.innerHTML=`<div class="flex justify-between items-center"><span class="text-sm font-medium text-text-heading">${s.time}</span><span class="text-[10px] font-semibold uppercase" style="color:var(--primary-blue);">${dateStr}</span></div><span class="text-xs text-text-body">${selectedSquad} (Half ${idx%2+1})</span>`;
+        list.appendChild(row);
+      });
+    }
+  }
+
+  /* ── Filter ── */
+  function toggleFilter(f) {
+    if (activeFilters.has(f)) activeFilters.delete(f);
+    else activeFilters.add(f);
+    document.getElementById('chk-'+f).className='radio-btn '+(activeFilters.has(f)?'active':'');
+    renderSlots();
+  }
+  function resetFilters() {
+    activeFilters.clear();
+    document.querySelectorAll('.radio-btn').forEach(x=>x.classList.remove('active'));
+    renderSlots();
+  }
+
+  function handlePay() { window.location.href='Checkout.html'; }
+
+  function handleOtherHalfAction() {
+    selectedSquad='7-a-side (7v7)';
+    if (pendingPartialSlotId!==null) {
+      const slots=allDaysSlots[selectedDateIndex];
+      const s=slots.find(x=>x.id===pendingPartialSlotId);
+      if (s&&s.status==='partial') s.status='partial-selected';
+      pendingPartialSlotId=null;
+    }
+    renderSquad(); renderSlots(); renderCalendar();
+    closeBS('other-half');
+  }
+
+  /* ── Init ── */
+  window.onload = () => {
+    renderCalendar(); renderSquad(); renderSlots();
+    lucide.createIcons();
+    const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.querySelector('.sticky-month p').textContent=`${months[todayDate.getMonth()]}, ${todayDate.getFullYear()}`;
+  };
+</script>
+
 </body>
 </html>

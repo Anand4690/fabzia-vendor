@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Fabzia Turf</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Utility CSS -->
+    <link rel="stylesheet" href="utility.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        .font-inter {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for dropdown */
+        .scrollbar-custom::-webkit-scrollbar {
+            width: 4px;
+        }
+        .scrollbar-custom::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .scrollbar-custom::-webkit-scrollbar-thumb {
+            background: #D7D7D7;
+            border-radius: 2px;
+        }
+        
+        /* Chip styles for selected sports */
+        .sport-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background-color: var(--green);
+            color: white;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sport-chip:hover {
+            background-color: var(--green-dark);
+        }
+
+        .sport-chip button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+            transition: background-color 0.2s ease;
+        }
+
+        .sport-chip button:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Dropdown option selected state */
+        .dropdown-option.selected {
+            background-color: #e8f5e9;
+            position: relative;
+        }
+
+        .dropdown-option.selected::after {
+            content: '✓';
+            position: absolute;
+            right: 16px;
+            color: var(--green);
+            font-weight: bold;
+        }
+
+        /* Error message styling */
+        .error-message {
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .error-message.show {
+            display: flex;
+        }
+
+        .error-message .warning-icon {
+            flex-shrink: 0;
+            width: 12px;
+            height: 12px;
+        }
+
+        .input-group.error {
+            border-color: #dc2626 !important;
+            box-shadow: 0 0 0 1px #dc2626 !important;
+        }
+
+        /* Hide scrollbars but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Toast Styles */
+        #toast {
+            font-weight: 500;
+            z-index: 100;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            pointer-events: none;
+            opacity: 0;
+        }
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-lato text-[var(--text-body)] antialiased flex items-center justify-center min-h-screen">
+
+    <!-- Mobile Container -->
+    <div class="relative w-full max-w-[430px] h-screen max-h-[812px] bg-[var(--white-pure)] shadow-2xl overflow-hidden flex flex-col">
+        
+        <!-- Top Navigation -->
+        <div class="flex items-center gap-2 px-1 py-2 border-b border-[var(--bg-container)] bg-[#FFFEFE] h-16 z-10">
+            <button id="backBtn" onclick="window.history.back()" class="flex items-center justify-center w-12 h-12 flex-shrink-0 hover:bg-gray-50 rounded-full transition-colors">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M16.9662 5.25017L10.2162 12.0002L16.9662 18.7502L15.3752 20.3412L7.03418 12.0002L15.3752 3.65918L16.9662 5.25017Z" fill="var(--text-heading)"/>
+                </svg>
+            </button>
+            <div class="flex-1">
+                <h1 class="text-[var(--text-heading)] text-[18px] font-normal leading-[28px] tracking-[0.04px] font-inter">
+                    Edit Profile
+                </h1>
+            </div>
+        </div>
+
+
+
+        <!-- Form Section -->
+        <div class="flex-1 px-4 pt-0 pb-4 overflow-y-auto no-scrollbar scrollbar-custom">
+            
+            <!-- Profile Image Section (Moved inside scrollable area) -->
+            <div class="flex justify-center items-center h-[141px] flex-shrink-0 relative">
+                <div class="relative group cursor-pointer">
+                    <img src="https://api.builder.io/api/v1/image/assets/TEMP/8d54f6aaa86b6c16bda6d9dd49e1a354fc7aff74?width=192" alt="Profile" class="w-24 h-24 rounded-full object-cover border-2 border-transparent group-hover:border-[var(--green)] transition-all">
+                    <button class="absolute bottom-0 right-0 bg-[var(--green)] rounded-full p-2 shadow-lg hover:brightness-110 transition-all" aria-label="Edit profile picture">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M23 19C23 19.5304 22.7893 20.0391 22.4142 20.4142C22.0391 20.7893 21.5304 21 21 21H3C2.46957 21 1.96086 20.7893 1.58579 20.4142C1.21071 20.0391 1 19.5304 1 19V8C1 7.46957 1.21071 6.96086 1.58579 6.58579C1.96086 6.21071 2.46957 6 3 6H7L9 3H15L17 6H21C21.5304 6 22.0391 6.21071 22.4142 6.58579C22.7893 6.96086 23 7.46957 23 8V19Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 17C14.2091 17 16 15.2091 16 13C16 10.7909 14.2091 9 12 9C9.79086 9 8 10.7909 8 13C8 15.2091 9.79086 17 12 17Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-5">
+                
+                <!-- Name Input -->
+                <div class="flex flex-col">
+                    <div id="nameInputGroup" class="input-group flex h-12 px-[10px] items-center gap-[10px] rounded-[4px] border border-[var(--black-700)] bg-[var(--white-pure)] transition-colors focus-within:border-[var(--green)] focus-within:ring-1 focus-within:ring-[var(--green)]">
+                        <input type="text" id="nameInput" value="Anand" class="flex-1 text-[var(--text-body)] font-inter text-[16px] font-medium leading-[28px] outline-none bg-transparent placeholder-[var(--text-placeholder)]">
+                    </div>
+                    <span id="nameError" class="error-message">
+                        <svg class="warning-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                        Name is required
+                    </span>
+                </div>
+
+                <!-- Email Input -->
+                <div class="flex flex-col">
+                    <div id="emailInputGroup" class="input-group flex h-12 px-[10px] items-center gap-[10px] rounded-[4px] border border-[var(--black-700)] bg-[var(--white-pure)] transition-colors focus-within:border-[var(--green)] focus-within:ring-1 focus-within:ring-[var(--green)]">
+                        <input type="email" id="emailInput" value="anand@gmail.com" class="flex-1 text-[var(--text-body)] font-inter text-[16px] font-medium leading-[28px] outline-none bg-transparent placeholder-[var(--text-placeholder)]">
+                    </div>
+                    <span id="emailError" class="error-message">
+                        <svg class="warning-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                        <span class="error-text">Please enter a valid email</span>
+                    </span>
+                </div>
+
+                <!-- Phone Input (Read-only) -->
+                <div class="relative">
+                    <div id="phoneInputContainer" class="flex h-12 px-[10px] items-center gap-[10px] rounded-[4px] border border-[var(--black-700)] bg-[var(--white-pure)] cursor-not-allowed opacity-80">
+                        <div class="flex-1 text-[var(--text-body)] font-inter text-[16px] font-medium leading-[28px] select-none">
+                            +91 12345-54321
+                        </div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 7V13" stroke="var(--text-heading)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 17.0101L12.01 16.999" stroke="var(--text-heading)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="var(--text-heading)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <!-- Phone Alert (Hidden by default) -->
+                    <div id="phoneAlert" class="absolute top-full left-0 right-0 mt-2 bg-[#0F172A] text-white px-4 py-2 rounded-md text-sm z-20 hidden opacity-0 transition-opacity duration-300">
+                        Phone number cannot be edited
+                    </div>
+                </div>
+
+                <!-- Sports Preference Dropdown -->
+                <div class="flex flex-col gap-2">
+                    <div class="relative">
+                        <button id="sportDropdownBtn" class="flex w-full h-12 px-[10px] justify-between items-center rounded-[4px] border border-[var(--black-700)] bg-[var(--white-pure)] hover:bg-gray-50 transition-colors">
+                            <span id="selectedSportText" class="text-[var(--text-body)] font-inter text-[16px] font-medium leading-[28px]">Sports Preference</span>
+                            <svg id="dropdownArrow" class="transition-transform duration-300" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 15.4L6 9.4L7.4 8L12 12.6L16.6 8L18 9.4L12 15.4Z" fill="var(--text-heading)"/>
+                            </svg>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div id="sportDropdownList" class="absolute top-full left-0 right-0 mt-1 bg-[var(--white-pure)] border border-[var(--bg-container)] rounded-[4px] shadow-lg max-h-60 overflow-y-auto hidden z-30 scrollbar-custom">
+                            <!-- Options injected by JS -->
+                        </div>
+                    </div>
+                    
+                    <!-- Selected Sports Chips -->
+                    <div id="selectedSportsChips" class="flex flex-wrap gap-2 min-h-[32px] hidden">
+                        <!-- Chips will be dynamically added here -->
+                    </div>
+                </div>
+
+                <!-- Address Input -->
+                <div class="input-group flex min-h-[140px] px-[10px] items-start py-3 gap-[10px] rounded-[4px] border border-[var(--black-700)] bg-[var(--white-pure)] transition-colors focus-within:border-[var(--green)] focus-within:ring-1 focus-within:ring-[var(--green)]">
+                    <textarea id="addressInput" placeholder="Enter Address" class="flex-1 text-[var(--text-body)] font-inter text-[16px] font-medium leading-[28px] outline-none bg-transparent placeholder-[var(--text-placeholder)] resize-none h-full"></textarea>
+                </div>
+
+                <!-- Community Checkboxes -->
+                <div class="flex flex-col">
+                    <button id="whatsappCheckbox" class="flex py-3 items-center gap-2 group">
+                        <div class="checkbox-box w-5 h-5 rounded border-[1.5px] border-[var(--text-heading)] flex items-center justify-center flex-shrink-0 transition-all duration-200">
+                            <svg class="checkbox-tick w-3.5 h-3.5 hidden" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.6667 3.5L5.25 9.91667L2.33333 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="text-[var(--text-heading)] font-inter text-[14px] font-medium leading-[150%] tracking-[0.04px] text-left">
+                            Add me to Whats app Community
+                        </span>
+                    </button>
+                    <button id="instagramCheckbox" class="flex py-3 items-center gap-2 group">
+                        <div class="checkbox-box w-5 h-5 rounded border-[1.5px] border-[var(--text-heading)] flex items-center justify-center flex-shrink-0 transition-all duration-200">
+                            <svg class="checkbox-tick w-3.5 h-3.5 hidden" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.6667 3.5L5.25 9.91667L2.33333 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="text-[var(--text-heading)] font-inter text-[14px] font-medium leading-[150%] tracking-[0.04px] text-left">
+                            Add me to Instagram Community
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Action Buttons -->
+        <div class="flex px-4 py-2 justify-between items-center border-t border-[var(--bg-container)] bg-[var(--white-pure)] shadow-[0_1px_2px_0_rgba(0,0,0,0.30),0_1px_3px_1px_rgba(0,0,0,0.15)] h-16 flex-shrink-0 z-10">
+            <button id="cancelBtn" onclick="window.history.back()" class="flex w-[162px] h-12 px-[10px] justify-center items-center gap-[10px] rounded-lg hover:bg-gray-100 transition-colors">
+                <span class="text-[var(--text-heading)] font-roboto text-[16px] font-normal leading-[24px] tracking-[0.5px]">
+                    cancel
+                </span>
+            </button>
+            <button id="updateBtn" class="flex w-[162px] h-12 px-[10px] justify-center items-center gap-[10px] rounded-lg bg-[var(--green)] hover:opacity-90 transition-opacity shadow-md">
+                <span class="text-[var(--white-pure)] font-roboto text-[16px] font-normal leading-[24px] tracking-[0.5px]">
+                    Update
+                </span>
+            </button>
+        </div>
+
+        <!-- Toast Notification (Inside container, above the action buttons) -->
+        <div id="toast" class="absolute bottom-20 left-1/2 -translate-x-1/2 bg-[#0F172A] text-white px-6 py-3 rounded-lg text-sm font-medium z-[60] opacity-0 pointer-events-none transition-all duration-300 translate-y-4">
+            Profile is updated
+        </div>
+    </div>
+
+    <!-- Logic Script -->
+    <script src="Js/EditProfile.js"></script>
+</body>
+</html>

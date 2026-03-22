@@ -1,20 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Checkout - Fabzia Turf</title>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Utility CSS -->
     <link rel="stylesheet" href="utility.css">
-    
+
     <style>
-        :root {
-            --primary: var(--primary-blue);
-        }
+        :root { --primary: var(--primary-blue); }
+        * { box-sizing: border-box; }
 
         body {
             background-color: #FFFEFE;
@@ -23,64 +18,130 @@
             overflow: hidden;
         }
 
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .input-focus:focus-within { border-color: var(--primary-blue) !important; }
 
-        .input-focus:focus-within {
-            border-color: var(--primary-blue) !important;
-        }
-
-        /* Radio styles */
-        .radio-circle {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--border-light);
-            border-radius: 50%;
-            margin-right: 8px;
-            position: relative;
-            flex-shrink: 0;
-            transition: border-color 0.2s;
-        }
-
-        input[type="radio"]:checked + div .radio-circle {
-            border-color: var(--primary-blue);
-        }
-
-        input[type="radio"]:checked + div .radio-circle::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 10px;
-            height: 10px;
-            background-color: var(--primary-blue);
-            border-radius: 50%;
-        }
-
-        /* Expandable content */
+        /* Expandable */
         .expandable-content {
-            max-height: 0;
-            overflow: hidden;
+            max-height: 0; overflow: hidden;
             transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
             opacity: 0;
         }
-        .expandable-content.active {
-            max-height: 1000px;
-            opacity: 1;
+        .expandable-content.active { max-height: 1000px; opacity: 1; }
+
+        /* ── Universal bottom sheet system ── */
+        .sheet-backdrop {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 50;
         }
+        .sheet-backdrop.open { display: block; }
+
+        /* All sheets are centered and capped at 430px */
+        .bottom-sheet {
+            display: none;
+            position: fixed;
+            left: 50%; bottom: 0;
+            transform: translateX(-50%) translateY(100%);
+            width: 100%; max-width: 430px;
+            background: #fff;
+            border-radius: 16px 16px 0 0;
+            z-index: 60;
+            max-height: 92vh;
+            flex-direction: column;
+            transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
+        }
+        .bottom-sheet.open {
+            display: flex;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Confirm sheet also capped */
+        #confirm-sheet {
+            display: none;
+            position: fixed;
+            left: 50%; bottom: 0;
+            transform: translateX(-50%) translateY(100%);
+            width: 100%; max-width: 430px;
+            background: #fff;
+            border-radius: 16px 16px 0 0;
+            z-index: 60;
+            max-height: 92vh;
+            flex-direction: column;
+            transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+        }
+        #confirm-sheet.open {
+            display: flex;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Dropdown */
+        .select-wrap { position: relative; }
+        .select-wrap select {
+            appearance: none; -webkit-appearance: none;
+            width: 100%; height: 52px; padding: 0 40px 0 14px;
+            border: 1px solid var(--border-light); border-radius: 8px;
+            font-size: 15px; font-family: 'Lato', sans-serif;
+            color: var(--text-primary); background: #fff; outline: none;
+        }
+        .select-wrap::after {
+            content: ''; position: absolute; right: 14px; top: 50%;
+            transform: translateY(-50%);
+            width: 0; height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid #666;
+            pointer-events: none;
+        }
+
+        /* ── Calendar (Figma 1858-2517) ── */
+        .cal-sheet-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+        .cal-day-header {
+            text-align: center; font-size: 13px; font-weight: 600;
+            color: #555; padding: 8px 0;
+        }
+        .cal-day {
+            text-align: center; font-size: 14px; padding: 8px 2px;
+            border-radius: 50%; cursor: pointer;
+            transition: background 0.15s;
+            color: #1a1a1a;
+        }
+        .cal-day:hover:not(.empty):not(.cal-selected) { background: #e8f0fe; }
+        .cal-day.other-month  { color: #bbb; }
+        .cal-day.cal-today:not(.cal-selected) { font-weight: 700; color: var(--primary-blue); }
+        .cal-day.cal-selected {
+            background: var(--primary-blue);
+            color: #fff; font-weight: 600; border-radius: 50%;
+        }
+        .cal-day.empty { pointer-events: none; }
+        .cal-nav-btn {
+            width: 32px; height: 32px; border-radius: 50%; border: none;
+            background: none; cursor: pointer; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .cal-nav-btn:hover { background: #f0f0f0; }
+
+        /* Date trigger field */
+        .date-trigger {
+            flex: 1; height: 52px; display: flex; align-items: center;
+            border: 1px solid var(--border-light); border-radius: 8px;
+            padding: 0 14px; cursor: pointer; background: #fff;
+            font-size: 14px; color: var(--text-primary);
+            user-select: none;
+        }
+        .date-trigger.has-value { color: var(--text-primary); }
+        .date-trigger:not(.has-value) { color: #aaa; }
     </style>
 </head>
 <body class="flex flex-col items-center">
     <div class="w-full max-w-[430px] flex flex-col h-full bg-white relative">
-        
-        <!-- â”€â”€ Sticky Header â”€â”€ -->
-        <header class="sticky top-0 z-50 bg-white border-b border-[var(--border-light)] shrink-0">
+
+        <!-- Sticky Header -->
+        <header class="sticky top-0 z-40 bg-white border-b border-[var(--border-light)] shrink-0">
             <div class="flex items-center gap-2 px-2 py-3">
                 <button onclick="history.back()" class="flex h-12 w-12 items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -91,10 +152,11 @@
             </div>
         </header>
 
-        <!-- â”€â”€ Scrollable Body â”€â”€ -->
+        <!-- Scrollable Body -->
         <div id="scroll-container" class="flex-1 overflow-y-auto no-scrollbar pb-10">
+
             <!-- Slot Details -->
-            <div class="flex flex-col border-b border-gray-100 section-group">
+            <div class="flex flex-col border-b border-gray-100">
                 <button onclick="toggleSection('slots')" class="flex items-center justify-between px-5 py-3.5">
                     <span class="text-[16px] font-medium text-[var(--text-primary)]">Slot Details (5)</span>
                     <svg id="chevron-slots" class="transition-transform duration-200" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -116,7 +178,7 @@
             </div>
 
             <!-- Booking Summary -->
-            <div class="flex flex-col border-b border-gray-100 section-group">
+            <div class="flex flex-col border-b border-gray-100">
                 <button onclick="toggleSection('summary')" class="flex items-center justify-between px-5 py-3.5">
                     <span class="text-[16px] font-medium text-[var(--text-primary)]">Booking Summary</span>
                     <svg id="chevron-summary" class="transition-transform duration-200" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -126,173 +188,235 @@
                 <div id="content-summary" class="expandable-content px-5 pb-4 space-y-3">
                     <div class="flex justify-between text-[14px]">
                         <span class="text-[var(--text-secondary)]">Total Slot Base Price</span>
-                        <span class="text-[var(--text-primary)] font-medium">â‚¹2,000</span>
+                        <span class="text-[var(--text-primary)] font-medium">₹2,000</span>
                     </div>
                     <div class="flex justify-between text-[14px]">
                         <span class="text-[var(--text-secondary)]">Convenience Fees</span>
-                        <span class="text-[var(--text-primary)] font-medium">+ â‚¹0</span>
-                    </div>
-                    <div id="wallet-deduction" class="hidden justify-between text-[14px]">
-                        <span class="text-[var(--text-secondary)]">Wallet Balance</span>
-                        <span class="text-[color:var(--primary-blue)] font-medium">- â‚¹150</span>
+                        <span class="text-[var(--text-primary)] font-medium">+ ₹0</span>
                     </div>
                     <div id="promo-deduction" class="hidden justify-between text-[14px]">
                         <span class="text-[var(--text-secondary)]">Promo Code (TURF2025)</span>
-                        <span class="text-[color:var(--primary-blue)] font-medium">- â‚¹125</span>
+                        <span class="text-[color:var(--primary-blue)] font-medium">- ₹125</span>
                     </div>
                     <div class="border-t border-dashed border-gray-200 pt-3 flex justify-between">
                         <span class="text-[16px] font-semibold">Total Amount</span>
-                        <span id="final-total" class="text-[16px] font-semibold">â‚¹2,000</span>
+                        <span id="final-total" class="text-[16px] font-semibold">₹2,000</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Offers & Wallet -->
-            <div class="px-5 mt-4 space-y-3">
-                <!-- Apply Offers -->
-                <div id="offers-placeholder">
-                    <button id="apply-offers-btn" onclick="location.href='Coupons.html'" class="w-full flex items-center justify-between p-3 border border-[var(--border-light)] rounded-lg hover:bg-gray-50 transition-colors">
-                        <div class="flex items-center gap-3">
-                            <img src="assets/Icons/New folder/discount.svg" alt="" class="w-6 h-6">
-                            <span class="text-[14px] font-medium">Apply Offers</span>
+            <!-- Apply Offers -->
+            <div class="px-5 mt-4" id="offers-placeholder">
+                <button id="apply-offers-btn" onclick="openCouponSheet()" class="w-full flex items-center justify-between p-3 border border-[var(--border-light)] rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <img src="assets/Icons/New folder/discount.svg" alt="" class="w-6 h-6" onerror="this.style.display='none'">
+                        <span class="text-[14px] font-medium">Apply Offers</span>
+                    </div>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 18L15 12L9 6" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div id="applied-offer-card" class="hidden flex w-full justify-between items-center gap-2 px-3 py-2 rounded-lg border border-[var(--border-light)] bg-white">
+                    <div class="flex items-center gap-3 flex-1">
+                        <img src="assets/Icons/New folder/discount.svg" alt="" class="w-6 h-6" onerror="this.style.display='none'">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-medium text-black">₹125 saved with TURF2025</span>
+                            <button onclick="openCouponSheet()" class="text-[10px] text-[var(--text-secondary)] text-left hover:underline">View all coupons</button>
                         </div>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                            <path d="M9 18L15 12L9 6" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M5.86334 10.5831L3.08334 7.80312L2.13667 8.74312L5.86334 12.4698L13.8633 4.46978L12.9233 3.52979L5.86334 10.5831Z" fill="var(--primary-blue)"/>
                         </svg>
-                    </button>
-                    <!-- Applied Offer Card -->
-                    <div id="applied-offer-card" class="hidden flex w-full justify-between items-center gap-2 px-3 py-2 rounded-lg border border-[var(--border-light)] bg-white">
-                        <div class="flex items-center gap-3 flex-1">
-                            <img src="assets/Icons/New folder/discount.svg" alt="" class="w-6 h-6">
-                            <div class="flex flex-col">
-                                <span class="text-sm font-medium text-black">â‚¹125 saved with TURF2025</span>
-                                <button onclick="location.href='Coupons.html'" class="text-[10px] text-[var(--text-secondary)] text-left hover:underline">View all coupons</button>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <path d="M5.86334 10.5831L3.08334 7.80312L2.13667 8.74312L5.86334 12.4698L13.8633 4.46978L12.9233 3.52979L5.86334 10.5831Z" fill="var(--primary-blue)"/>
-                            </svg>
-                            <span class="text-[10px] font-semibold text-[color:var(--primary-blue)]">Applied</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Apply Wallet Balance -->
-                <div id="wallet-placeholder">
-                    <div id="wallet-apply-btn" class="w-full flex items-center justify-between p-3 border border-[var(--border-light)] rounded-lg">
-                        <div class="flex items-center gap-3">
-                            <img src="assets/Icons/New folder/wallet-outline.svg" alt="" class="w-6 h-6">
-                            <span class="text-[14px] font-medium">Apply Wallet Balance</span>
-                        </div>
-                        <button onclick="applyWalletState()" class="text-[12px] font-semibold text-[color:var(--primary-blue)]">Apply</button>
-                    </div>
-                    <!-- Applied Wallet Card -->
-                    <div id="applied-wallet-card" class="hidden flex w-full justify-between items-center gap-2 px-3 py-2 rounded-lg border border-[var(--border-light)] bg-white">
-                        <div class="flex items-center gap-3 flex-1">
-                            <img src="assets/Icons/New folder/wallet-outline.svg" alt="" class="w-6 h-6">
-                            <span class="text-sm font-medium text-black">â‚¹150 saved with Wallet</span>
-                        </div>
-                        <button onclick="removeWalletState()" class="text-xs font-semibold text-[var(--red)] px-2 py-1">Remove</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GST Checkbox -->
-            <div class="px-5 mt-6 section-group">
-                <label class="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" id="gst-checkbox2" onchange="toggleGSTFields2()" class="w-5 h-5 accent-[var(--primary-blue)]">
-                    <span class="text-[14px] text-[var(--text-secondary)]">I have GST number <span class="text-[var(--text-placeholder)]">(optional)</span></span>
-                </label>
-                
-                <div id="gst-fields2" class="expandable-content mt-4 space-y-4">
-                    <div class="flex flex-col gap-2">
-                        <label class="text-[14px] font-semibold text-[var(--text-primary)]">Registration Number</label>
-                        <div class="flex h-[52px] items-center rounded-lg border border-[var(--border-light)] bg-white px-3 input-focus">
-                            <input type="text" placeholder="Enter GST Registration Number" class="flex-1 bg-transparent text-[16px] outline-none placeholder:text-[var(--text-placeholder)]">
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-[14px] font-semibold text-[var(--text-primary)]">Company Name</label>
-                        <div class="flex h-[52px] items-center rounded-lg border border-[var(--border-light)] bg-white px-3 input-focus">
-                            <input type="text" placeholder="Enter Company Name" class="flex-1 bg-transparent text-[16px] outline-none placeholder:text-[var(--text-placeholder)]">
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-[14px] font-semibold text-[var(--text-primary)]">Address</label>
-                        <div class="flex min-h-[100px] rounded-lg border border-[var(--border-light)] bg-white px-3 py-3 input-focus">
-                            <textarea placeholder="Enter your address" class="flex-1 bg-transparent text-[16px] outline-none resize-none placeholder:text-[var(--text-placeholder)]"></textarea>
-                        </div>
+                        <span class="text-[10px] font-semibold text-[color:var(--primary-blue)]">Applied</span>
                     </div>
                 </div>
             </div>
 
             <!-- Amount Inputs -->
             <div class="px-5 mt-6 space-y-4">
-                <div class="flex flex-col gap-2 field-group">
+                <div class="flex flex-col gap-2">
                     <label class="text-[14px] font-semibold text-[var(--text-primary)]">Advance Amount</label>
                     <div class="flex h-[52px] items-center rounded-lg border border-[var(--border-light)] bg-white px-3 transition-colors input-focus">
-                        <span class="text-[16px] text-[var(--text-secondary)] mr-2">â‚¹</span>
-                        <input type="text" inputmode="numeric" oninput="formatCurrency(this)" placeholder="Enter Amount" 
+                        <span class="text-[16px] text-[var(--text-primary)] font-medium mr-2">₹</span>
+                        <input type="text" inputmode="numeric" oninput="formatCurrency(this)" placeholder="Enter Amount"
                             class="flex-1 bg-transparent text-[16px] outline-none placeholder:text-[var(--text-placeholder)]">
                     </div>
                 </div>
-
-                <div class="flex flex-col gap-2 field-group">
+                <div class="flex flex-col gap-2">
                     <label class="text-[14px] font-semibold text-[var(--text-primary)]">Discount Amount</label>
                     <div class="flex h-[52px] items-center rounded-lg border border-[var(--border-light)] bg-white px-3 transition-colors input-focus">
-                        <span class="text-[16px] text-[var(--text-secondary)] mr-2">â‚¹</span>
-                        <input type="text" inputmode="numeric" oninput="formatCurrency(this)" placeholder="Enter Amount" 
+                        <span class="text-[16px] text-[var(--text-primary)] font-medium mr-2">₹</span>
+                        <input type="text" inputmode="numeric" oninput="formatCurrency(this)" placeholder="Enter Amount"
                             class="flex-1 bg-transparent text-[16px] outline-none placeholder:text-[var(--text-placeholder)]">
                     </div>
                 </div>
             </div>
 
-            <!-- Payment Mode -->
-            <div class="px-5 mt-6 pb-4">
-                <p class="text-[14px] font-semibold text-[var(--text-primary)] mb-3">Payment Mode</p>
-                <div class="flex gap-4">
-                    <label class="flex-1 cursor-pointer">
-                        <input type="radio" name="pay-mode" value="online" class="hidden" checked>
-                        <div class="flex items-center h-[52px] px-3 border border-[var(--border-light)] rounded-lg transition-all">
-                            <div class="radio-circle"></div>
-                            <span class="text-[16px] text-[var(--text-primary)]">Online</span>
-                        </div>
-                    </label>
-                    <label class="flex-1 cursor-pointer">
-                        <input type="radio" name="pay-mode" value="offline" class="hidden">
-                        <div class="flex items-center h-[52px] px-3 border border-[var(--border-light)] rounded-lg transition-all">
-                            <div class="radio-circle"></div>
-                            <span class="text-[16px] text-[var(--text-primary)]">Offline</span>
-                        </div>
-                    </label>
+            <!-- Additional Note -->
+            <div class="px-5 mt-6 pb-6">
+                <label class="text-[14px] font-semibold text-[var(--text-primary)] block mb-2">Additional Note</label>
+                <div class="rounded-lg border border-[var(--border-light)] bg-white px-3 py-3 input-focus">
+                    <textarea id="additional-note" rows="4" placeholder="Write a note or any special instructions…"
+                        class="w-full bg-transparent text-[15px] outline-none resize-none placeholder:text-[var(--text-placeholder)] leading-relaxed"></textarea>
                 </div>
             </div>
+
         </div>
 
         <!-- Sticky Bottom -->
         <div class="sticky bottom-0 bg-white border-t border-[var(--border-light)] px-5 pb-8 pt-4 shrink-0 flex flex-col gap-3">
             <button onclick="openConfirmSheet()" class="w-full h-[52px] bg-[var(--primary-blue)] text-white rounded-lg text-[16px] font-semibold active:opacity-90">
-                Pay â‚¹1,951 & Book Slot
+                Book Slot
             </button>
             <p class="text-[12px] text-center text-[var(--text-secondary)]">
-                By continuing you agree with our <a href="#" class="underline">Terms of Services</a> & <a href="#" class="underline">Privacy Policy</a>
+                By continuing you agree with our <a href="#" class="underline">Terms of Services</a> &amp; <a href="#" class="underline">Privacy Policy</a>
             </p>
         </div>
     </div>
 
-    <!-- â”€â”€ Confirm Details Bottom Sheet â”€â”€ -->
-    <div id="confirm-sheet-backdrop" onclick="closeConfirmSheet()" class="hidden fixed inset-0 bg-black/50 z-50"></div>
-    <div id="confirm-sheet" class="hidden fixed inset-x-0 bottom-0 bg-white rounded-t-2xl z-[60] shadow-2xl flex flex-col"
-         style="transition: transform 0.35s cubic-bezier(0.32,0.72,0,1); transform: translateY(100%); max-height: 82vh;">
+    <!-- ═══════════════════════════════
+         SHARED BACKDROP
+    ═══════════════════════════════ -->
+    <div id="sheet-backdrop" class="sheet-backdrop" onclick="closeAllSheets()"></div>
 
-        <!-- Handle -->
+    <!-- ═══════════════════════════════
+         COUPON BOTTOM SHEET
+    ═══════════════════════════════ -->
+    <div id="coupon-sheet" class="bottom-sheet">
         <div class="flex justify-center pt-3 pb-1 shrink-0">
             <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
         </div>
+        <div class="flex items-center justify-between px-5 pt-2 pb-4 shrink-0 border-b border-gray-100">
+            <h2 class="text-[20px] font-semibold text-[var(--text-primary)]">Coupon Details</h2>
+            <button onclick="closeCouponSheet()" class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto px-5 pt-5 pb-4 space-y-4">
+            <!-- Turf Name -->
+            <div class="flex flex-col gap-2">
+                <label class="text-[14px] font-semibold text-[var(--text-primary)]">Turf Name</label>
+                <div class="select-wrap">
+                    <select id="coupon-turf">
+                        <option value="">Select Turf</option>
+                        <option value="multisports">The Multisports Turf</option>
+                        <option value="fabzia">Fabzia Arena</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Coupon Name -->
+            <div class="flex flex-col gap-2">
+                <label class="text-[14px] font-semibold text-[var(--text-primary)]">Coupon Name</label>
+                <div class="flex h-[52px] items-center rounded-lg border border-[var(--border-light)] bg-white px-3 input-focus">
+                    <input id="coupon-name" type="text" placeholder="Coupon Name"
+                        class="flex-1 bg-transparent text-[15px] outline-none placeholder:text-[var(--text-placeholder)]">
+                </div>
+            </div>
+            <!-- Discount % -->
+            <div class="flex flex-col gap-2">
+                <label class="text-[14px] font-semibold text-[var(--text-primary)]">Discount Percentage</label>
+                <div class="flex h-[52px] items-center rounded-lg border border-[var(--border-light)] bg-white px-3 gap-2 input-focus">
+                    <input id="coupon-discount" type="text" placeholder="20% ,10%"
+                        class="flex-1 bg-transparent text-[15px] outline-none placeholder:text-[var(--text-placeholder)]">
+                    <span class="text-[18px] text-[var(--text-secondary)] font-medium">%</span>
+                </div>
+            </div>
+            <!-- Validity Range — date pickers open a calendar sheet -->
+            <div class="flex flex-col gap-2">
+                <label class="text-[14px] font-semibold text-[var(--text-primary)]">Validity Range</label>
+                <div class="flex items-center gap-2">
+                    <div id="from-trigger" class="date-trigger" onclick="openCalSheet('from')">
+                        <span id="from-display">18 Mar ,26</span>
+                    </div>
+                    <span class="text-[var(--text-secondary)] font-semibold text-lg">—</span>
+                    <div id="to-trigger" class="date-trigger" onclick="openCalSheet('to')">
+                        <span id="to-display">20 Mar ,26</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="shrink-0 px-5 pt-3 pb-8 border-t border-gray-100">
+            <button onclick="addCoupon()" class="w-full h-[52px] bg-[var(--primary-blue)] text-white rounded-lg text-[16px] font-semibold active:opacity-90">
+                Add Coupon
+            </button>
+        </div>
+    </div>
 
-        <!-- Header -->
-        <div class="flex items-center justify-between px-5 pt-2 pb-3 shrink-0">
+    <!-- ═══════════════════════════════
+         CALENDAR BOTTOM SHEET (Figma 1858-2517)
+    ═══════════════════════════════ -->
+    <div id="cal-sheet" class="bottom-sheet" style="z-index:70;">
+        <div class="flex justify-center pt-3 pb-1 shrink-0">
+            <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
+        </div>
+        <div class="px-4 pt-2 pb-4 flex flex-col gap-3">
+            <!-- Month + Year row -->
+            <div class="flex items-center gap-3">
+                <!-- Month nav -->
+                <div class="flex items-center gap-1 flex-1">
+                    <button class="cal-nav-btn" onclick="calNav('month',-1)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="flex items-center gap-1">
+                        <span id="cal-month-label" class="text-[15px] font-semibold text-[#1a1a1a]">Jan</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 9L12 15L18 9" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <button class="cal-nav-btn" onclick="calNav('month',1)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                </div>
+                <!-- Year nav -->
+                <div class="flex items-center gap-1">
+                    <button class="cal-nav-btn" onclick="calNav('year',-1)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="flex items-center gap-1">
+                        <span id="cal-year-label" class="text-[15px] font-semibold text-[#1a1a1a]">2026</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 9L12 15L18 9" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <button class="cal-nav-btn" onclick="calNav('year',1)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Day headers -->
+            <div class="cal-sheet-grid">
+                <div class="cal-day-header">S</div>
+                <div class="cal-day-header">M</div>
+                <div class="cal-day-header">T</div>
+                <div class="cal-day-header">W</div>
+                <div class="cal-day-header">T</div>
+                <div class="cal-day-header">F</div>
+                <div class="cal-day-header">S</div>
+            </div>
+
+            <!-- Day grid -->
+            <div id="cal-days-grid" class="cal-sheet-grid"></div>
+
+            <!-- Cancel / OK -->
+            <div class="flex justify-end gap-6 pt-2 pb-2">
+                <button onclick="closeCalSheet()" class="text-[14px] font-semibold text-[var(--text-secondary)] px-2 py-1">Cancel</button>
+                <button onclick="confirmCalDate()" class="text-[14px] font-semibold text-[var(--primary-blue)] px-2 py-1">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second backdrop for calendar (sits above coupon sheet backdrop) -->
+    <div id="cal-backdrop" class="sheet-backdrop" style="z-index:65;" onclick="closeCalSheet()"></div>
+
+    <!-- ═══════════════════════════════
+         CONFIRM DETAILS SHEET
+    ═══════════════════════════════ -->
+    <div id="confirm-sheet-backdrop" class="sheet-backdrop" onclick="closeConfirmSheet()"></div>
+    <div id="confirm-sheet">
+        <div class="flex justify-center pt-3 pb-1 shrink-0">
+            <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
+        </div>
+        <div class="flex items-center justify-between px-5 pt-2 pb-3 shrink-0 border-b border-gray-100">
             <h2 class="text-[20px] font-semibold text-[var(--text-primary)] tracking-[0.04px]">Confirm Details</h2>
             <button onclick="closeConfirmSheet()" class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -300,9 +424,7 @@
                 </svg>
             </button>
         </div>
-
-        <!-- Scrollable Fields -->
-        <div id="sheet-scroll" class="flex-1 overflow-y-auto px-5 pb-4">
+        <div id="sheet-scroll" class="flex-1 overflow-y-auto px-5 pt-4 pb-4 no-scrollbar">
             <div class="flex flex-col gap-4">
                 <!-- Phone -->
                 <div class="flex flex-col gap-2">
@@ -310,14 +432,12 @@
                     <div id="phone-field-wrap" class="flex h-[52px] items-center rounded-lg border border-[var(--border-light)] bg-white px-3 gap-2 transition-colors focus-within:border-[var(--primary-blue)]">
                         <span class="text-[16px] text-[var(--text-primary)] font-medium shrink-0 border-r border-[var(--border-light)] pr-3">+91</span>
                         <input id="sheet-phone" type="tel" inputmode="numeric" maxlength="11"
-                            oninput="formatSheetPhone(this)"
-                            placeholder="00000 00000"
+                            oninput="formatSheetPhone(this)" placeholder="00000 00000"
                             class="flex-1 min-w-0 bg-transparent text-[16px] outline-none placeholder:text-[var(--text-placeholder)] tracking-wider">
                     </div>
                     <p id="phone-err" class="hidden text-[12px] text-[var(--error-red)]">Valid 10-digit phone number required</p>
                 </div>
-
-                <!-- Customer Name -->
+                <!-- Name -->
                 <div class="flex flex-col gap-2">
                     <label class="text-[14px] font-semibold text-[var(--text-primary)] tracking-[0.04px]">Customer Name</label>
                     <div id="name-field-wrap" class="flex h-[52px] items-center rounded-lg border border-[var(--border-light)] bg-white px-3 transition-colors focus-within:border-[var(--primary-blue)]">
@@ -326,7 +446,6 @@
                     </div>
                     <p id="name-err" class="hidden text-[12px] text-[var(--error-red)]">Customer name is required</p>
                 </div>
-
                 <!-- Email -->
                 <div class="flex flex-col gap-2">
                     <label class="text-[14px] font-semibold text-[var(--text-primary)] tracking-[0.04px]">Email</label>
@@ -338,8 +457,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Fixed Confirm Button -->
         <div class="shrink-0 px-5 pt-3 pb-8 border-t border-gray-100">
             <button onclick="confirmBooking()" class="w-full h-[52px] bg-[var(--primary-blue)] text-white rounded-lg text-[16px] font-semibold active:opacity-90">
                 Confirm
@@ -347,183 +464,228 @@
         </div>
     </div>
 
-
     <script>
-        // Toggle Sections
+        /* ── Section toggles ── */
         function toggleSection(id) {
-            const content = document.getElementById('content-' + id);
-            const chevron = document.getElementById('chevron-' + id);
-            content.classList.toggle('active');
-            chevron.classList.toggle('rotate-180');
+            document.getElementById('content-' + id).classList.toggle('active');
+            document.getElementById('chevron-' + id).classList.toggle('rotate-180');
         }
 
-        // GST Toggle
-        function toggleGSTFields2() {
-            const cb = document.getElementById('gst-checkbox2');
-            const fields = document.getElementById('gst-fields2');
-            if (cb.checked) {
-                fields.classList.add('active');
-                handleFocus(fields);
-            } else {
-                fields.classList.remove('active');
-            }
+        /* ── Currency ── */
+        function formatCurrency(el) {
+            let val = el.value.replace(/\D/g, '');
+            if (!val) { el.value = ''; return; }
+            el.value = parseInt(val).toLocaleString('en-IN');
         }
 
-        // Wallet Logic
-        function applyWalletState() {
-            document.getElementById('wallet-apply-btn').classList.add('hidden');
-            document.getElementById('applied-wallet-card').classList.remove('hidden');
-            document.getElementById('wallet-deduction').classList.remove('hidden');
-            document.getElementById('wallet-deduction').classList.add('flex');
-            updateTotal();
-        }
-
-        function removeWalletState() {
-            document.getElementById('wallet-apply-btn').classList.remove('hidden');
-            document.getElementById('applied-wallet-card').classList.add('hidden');
-            document.getElementById('wallet-deduction').classList.add('hidden');
-            document.getElementById('wallet-deduction').classList.remove('flex');
-            updateTotal();
-        }
-
-        // Offer Logic (Coupons.html integration)
+        /* ── Coupon state ── */
         function checkCouponState() {
-            const isApplied = localStorage.getItem('couponApplied') === 'true';
-            const applyBtn = document.getElementById('apply-offers-btn');
-            const appliedCard = document.getElementById('applied-offer-card');
-            const promoDeduction = document.getElementById('promo-deduction');
-
-            if (isApplied) {
-                applyBtn.classList.add('hidden');
-                appliedCard.classList.remove('hidden');
-                promoDeduction.classList.remove('hidden');
-                promoDeduction.classList.add('flex');
-            } else {
-                applyBtn.classList.remove('hidden');
-                appliedCard.classList.add('hidden');
-                promoDeduction.classList.add('hidden');
-                promoDeduction.classList.remove('flex');
-            }
+            const applied = localStorage.getItem('couponApplied') === 'true';
+            document.getElementById('apply-offers-btn').classList.toggle('hidden', applied);
+            document.getElementById('applied-offer-card').classList.toggle('hidden', !applied);
+            const pd = document.getElementById('promo-deduction');
+            pd.classList.toggle('hidden', !applied);
+            pd.classList.toggle('flex', applied);
             updateTotal();
         }
-
-        // Total Update Logic
         function updateTotal() {
             let total = 2000;
             if (localStorage.getItem('couponApplied') === 'true') total -= 125;
-            if (!document.getElementById('wallet-deduction').classList.contains('hidden')) total -= 150;
-            
-            document.getElementById('final-total').textContent = 'â‚¹' + total.toLocaleString('en-IN');
+            document.getElementById('final-total').textContent = '₹' + total.toLocaleString('en-IN');
         }
 
-        // Currency Formatting (Comma logic)
-        function formatCurrency(el) {
-            let val = el.value.replace(/\D/g, '');
-            if (val === '') { el.value = ''; return; }
-            let formatted = parseInt(val).toLocaleString('en-IN');
-            el.value = formatted;
+        /* ════════════════════════════════════
+           COUPON SHEET
+        ════════════════════════════════════ */
+        function openCouponSheet() {
+            document.getElementById('sheet-backdrop').classList.add('open');
+            document.getElementById('coupon-sheet').classList.add('open');
+        }
+        function closeCouponSheet() {
+            document.getElementById('coupon-sheet').classList.remove('open');
+            document.getElementById('sheet-backdrop').classList.remove('open');
+        }
+        function addCoupon() {
+            const name = document.getElementById('coupon-name').value.trim();
+            if (!name) { alert('Please enter a coupon name.'); return; }
+            localStorage.setItem('couponApplied', 'true');
+            closeCouponSheet();
+            setTimeout(checkCouponState, 350);
         }
 
-        // Keyboard Focus Scroll
-        const inputs = document.querySelectorAll('input, textarea');
-        inputs.forEach(input => {
-            input.addEventListener('focus', () => handleFocus(input));
-        });
+        /* ════════════════════════════════════
+           CALENDAR SHEET (Figma 1858-2517)
+        ════════════════════════════════════ */
+        const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-        function handleFocus(el) {
-            setTimeout(() => {
-                const group = el.closest('.section-group') || el.closest('.field-group');
-                if (group) group.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 300);
+        let calTarget  = 'from';   // 'from' or 'to'
+        let calYear    = new Date().getFullYear();
+        let calMonth   = new Date().getMonth();
+        let calPending = null;     // Date object being selected
+
+        // Stored date values
+        const calDates = { from: new Date(2026,2,18), to: new Date(2026,2,20) };
+
+        function formatDateLabel(d) {
+            if (!d) return '';
+            // Format: "18 Mar ,26"
+            const day = d.getDate();
+            const mon = MONTHS_SHORT[d.getMonth()];
+            const yr  = String(d.getFullYear()).slice(-2);
+            return `${day} ${mon} ,${yr}`;
         }
 
-        // Bottom Sheet logic
+        function openCalSheet(target) {
+            calTarget  = target;
+            const base = calDates[target] || new Date();
+            calYear    = base.getFullYear();
+            calMonth   = base.getMonth();
+            calPending = new Date(base);
+            renderCalSheet();
+            document.getElementById('cal-backdrop').classList.add('open');
+            document.getElementById('cal-sheet').classList.add('open');
+        }
+
+        function closeCalSheet() {
+            document.getElementById('cal-sheet').classList.remove('open');
+            document.getElementById('cal-backdrop').classList.remove('open');
+        }
+
+        function confirmCalDate() {
+            if (calPending) {
+                calDates[calTarget] = calPending;
+                document.getElementById(calTarget + '-display').textContent = formatDateLabel(calPending);
+                document.getElementById(calTarget + '-trigger').classList.add('has-value');
+            }
+            closeCalSheet();
+        }
+
+        function calNav(unit, dir) {
+            if (unit === 'month') {
+                calMonth += dir;
+                if (calMonth > 11) { calMonth = 0; calYear++; }
+                if (calMonth < 0)  { calMonth = 11; calYear--; }
+            } else {
+                calYear += dir;
+            }
+            renderCalSheet();
+        }
+
+        function renderCalSheet() {
+            document.getElementById('cal-month-label').textContent = MONTHS_SHORT[calMonth];
+            document.getElementById('cal-year-label').textContent  = calYear;
+
+            const grid     = document.getElementById('cal-days-grid');
+            grid.innerHTML = '';
+
+            const today     = new Date();
+            const firstDay  = new Date(calYear, calMonth, 1).getDay();
+            const daysInMon = new Date(calYear, calMonth + 1, 0).getDate();
+            const prevDays  = new Date(calYear, calMonth, 0).getDate();
+
+            // Prev month padding
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const el = document.createElement('div');
+                el.className = 'cal-day other-month empty';
+                el.textContent = prevDays - i;
+                grid.appendChild(el);
+            }
+
+            // Current month
+            for (let d = 1; d <= daysInMon; d++) {
+                const el  = document.createElement('div');
+                const dt  = new Date(calYear, calMonth, d);
+                const isToday = dt.toDateString() === today.toDateString();
+                const isSel   = calPending && dt.toDateString() === calPending.toDateString();
+
+                el.className = 'cal-day';
+                if (isToday) el.classList.add('cal-today');
+                if (isSel)   el.classList.add('cal-selected');
+                el.textContent = d;
+                el.onclick = () => {
+                    calPending = new Date(calYear, calMonth, d);
+                    renderCalSheet();
+                };
+                grid.appendChild(el);
+            }
+
+            // Next month padding (fill to 6 rows if needed)
+            const totalCells = firstDay + daysInMon;
+            const remaining  = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+            for (let d = 1; d <= remaining; d++) {
+                const el = document.createElement('div');
+                el.className = 'cal-day other-month empty';
+                el.textContent = d;
+                grid.appendChild(el);
+            }
+        }
+
+        /* ════════════════════════════════════
+           CONFIRM SHEET
+        ════════════════════════════════════ */
         function openConfirmSheet() {
-            const sheet = document.getElementById('confirm-sheet');
-            const backdrop = document.getElementById('confirm-sheet-backdrop');
-            sheet.classList.remove('hidden');
-            backdrop.classList.remove('hidden');
-            // Trigger animation
-            requestAnimationFrame(() => {
-                sheet.style.transform = 'translateY(0)';
-            });
+            document.getElementById('confirm-sheet-backdrop').classList.add('open');
+            document.getElementById('confirm-sheet').classList.add('open');
         }
-
         function closeConfirmSheet() {
-            const sheet = document.getElementById('confirm-sheet');
-            const backdrop = document.getElementById('confirm-sheet-backdrop');
-            sheet.style.transform = 'translateY(100%)';
-            setTimeout(() => {
-                sheet.classList.add('hidden');
-                backdrop.classList.add('hidden');
-            }, 300);
+            document.getElementById('confirm-sheet').classList.remove('open');
+            document.getElementById('confirm-sheet-backdrop').classList.remove('open');
         }
 
-        function sheetFocus(el) {
-            setTimeout(() => {
-                el.closest('.flex.flex-col')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 300);
+        function closeAllSheets() {
+            closeCouponSheet();
         }
 
         function formatSheetPhone(el) {
-            let digits = el.value.replace(/\D/g, '').substring(0, 10);
-            if (digits.length > 5) {
-                el.value = digits.substring(0, 5) + ' ' + digits.substring(5);
-            } else {
-                el.value = digits;
-            }
+            let d = el.value.replace(/\D/g, '').substring(0, 10);
+            el.value = d.length > 5 ? d.substring(0,5) + ' ' + d.substring(5) : d;
         }
 
         function confirmBooking() {
             const phone = document.getElementById('sheet-phone');
-            const name = document.getElementById('sheet-name');
+            const name  = document.getElementById('sheet-name');
             const email = document.getElementById('sheet-email');
-            let valid = true;
+            let valid   = true;
 
-            // Phone validation - strip spaces for length check
-            const rawPhone = phone.value.replace(/\s/g, '');
-            if (rawPhone.length < 10) {
-                document.getElementById('phone-field-wrap').classList.add('border-[var(--error-red)]');
-                document.getElementById('phone-err').classList.remove('hidden');
-                valid = false;
+            const raw = phone.value.replace(/\s/g, '');
+            const pWrap  = document.getElementById('phone-field-wrap');
+            const pErr   = document.getElementById('phone-err');
+            if (raw.length < 10) {
+                pWrap.style.borderColor = 'var(--error-red)'; pErr.classList.remove('hidden'); valid = false;
             } else {
-                document.getElementById('phone-field-wrap').classList.remove('border-[var(--error-red)]');
-                document.getElementById('phone-err').classList.add('hidden');
+                pWrap.style.borderColor = ''; pErr.classList.add('hidden');
             }
 
-            // Name validation
+            const nWrap = document.getElementById('name-field-wrap');
+            const nErr  = document.getElementById('name-err');
             if (!name.value.trim()) {
-                document.getElementById('name-field-wrap').classList.add('border-[var(--error-red)]');
-                document.getElementById('name-err').classList.remove('hidden');
-                valid = false;
+                nWrap.style.borderColor = 'var(--error-red)'; nErr.classList.remove('hidden'); valid = false;
             } else {
-                document.getElementById('name-field-wrap').classList.remove('border-[var(--error-red)]');
-                document.getElementById('name-err').classList.add('hidden');
+                nWrap.style.borderColor = ''; nErr.classList.add('hidden');
             }
 
-            // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email.value)) {
-                document.getElementById('email-field-wrap').classList.add('border-[var(--error-red)]');
-                document.getElementById('email-err').classList.remove('hidden');
-                valid = false;
+            const eWrap = document.getElementById('email-field-wrap');
+            const eErr  = document.getElementById('email-err');
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+                eWrap.style.borderColor = 'var(--error-red)'; eErr.classList.remove('hidden'); valid = false;
             } else {
-                document.getElementById('email-field-wrap').classList.remove('border-[var(--error-red)]');
-                document.getElementById('email-err').classList.add('hidden');
+                eWrap.style.borderColor = ''; eErr.classList.add('hidden');
             }
 
-            if (valid) {
-                window.location.href = 'SlotConfirmation.html';
-            }
+            if (valid) window.location.href = 'SlotConfirmation.html';
         }
 
-        // Initialize state
+        /* ── Init ── */
         window.onload = () => {
-            // Always start with no coupon applied (default Apply state)
             localStorage.setItem('couponApplied', 'false');
             localStorage.removeItem('selectedCouponId');
-            // Keep sections collapsed by default
             checkCouponState();
+            // Set default display labels
+            document.getElementById('from-display').textContent = formatDateLabel(calDates.from);
+            document.getElementById('to-display').textContent   = formatDateLabel(calDates.to);
+            document.getElementById('from-trigger').classList.add('has-value');
+            document.getElementById('to-trigger').classList.add('has-value');
         };
     </script>
 </body>

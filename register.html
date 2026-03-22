@@ -67,7 +67,17 @@
     </style>
 </head>
 <body class="flex flex-col items-center h-[100dvh]">
-    <div class="w-full max-w-[430px] flex flex-col h-full overflow-hidden">
+    <div class="w-full max-w-[430px] flex flex-col h-full overflow-hidden relative">
+        <!-- ── Toaster ── -->
+        <div id="toaster" class="pointer-events-none absolute top-4 left-4 right-4 z-[100] transform -translate-y-[150%] transition-all duration-300 flex items-center gap-3 rounded-lg px-4 py-3 shadow-md mx-auto opacity-0 border bg-white">
+            <div id="toaster-icon" class="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full text-white"></div>
+            <div class="flex-1">
+                <p id="toaster-msg" class="text-[14px] font-semibold tracking-[0.04px] text-[var(--text-primary)]"></p>
+            </div>
+            <button type="button" onclick="hideToaster()" class="pointer-events-auto flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 focus:outline-none rounded-full hover:bg-gray-100 transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
         
         <!-- ── Sticky Header ── -->
         <div class="flex flex-col gap-2 px-5 pt-10 pb-4 bg-[#FFFEFE] shrink-0">
@@ -255,8 +265,58 @@
             </div>
         </div>
     </div>
+    <!-- ── Success Popup ── -->
+    <div id="success-popup" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4" style="background: rgba(0,0,0,0.5);">
+        <div class="relative bg-white rounded-2xl w-full max-w-[340px] p-6 pt-8 flex flex-col items-center text-center shadow-xl transform scale-95 opacity-0 transition-all duration-200" id="success-popup-card">
+            <!-- Close icon -->
+            <button onclick="closeSuccessPopup()" class="absolute top-4 right-4 p-1.5 hover:bg-gray-100 rounded-full transition-colors">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <!-- Checkmark Icon -->
+            <div class="w-12 h-12 bg-[#E8F0FE] rounded-full flex items-center justify-center mb-4 text-[var(--primary-blue)]">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <!-- Text content -->
+            <h2 class="text-[18px] font-bold text-[var(--text-primary)] mb-1.5 tracking-tight">Thanks for Registration</h2>
+            <p class="text-[14px] font-normal text-[var(--text-secondary)] leading-relaxed pb-2">
+                Fabzia Team would be contacting you soon !
+            </p>
+        </div>
+    </div>
 
     <script>
+        // ── Toaster Logic ──
+        let toasterTimeout;
+        function showToaster(type, message) {
+            const toaster = document.getElementById('toaster');
+            const iconWrap = document.getElementById('toaster-icon');
+            const msgEl = document.getElementById('toaster-msg');
+            
+            clearTimeout(toasterTimeout);
+            
+            if (type === 'success') {
+                toaster.className = 'pointer-events-auto absolute top-4 left-4 right-4 z-[100] transform transition-all duration-300 flex items-center gap-3 rounded-lg px-4 py-3 shadow-lg mx-auto border border-[#E8F0FE] bg-white translate-y-0 opacity-100';
+                iconWrap.className = 'flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-[var(--primary-blue)] text-white';
+                iconWrap.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            } else {
+                toaster.className = 'pointer-events-auto absolute top-4 left-4 right-4 z-[100] transform transition-all duration-300 flex items-center gap-3 rounded-lg px-4 py-3 shadow-lg mx-auto border border-red-100 bg-white translate-y-0 opacity-100';
+                iconWrap.className = 'flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-[var(--error-red)] text-white';
+                iconWrap.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            }
+            msgEl.textContent = message;
+            toasterTimeout = setTimeout(() => hideToaster(), 3000);
+        }
+
+        function hideToaster() {
+            const toaster = document.getElementById('toaster');
+            toaster.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+            toaster.classList.add('-translate-y-[150%]', 'opacity-0', 'pointer-events-none');
+        }
+
         const phoneInput = document.getElementById('phone-input');
         const dropdownBtn = document.getElementById('sports-dropdown-btn');
         const dropdownMenu = document.getElementById('sports-menu');
@@ -405,9 +465,33 @@
             }
 
             if (isValid) {
-                alert('Registration Successful!');
-                window.location.href = 'Login.html';
+                showSuccessPopup(); // Keep the custom success popup for register as requested earlier
+            } else {
+                showToaster('error', 'Please resolve the errors highlighted below.');
             }
+        }
+
+        // Popup logic
+        function showSuccessPopup() {
+            const popup = document.getElementById('success-popup');
+            const card = document.getElementById('success-popup-card');
+            popup.classList.remove('hidden');
+            // Force reflow
+            void popup.offsetWidth;
+            card.classList.remove('scale-95', 'opacity-0');
+            card.classList.add('scale-100', 'opacity-100');
+        }
+
+        function closeSuccessPopup() {
+            const popup = document.getElementById('success-popup');
+            const card = document.getElementById('success-popup-card');
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                popup.classList.add('hidden');
+                // Optional: redirect to login after closing
+                window.location.href = 'Login.html';
+            }, 200);
         }
     </script>
 </body>

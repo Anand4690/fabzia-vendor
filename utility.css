@@ -12,6 +12,7 @@
   /* Changed primary green to blue */
   --primary-blue: #125dcd;
   --primary-blue-active: #1052b5;
+  --primary-blue-dark: #1a4fa0; /* darker blue – borders, rings, buttons */
   --green: hsl(145, 92%, 33%);
   --black-300: hsl(0, 0%, 30%);
   --black-700: hsl(0, 0%, 70%);
@@ -63,6 +64,19 @@
   --bg-soft: #f9fbf8;
   --border-light: #f1f5f9;
   --border-mid: #e2e8f0;
+
+  /* Slot Booking – status colors */
+  --slot-partial: #eeaf02; /* amber – partial slot border */
+  --slot-partial-bg: rgba(238, 175, 2, 0.1); /* amber tint – partial icon bg */
+  --slot-selected-bg: #eef4fd; /* blue tint – partial-selected bg */
+  --slot-blocked-bg: #f8f8f8; /* light grey – blocked slot bg */
+  --slot-blocked-stripe: rgba(180, 180, 180, 0.3); /* stripe overlay color */
+  --slot-text-muted: #a3a3a3; /* greyed-out available/disabled text */
+  --slot-text-blocked: #c2c2c2; /* very light grey – blocked labels */
+  --slot-border-default: #d7d7d7; /* default card border */
+  --slot-border-light: #b2b2b2; /* pill unselected border */
+  --slot-sq-unsel-bg: #f5f7f6; /* squad pill unselected bg */
+  --slot-price-label: #666666; /* price text colour */
 
   /* Text Colors Extended */
   --text-slate-900: #0f172a;
