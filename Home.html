@@ -1,468 +1,463 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Home - Fabzia Vendor App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Fabzia Turf</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="utility.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        .font-inter { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .three-dots-menu { display: none; }
+        .three-dots-menu.show { display: block; }
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Utility CSS (design tokens + base styles) -->
-  <link rel="stylesheet" href="utility.css" />
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'primary-blue':     'var(--primary-blue)',
-            'text-heading':     'var(--text-heading)',
-            'text-body':        'var(--text-body)',
-            'text-placeholder': 'var(--text-placeholder)',
-            'border-light':     'var(--border-light)',
-            'bg-light':         'var(--bg-light)',
-            'bg-soft':          'var(--bg-soft)',
-            'bg-container':     'var(--bg-container)',
-            'green':            'var(--green)',
-          },
-          fontFamily: {
-            lato: ['Lato', 'sans-serif'],
-          },
+        /* Toast Styles */
+        #toast {
+            font-weight: 500;
+            z-index: 9999;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            pointer-events: none;
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+            top: 20px;
+            left: 50%;
+            position: fixed;
         }
-      }
-    }
-  </script>
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
 
-  <style>
-    /* ── Base ── */
-    html, body {
-      height: 100%;
-      font-family: 'Lato', sans-serif;
-      background-color: var(--bg-light);
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    /* ── Mobile shell ── */
-    .mobile-shell {
-      max-width: 430px;
-      min-height: 100vh;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      background-color: var(--bg-light);
-      position: relative;
-    }
-
-    /* ── Main scrollable area (between sticky top-nav & fixed bottom-nav) ── */
-    .main-scroll {
-      flex: 1;
-      overflow-y: auto;
-      padding-bottom: 80px; /* room for fixed bottom nav */
-    }
-
-    /* ── Booking card left border ── */
-    .booking-card {
-      border-left: 5px solid var(--green);
-    }
-
-    /* ── Banner carousel ── */
-    .banner-track {
-      display: flex;
-      transition: transform 0.4s ease;
-    }
-    .banner-slide {
-      flex-shrink: 0;
-      width: 100%;
-    }
-
-    /* ── Dot indicators ── */
-    .dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      border: 1.5px solid #ededed;
-      background: transparent;
-      transition: all 0.3s;
-    }
-    .dot.active {
-      width: 18px;
-      border-radius: 9px;
-      background: #ededed;
-      border-color: #ededed;
-    }
-
-    /* ── Bottom nav active ── */
-    .nav-label-active { color: var(--primary-blue); }
-    .nav-label-inactive { color: var(--text-heading); }
-    .nav-icon-wrap-active {
-      background-color: rgba(18, 93, 205, 0.10);
-      border-radius: 16px;
-    }
-
-    /* ── Greeting time colour ── */
-    .greeting-sub { color: #999; }
-    .greeting-name { color: var(--primary-blue); }
-
-    /* ── Stats card ── */
-    .stats-card {
-      background: var(--white-pure);
-      border: 1px solid var(--border-light);
-      border-radius: 12px;
-    }
-
-    /* ── No-scrollbar ── */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  </style>
+        .modal-overlay {
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+            pointer-events: none;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen font-inter">
+    
+    <div class="relative w-full max-w-[430px] h-[100dvh] bg-[#f5f5f5] shadow-2xl flex flex-col overflow-hidden">
+        
+        <!-- Header Section (Top Nav + Revenue) -->
+        <div class="bg-[#e7ecf3] flex flex-col relative w-full h-[200px] shrink-0">
+            <!-- Top Nav -->
+            <div class="flex items-center justify-between px-4 py-3 h-[72px] shrink-0 text-[var(--text-heading)]">
+                <a href="EditProfile.html" class="w-[30px] h-[30px] bg-[#d9d9d9] rounded-full flex items-center justify-center hover:opacity-80 transition-opacity">
+                    <span class="text-[#125dcd] text-[14px]">fs</span>
+                </a>
+                <h1 class="text-[20px] font-medium leading-[28px] tracking-[0.04px]">Fabzia Vendor</h1>
+                <button class="w-6 h-6 flex items-center justify-center hover:text-[var(--primary-blue)] transition-colors">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Total Revenue Panel -->
+            <div class="px-[18px] mt-3 flex flex-col gap-[13px] absolute top-[83px] w-[294px]">
+                <div class="flex flex-col items-start gap-1">
+                    <p class="text-[14px] text-black font-inter tracking-[0.04px] leading-[1.5]">Total Revenue </p>
+                    <p class="text-[24px] font-semibold text-[var(--text-heading)] font-inter tracking-[0.04px] leading-[32px]">₹5,00,000</p>
+                </div>
+                
+                <div class="flex gap-5 w-full">
+                    <!-- This Week -->
+                    <div class="bg-[#f5f5f5] flex flex-col p-2 rounded-[8px] w-[125px] hover:shadow-md transition-shadow cursor-default">
+                        <p class="text-[10px] font-semibold text-black tracking-[-0.1px] font-inter">This Week</p>
+                        <p class="text-[16px] font-semibold text-[var(--text-heading)] font-inter leading-[28px]">₹5,00,000</p>
+                        <p class="text-[12px] text-[#3d3d3d] font-inter">1 Turf</p>
+                    </div>
+                    <!-- This Month -->
+                    <div class="bg-[#f5f5f5] flex flex-col p-2 rounded-[8px] w-[125px] hover:shadow-md transition-shadow cursor-default">
+                        <p class="text-[10px] font-semibold text-black tracking-[-0.1px] font-inter">This Month</p>
+                        <p class="text-[16px] font-semibold text-[var(--text-heading)] font-inter leading-[28px]">₹5,00,000</p>
+                        <p class="text-[12px] text-[#3d3d3d] font-inter">7 Turf</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div class="mobile-shell">
+        <!-- Scrollable Content Area -->
+        <div class="flex-1 overflow-y-auto no-scrollbar relative w-full mt-7">
 
-  <!-- ════════ STICKY TOP NAV ════════ -->
-  <header class="sticky top-0 z-40 bg-white border-b border-[var(--bg-container)]">
-    <div class="flex items-center justify-between px-4 h-[72px]">
+            <!-- Today's Bookings -->
+            <div class="px-4 pb-[80px]">
+                <h2 class="text-[16px] font-medium text-[var(--text-heading)] font-inter mb-5">Today’s Booking</h2>
+                
+                <div class="flex flex-col gap-4">
+                    <!-- Booking Card 1 -->
+                    <div class="bg-[var(--white-pure)] rounded-xl p-4 pr-[70px] shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-1">
+                        <!-- Right corner actions -->
+                        <div class="absolute right-4 top-3 bottom-0 pb-3 flex flex-col items-end justify-between">
+                            <button class="w-[24px] h-[24px] rounded-full flex items-center justify-center hover:bg-gray-100 relative" onclick="toggleMenu('menu-1')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-gray-700">
+                                    <circle cx="5" cy="12" r="2"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
+                                    <circle cx="19" cy="12" r="2"></circle>
+                                </svg>
+                            </button>
+                            <div id="menu-1" class="three-dots-menu absolute top-8 right-0 w-36 bg-white rounded-lg shadow-lg border border-[var(--border-light)] py-1 z-20">
+                                <button onclick="openEditModal('card-1')" class="w-full text-left px-4 py-2 text-[14px] text-[var(--text-heading)] hover:bg-gray-50 transition-colors">Edit</button>
+                                <button onclick="openCancelModal('card-1')" class="w-full text-left px-4 py-2 text-[14px] text-red-600 hover:bg-red-50 transition-colors">Cancel Booking</button>
+                            </div>
+                            <span class="bg-[#2c7a3f] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">Booked</span>
+                        </div>
 
-      <!-- Avatar initials -->
-      <div class="w-[30px] h-[30px] rounded-full bg-[#d9d9d9] flex items-center justify-center flex-shrink-0">
-        <span class="text-[var(--primary-blue)] text-[14px] font-normal leading-tight select-none">fs</span>
-      </div>
+                        <div class="flex justify-start items-start mb-1">
+                            <div class="text-[var(--primary-blue)] font-bold text-[14px] font-inter">12VB</div>
+                        </div>
 
-      <!-- App name -->
-      <span class="text-[var(--text-heading)] text-[20px] font-medium leading-7 tracking-[0.04px]">
-        Fabzia Vendor App
-      </span>
+                        <div class="flex justify-start items-center mb-1">
+                            <h3 class="text-[15px] font-semibold text-[var(--text-heading)] font-inter truncate pr-2">The Multi-Sports Turf (7v7)</h3>
+                        </div>
 
-      <!-- Notification bell -->
-      <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-50 transition-colors" aria-label="Notifications">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.37 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.64 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="var(--text-heading)"/>
-        </svg>
-      </button>
+                        <div class="text-[13px] text-[var(--text-body)] font-inter mb-3 flex items-center gap-1 flex-wrap pr-2">
+                            <span>Anand</span>
+                            <span class="text-[10px] text-gray-300">•</span>
+                            <span>12 Jan 2026</span>
+                            <span class="text-[10px] text-gray-300">•</span>
+                            <span>5-6pm</span>
+                        </div>
+
+                        <div class="border-t border-[var(--bg-container)] pt-3 flex justify-start items-center text-[13px] font-inter pr-2 gap-2">
+                            <span class="text-[var(--text-body)]">Paid/Total:</span>
+                            <span class="text-[var(--text-heading)] font-medium">₹<span class="advance-amt">200</span> / 1000</span>
+                        </div>
+                    </div>
+
+                    <!-- Booking Card 2 -->
+                    <div class="bg-[var(--white-pure)] rounded-xl p-4 pr-[70px] shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-2">
+                        <!-- Right corner actions -->
+                        <div class="absolute right-4 top-3 bottom-0 pb-3 flex flex-col items-end justify-between">
+                            <button class="w-[24px] h-[24px] rounded-full flex items-center justify-center hover:bg-gray-100 relative" onclick="toggleMenu('menu-2')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-gray-700">
+                                    <circle cx="5" cy="12" r="2"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
+                                    <circle cx="19" cy="12" r="2"></circle>
+                                </svg>
+                            </button>
+                            <div id="menu-2" class="three-dots-menu absolute top-8 right-0 w-36 bg-white rounded-lg shadow-lg border border-[var(--border-light)] py-1 z-20">
+                                <button onclick="openEditModal('card-2')" class="w-full text-left px-4 py-2 text-[14px] text-[var(--text-heading)] hover:bg-gray-50 transition-colors">Edit</button>
+                                <button onclick="openCancelModal('card-2')" class="w-full text-left px-4 py-2 text-[14px] text-red-600 hover:bg-red-50 transition-colors">Cancel Booking</button>
+                            </div>
+                            <span class="bg-[#2c7a3f] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">Booked</span>
+                        </div>
+
+                        <div class="flex justify-start items-start mb-1">
+                            <div class="text-[var(--primary-blue)] font-bold text-[14px] font-inter">15AC</div>
+                        </div>
+
+                        <div class="flex justify-start items-center mb-1">
+                            <h3 class="text-[15px] font-semibold text-[var(--text-heading)] font-inter truncate pr-2">Play Field Turf</h3>
+                        </div>
+
+                        <div class="text-[13px] text-[var(--text-body)] font-inter mb-3 flex items-center gap-1 flex-wrap pr-2">
+                            <span>Rahul</span>
+                            <span class="text-[10px] text-gray-300">•</span>
+                            <span>13 Jan 2026</span>
+                            <span class="text-[10px] text-gray-300">•</span>
+                            <span>6-7pm</span>
+                        </div>
+
+                        <div class="border-t border-[var(--bg-container)] pt-3 flex justify-start items-center text-[13px] font-inter pr-2 gap-2">
+                            <span class="text-[var(--text-body)]">Paid/Total:</span>
+                            <span class="text-[var(--text-heading)] font-medium">₹<span class="advance-amt">400</span> / 800</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW BOTTOM NAVIGATION (Home Active) -->
+        <nav class="absolute bottom-0 left-0 bg-white border-t border-[#d7d7d7] w-full z-40 h-[64px]">
+            <div class="w-full h-full flex items-center justify-between px-2">
+
+                <!-- Home -->
+                <a href="Home.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full cursor-pointer group">
+                    <div class="w-[56px] h-[32px] flex items-center justify-center rounded-[16px] transition-colors bg-[#125dcd]/10 text-[var(--primary-blue)]">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <path d="M12 3L4 9v12h5v-7h6v7h5V9z"/>
+                        </svg>
+                    </div>
+                    <span class="text-[12px] font-semibold text-[var(--primary-blue)] tracking-[0.5px]">Home</span>
+                </a>
+
+                <!-- Book -->
+                <a href="BookPage.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full cursor-pointer group">
+                    <div class="w-[56px] h-[32px] flex items-center justify-center rounded-[16px] group-hover:bg-gray-100 transition-colors text-[var(--text-heading)]">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22 10V6C22 4.9 21.1 4 20 4H4C2.9 4 2.01 4.9 2.01 6V10C3.11 10 4 10.9 4 12C4 13.1 3.11 14 2.01 14V18C2.01 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V14C20.9 14 20 13.1 20 12C20 10.9 22 10ZM11 15H9V13H11V15ZM11 11H9V9H11V11ZM15 15H13V13H15V15ZM15 11H13V9H15V11Z" />
+                        </svg>
+                    </div>
+                    <span class="text-[12px] font-semibold text-[var(--text-heading)] tracking-[0.5px]">Book</span>
+                </a>
+
+                <!-- More -->
+                <a href="More.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full cursor-pointer group">
+                    <div class="w-[56px] h-[32px] flex items-center justify-center rounded-[16px] group-hover:bg-gray-100 transition-colors text-[var(--text-heading)]">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <circle cx="5" cy="12" r="2"></circle>
+                            <circle cx="12" cy="12" r="2"></circle>
+                            <circle cx="19" cy="12" r="2"></circle>
+                        </svg>
+                    </div>
+                    <span class="text-[12px] font-semibold text-[var(--text-heading)] tracking-[0.5px]">More</span>
+                </a>
+
+                <!-- Profile -->
+                <a href="Profile.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full cursor-pointer group">
+                    <div class="w-[56px] h-[32px] flex items-center justify-center rounded-[16px] group-hover:bg-gray-100 transition-colors text-[var(--text-heading)]">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <span class="text-[12px] font-semibold text-[var(--text-heading)] tracking-[0.5px]">Profile</span>
+                </a>
+
+            </div>
+        </nav>
+        
+        <!-- Edit Paid Amount Bottom Sheet -->
+        <div id="editOverlay" class="fixed inset-0 bg-black/40 z-[60] opacity-0 pointer-events-none transition-opacity duration-300" onclick="closeEditModal()"></div>
+        <div id="editSheet" class="fixed bottom-0 left-1/2 -translate-x-1/2 translate-y-[100%] transition-transform duration-300 ease-out w-full max-w-[430px] bg-white rounded-t-[16px] z-[70] flex flex-col p-5">
+            <!-- Header -->
+            <div class="flex justify-between items-start w-full mb-1">
+                <h3 id="editTurfName" class="text-[20px] font-semibold text-[var(--text-heading)] font-inter leading-[28px]">Fabzia Arena</h3>
+                <button onclick="closeEditModal()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <p id="editSlotDetails" class="text-[14px] text-[#4d4d4d] font-inter mb-6">12 Jan 2026 • 5-6pm • 5v5</p>
+
+            <label class="block text-[14px] text-[var(--text-heading)] mb-2 font-semibold font-inter">Change Paid Amount</label>
+            <div class="relative flex items-center bg-white border border-[#d7d7d7] rounded-[8px] h-[52px] px-3 mb-6 focus-within:border-[var(--primary-blue)] transition-colors">
+                <span class="text-[16px] text-[#3d3d3d] font-inter mr-2">₹</span>
+                <input type="number" id="advanceInput" inputmode="numeric" pattern="[0-9]*" class="flex-1 w-full bg-transparent outline-none font-semibold font-inter text-[16px] text-[#4d4d4d]">
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="closeEditModal()" class="flex-1 h-[52px] rounded-[8px] border border-[#a3a3a3] text-[var(--text-heading)] font-medium hover:bg-gray-50 transition-colors font-inter text-[16px]">
+                    Back
+                </button>
+                <button onclick="saveEdit()" class="flex-1 h-[52px] rounded-[8px] bg-[#125dcd] text-white font-semibold hover:bg-blue-700 transition-colors font-inter text-[16px]">
+                    Update
+                </button>
+            </div>
+        </div>
+
+        <!-- Cancel Confirmation Modal -->
+        <div id="cancelModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 hidden opacity-0 transition-opacity duration-300 px-4">
+            <div class="bg-white rounded-[16px] p-5 w-[100%] max-w-[340px] shadow-xl transform scale-95 transition-transform duration-300 ease-out" id="cancelModalContent">
+                <div class="flex justify-between items-start mb-1">
+                    <h3 class="text-[20px] font-semibold text-[var(--text-heading)] font-inter leading-[28px]">Are you Sure you want to<br>Cancel Slot?</h3>
+                    <button onclick="closeCancelModal()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <p id="cancelSlotDetails" class="text-[14px] text-[#4d4d4d] font-inter mb-6">12 Jan 2026 • 5-6pm • 5v5</p>
+                <div class="flex gap-2">
+                    <button onclick="closeCancelModal()" class="flex-1 h-[52px] rounded-[8px] border border-[#a3a3a3] text-[var(--text-heading)] font-medium hover:bg-gray-50 transition-colors font-inter text-[16px]">
+                        Back
+                    </button>
+                    <button onclick="confirmCancel()" class="flex-1 h-[52px] rounded-[8px] bg-[#b3261e] text-white font-semibold hover:bg-red-700 transition-colors font-inter text-[16px]">
+                        Cancel Slot
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toaster -->
+        <div id="toast" class="bg-[var(--primary-blue-dark)] text-white px-6 py-3 rounded-lg text-[14px] font-medium flex items-center gap-2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <span id="toastMsg">Slot has been Cancelled Successfully</span>
+        </div>
 
     </div>
-  </header>
 
-  <!-- ════════ SCROLLABLE MAIN ════════ -->
-  <main class="main-scroll no-scrollbar">
+    <!-- Scripts -->
+    <script>
+        let currentCardId = null;
 
-    <!-- ── Greeting + Stats ── -->
-    <section class="px-4 pt-[18px] pb-4 flex flex-col gap-4">
+        // Toggle Three Dots Menu
+        function toggleMenu(menuId) {
+            document.querySelectorAll('.three-dots-menu').forEach(menu => {
+                if(menu.id !== menuId) menu.classList.remove('show');
+            });
+            const menu = document.getElementById(menuId);
+            if(menu) menu.classList.toggle('show');
+        }
 
-      <!-- Greeting -->
-      <div class="leading-none">
-        <p class="greeting-sub text-[24px] font-medium leading-[32px] tracking-[0.04px]">Good Afternoon,&nbsp;</p>
-        <p class="greeting-name text-[24px] font-semibold leading-[32px] tracking-[0.04px]">Anand!</p>
-      </div>
+        // Close dropdowns if clicked outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.booking-card')) {
+                document.querySelectorAll('.three-dots-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
 
-      <!-- Stats card -->
-      <div class="stats-card flex items-center justify-between px-5 py-5">
+        // Helper to extract turf info from card
+        function extractTurfInfo(cardId) {
+            const card = document.querySelector(`[data-id="${cardId}"]`);
+            if (!card) return {};
+            
+            const nameElem = card.querySelector('h3');
+            const fullTitle = nameElem ? nameElem.innerText : 'Turf';
+            const turfName = fullTitle.split('(')[0].trim();
+            const squadSizeMatch = fullTitle.match(/\(([^)]+)\)/);
+            const squadSize = squadSizeMatch ? squadSizeMatch[1] : '5v5';
 
-        <!-- Left: numbers -->
-        <div class="flex flex-col gap-1">
-          <p class="text-[var(--text-body)] text-[14px] font-normal leading-[21px] tracking-[0.04px]">Total Revenue</p>
-          <p class="text-[var(--text-heading)] text-[24px] font-semibold leading-[32px]">₹5,00,000</p>
-          <p class="text-[var(--text-body)] text-[14px] font-normal leading-[21px] tracking-[0.04px]">24 Turfs</p>
-        </div>
+            const spans = card.querySelectorAll('.text-\\[13px\\] span');
+            let dateStr = '12 Jan 2026';
+            let timeStr = '5-6pm';
+            if(spans.length >= 5) {
+                dateStr = spans[2].innerText;
+                timeStr = spans[4].innerText;
+            }
 
-        <!-- Right: View Details link -->
-        <a href="Dashboard.html" class="text-[var(--text-body)] text-[14px] font-normal underline leading-[21px] tracking-[0.04px] hover:text-[var(--primary-blue)] transition-colors">
-          View Details
-        </a>
+            return {
+                turfName,
+                details: `${dateStr}  •  ${timeStr}  •  ${squadSize}`
+            };
+        }
 
-      </div>
+        // Modals Logic
+        function openEditModal(cardId) {
+            currentCardId = cardId;
+            const card = document.querySelector(`[data-id="${cardId}"]`);
+            if (card) {
+                const menu = card.querySelector('.three-dots-menu');
+                if(menu) menu.classList.remove('show');
+            }
+            
+            const turfInfo = extractTurfInfo(cardId);
+            const turfNameElem = document.getElementById('editTurfName');
+            if(turfNameElem) turfNameElem.innerText = turfInfo.turfName || 'Turf';
+            const detailsElem = document.getElementById('editSlotDetails');
+            if(detailsElem) detailsElem.innerText = turfInfo.details || '';
 
-    </section>
+            const amtBox = document.querySelector(`[data-id="${cardId}"] .advance-amt`);
+            const inputElem = document.getElementById('advanceInput');
+            if (amtBox && inputElem) {
+                inputElem.value = amtBox.innerText;
+            }
 
-    <!-- ── Hero Banner Carousel ── -->
-    <section class="px-4 pb-4">
-      <div class="relative rounded-lg overflow-hidden" style="height: 185px;" id="banner-wrapper">
+            const overlay = document.getElementById('editOverlay');
+            const sheet = document.getElementById('editSheet');
+            
+            if(overlay) {
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                overlay.classList.add('opacity-100', 'pointer-events-auto');
+            }
+            if(sheet) {
+                sheet.classList.remove('translate-y-[100%]');
+                sheet.classList.add('translate-y-0');
+            }
+        }
 
-        <!-- Track -->
-        <div class="banner-track h-full" id="banner-track">
+        function closeEditModal() {
+            const overlay = document.getElementById('editOverlay');
+            const sheet = document.getElementById('editSheet');
+            
+            if(overlay) {
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                overlay.classList.remove('opacity-100', 'pointer-events-auto');
+            }
+            if(sheet) {
+                sheet.classList.add('translate-y-[100%]');
+                sheet.classList.remove('translate-y-0');
+            }
+        }
 
-          <!-- Slide 1 -->
-          <div class="banner-slide h-full">
-            <div class="h-full w-full rounded-lg overflow-hidden relative"
-                 style="background: linear-gradient(135deg, #1a4fa0 0%, #125dcd 50%, #3b82f6 100%);">
-              <div class="absolute inset-0 flex flex-col justify-center px-6">
-                <p class="text-white text-[11px] font-semibold uppercase tracking-widest mb-1 opacity-80">Featured</p>
-                <p class="text-white text-[20px] font-bold leading-tight mb-1">Manage Your Turfs</p>
-                <p class="text-white text-[13px] font-normal opacity-80 leading-snug">All your bookings at a glance</p>
-              </div>
-              <!-- Decorative circles -->
-              <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white opacity-[0.05]"></div>
-              <div class="absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-white opacity-[0.07]"></div>
-            </div>
-          </div>
+        function saveEdit() {
+            const newValElem = document.getElementById('advanceInput');
+            const newVal = newValElem ? newValElem.value : null;
+            if(newVal && currentCardId) {
+                const advanceAmt = document.querySelector(`[data-id="${currentCardId}"] .advance-amt`);
+                if(advanceAmt) advanceAmt.innerText = newVal;
+            }
+            closeEditModal();
+        }
 
-          <!-- Slide 2 -->
-          <div class="banner-slide h-full">
-            <div class="h-full w-full rounded-lg overflow-hidden relative"
-                 style="background: linear-gradient(135deg, #065f46 0%, #059669 100%);">
-              <div class="absolute inset-0 flex flex-col justify-center px-6">
-                <p class="text-white text-[11px] font-semibold uppercase tracking-widest mb-1 opacity-80">Tip</p>
-                <p class="text-white text-[20px] font-bold leading-tight mb-1">Grow Your Revenue</p>
-                <p class="text-white text-[13px] font-normal opacity-80 leading-snug">Enable online payments today</p>
-              </div>
-              <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white opacity-[0.05]"></div>
-              <div class="absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-white opacity-[0.07]"></div>
-            </div>
-          </div>
+        function openCancelModal(cardId) {
+            currentCardId = cardId;
+            const card = document.querySelector(`[data-id="${cardId}"]`);
+            if (card) {
+                const menu = card.querySelector('.three-dots-menu');
+                if(menu) menu.classList.remove('show');
+            }
+            
+            const turfInfo = extractTurfInfo(cardId);
+            const cancelSlotDetails = document.getElementById('cancelSlotDetails');
+            if(cancelSlotDetails) cancelSlotDetails.innerText = turfInfo.details || '';
 
-          <!-- Slide 3 -->
-          <div class="banner-slide h-full">
-            <div class="h-full w-full rounded-lg overflow-hidden relative"
-                 style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);">
-              <div class="absolute inset-0 flex flex-col justify-center px-6">
-                <p class="text-white text-[11px] font-semibold uppercase tracking-widest mb-1 opacity-80">New</p>
-                <p class="text-white text-[20px] font-bold leading-tight mb-1">Download Reports</p>
-                <p class="text-white text-[13px] font-normal opacity-80 leading-snug">Export your booking summaries</p>
-              </div>
-              <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white opacity-[0.05]"></div>
-              <div class="absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-white opacity-[0.07]"></div>
-            </div>
-          </div>
+            const modal = document.getElementById('cancelModal');
+            const content = document.getElementById('cancelModalContent');
+            if(modal && content) {
+                modal.classList.remove('hidden');
+                void modal.offsetWidth;
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }
+        }
 
-        </div>
+        function closeCancelModal() {
+            const modal = document.getElementById('cancelModal');
+            const content = document.getElementById('cancelModalContent');
+            if(modal && content) {
+                modal.classList.add('opacity-0');
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
 
-        <!-- Dot indicators -->
-        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1" id="banner-dots">
-          <div class="dot active" data-idx="0"></div>
-          <div class="dot" data-idx="1"></div>
-          <div class="dot" data-idx="2"></div>
-        </div>
+        function confirmCancel() {
+            closeCancelModal();
+            if(currentCardId) {
+                const card = document.querySelector(`[data-id="${currentCardId}"]`);
+                if(card) {
+                    card.style.transition = "transform 0.3s, opacity 0.3s";
+                    card.style.transform = "translateX(-20px)";
+                    card.style.opacity = "0";
+                    setTimeout(() => {
+                        card.remove();
+                        showToaster();
+                    }, 300);
+                }
+            }
+        }
 
-      </div>
-    </section>
-
-    <!-- ── Today's Bookings ── -->
-    <section class="px-4 pb-6">
-
-      <!-- Section header -->
-      <div class="border-b border-[var(--border-light)] mb-3">
-        <div class="flex items-center h-12">
-          <h2 class="text-[var(--text-heading)] text-[18px] font-medium leading-7">Today's Booking</h2>
-        </div>
-      </div>
-
-      <!-- Booking cards list -->
-      <div class="flex flex-col gap-2" id="bookings-list">
-
-        <!-- Card (repeated via JS below, with static fallback) -->
-        <!-- JS-rendered below -->
-
-      </div>
-
-    </section>
-
-  </main>
-
-  <!-- ════════ FIXED BOTTOM NAV ════════ -->
-  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[var(--bg-container)] flex justify-center">
-    <div class="w-full max-w-[430px] h-16 flex items-center justify-between px-2">
-
-      <!-- Home (active) -->
-      <a href="Home.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full">
-        <div class="w-14 h-8 flex items-center justify-center nav-icon-wrap-active">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2.98416C12.1774 2.98416 12.349 3.04727 12.4844 3.1619L19.9844 9.52518H19.9854C20.0683 9.59554 20.1349 9.68334 20.1807 9.78201C20.2264 9.88075 20.25 9.98864 20.25 10.0974V19.4998C20.25 19.6986 20.1709 19.8894 20.0303 20.0301C19.8896 20.1707 19.6989 20.2498 19.5 20.2498H14.75V13.2498H9.25V20.2498H4.5C4.30109 20.2498 4.11038 20.1707 3.96973 20.0301C3.82914 19.8894 3.75 19.6986 3.75 19.4998V10.0974L3.75488 10.0154C3.76373 9.93481 3.78512 9.85592 3.81934 9.78201C3.86505 9.68334 3.93173 9.59554 4.01465 9.52518H4.01562L11.5156 3.1619L11.5146 3.16092C11.6161 3.07498 11.7388 3.01899 11.8682 2.99588L12 2.98416Z" fill="var(--primary-blue)" stroke="var(--primary-blue)" stroke-width="0.5"/>
-          </svg>
-        </div>
-        <span class="text-[12px] font-semibold nav-label-active tracking-[0.5px]">Home</span>
-      </a>
-
-      <!-- Booking -->
-      <a href="Booking.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full">
-        <div class="w-14 h-8 flex items-center justify-center">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="3" y="4" width="18" height="18" rx="2" stroke="var(--text-heading)" stroke-width="1.5"/>
-            <path d="M16 2V6M8 2V6M3 10H21" stroke="var(--text-heading)" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M8 14H16M8 17H13" stroke="var(--text-heading)" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <span class="text-[12px] font-semibold nav-label-inactive tracking-[0.5px]">Booking</span>
-      </a>
-
-      <!-- Download Report -->
-      <a href="DownloadReport.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full">
-        <div class="w-14 h-8 flex items-center justify-center">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 3V15M12 15L8 11M12 15L16 11" stroke="var(--text-heading)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M3 17V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V17" stroke="var(--text-heading)" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <span class="text-[12px] font-semibold nav-label-inactive tracking-[0.5px]">Reports</span>
-      </a>
-
-      <!-- More -->
-      <a href="More.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full">
-        <div class="w-14 h-8 flex items-center justify-center">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="5" cy="12" r="1.5" fill="var(--text-heading)"/>
-            <circle cx="12" cy="12" r="1.5" fill="var(--text-heading)"/>
-            <circle cx="19" cy="12" r="1.5" fill="var(--text-heading)"/>
-          </svg>
-        </div>
-        <span class="text-[12px] font-semibold nav-label-inactive tracking-[0.5px]">More</span>
-      </a>
-
-    </div>
-  </nav>
-
-</div>
-
-<!-- ════════ Scripts ════════ -->
-<script>
-  /* ─────────────────────────────────────
-     Greeting  (time-aware)
-  ───────────────────────────────────── */
-  (function () {
-    const h = new Date().getHours();
-    let greeting = 'Good Morning';
-    if (h >= 12 && h < 17) greeting = 'Good Afternoon';
-    else if (h >= 17)      greeting = 'Good Evening';
-
-    const greetEl = document.querySelector('.greeting-sub');
-    if (greetEl) greetEl.textContent = greeting + ',\u00A0';
-  })();
-
-  /* ─────────────────────────────────────
-     Booking data
-  ───────────────────────────────────── */
-  const todayBookings = [
-    {
-      id: 'B001',
-      turf: 'The Multi-Sports Turf (7v7)',
-      date: '16 Mar 2026',
-      time: '6:00 – 7:00 AM',
-      status: 'booked',
-    },
-    {
-      id: 'B002',
-      turf: 'Ultimate Powerplay Turf',
-      date: '16 Mar 2026',
-      time: '8:00 – 9:00 AM',
-      status: 'booked',
-    },
-    {
-      id: 'B003',
-      turf: 'Battlefield Delhi Vaishali Nagar',
-      date: '16 Mar 2026',
-      time: '10:00 – 11:30 AM',
-      status: 'payment-due',
-    },
-    {
-      id: 'B004',
-      turf: 'Kes Turf',
-      date: '16 Mar 2026',
-      time: '2:00 – 3:00 PM',
-      status: 'booked',
-    },
-    {
-      id: 'B005',
-      turf: 'Strike Hill Side Turf',
-      date: '16 Mar 2026',
-      time: '5:00 – 6:30 PM',
-      status: 'booked',
-    },
-  ];
-
-  /* ─────────────────────────────────────
-     Render booking cards
-  ───────────────────────────────────── */
-  function getBorderColor(status) {
-    if (status === 'payment-due') return 'var(--warning)';
-    if (status === 'cancelled')   return 'var(--error-red)';
-    return 'var(--green)';
-  }
-
-  function renderBookings() {
-    const list = document.getElementById('bookings-list');
-    if (!list) return;
-
-    if (todayBookings.length === 0) {
-      list.innerHTML = `
-        <div class="flex flex-col items-center justify-center py-16 gap-3 text-center">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="4" width="18" height="18" rx="2" stroke="var(--text-placeholder)" stroke-width="1.5"/>
-            <path d="M16 2V6M8 2V6M3 10H21" stroke="var(--text-placeholder)" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <p class="text-[var(--text-body)] text-sm">No bookings for today.</p>
-        </div>`;
-      return;
-    }
-
-    list.innerHTML = todayBookings.map(b => `
-      <a href="Booking.html"
-         class="bg-white rounded-[4px] flex items-center justify-between px-4 py-3 hover:shadow-sm transition-shadow"
-         style="border-left: 5px solid ${getBorderColor(b.status)};"
-         aria-label="Booking ${b.id}"
-      >
-        <div class="flex flex-col gap-1 min-w-0 flex-1 pr-3">
-          <p class="text-[var(--text-heading)] text-[16px] font-semibold leading-7 truncate">${b.turf}</p>
-          <p class="text-[var(--text-body)] text-[14px] font-normal leading-[21px] tracking-[0.04px]">${b.date}\u00A0\u2022\u00A0${b.time}</p>
-        </div>
-        <!-- Chevron right -->
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" flex-shrink="0">
-          <path d="M9 18L15 12L9 6" stroke="var(--text-body)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-    `).join('');
-  }
-
-  renderBookings();
-
-  /* ─────────────────────────────────────
-     Banner carousel (auto-slide + dots)
-  ───────────────────────────────────── */
-  (function () {
-    const track = document.getElementById('banner-track');
-    const dots  = document.querySelectorAll('#banner-dots .dot');
-    if (!track || !dots.length) return;
-
-    const total = dots.length;
-    let current = 0;
-    let timer;
-
-    function goTo(idx) {
-      current = idx;
-      track.style.transform = `translateX(-${current * 100}%)`;
-      dots.forEach((d, i) => {
-        d.classList.toggle('active', i === current);
-      });
-    }
-
-    function next() { goTo((current + 1) % total); }
-
-    function startTimer() {
-      clearInterval(timer);
-      timer = setInterval(next, 4000);
-    }
-
-    // Dot click
-    dots.forEach(d => {
-      d.addEventListener('click', () => {
-        goTo(parseInt(d.dataset.idx));
-        startTimer();
-      });
-    });
-
-    // Swipe support
-    let startX = 0;
-    const wrapper = document.getElementById('banner-wrapper');
-    wrapper.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
-    wrapper.addEventListener('touchend', e => {
-      const dx = e.changedTouches[0].clientX - startX;
-      if (Math.abs(dx) > 40) {
-        goTo(dx < 0 ? (current + 1) % total : (current - 1 + total) % total);
-        startTimer();
-      }
-    });
-
-    startTimer();
-  })();
-</script>
-
+        function showToaster() {
+            const toast = document.getElementById('toast');
+            if(toast) {
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+    </script>
 </body>
 </html>

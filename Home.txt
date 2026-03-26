@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Home - Fabzia Vendor App</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Utility CSS (design tokens + base styles) -->
+  <link rel="stylesheet" href="utility.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'primary-blue':     'var(--primary-blue)',
+            'text-heading':     'var(--text-heading)',
+            'text-body':        'var(--text-body)',
+            'text-placeholder': 'var(--text-placeholder)',
+            'border-light':     'var(--border-light)',
+            'bg-light':         'var(--bg-light)',
+            'bg-soft':          'var(--bg-soft)',
+            'bg-container':     'var(--bg-container)',
+            'green':            'var(--green)',
+          },
+          fontFamily: {
+            lato: ['Lato', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ── Base ── */
+    html, body {
+      height: 100%;
+      font-family: 'Lato', sans-serif;
+      background-color: var(--bg-light);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── Mobile shell ── */
+    .mobile-shell {
+      max-width: 430px;
+      min-height: 100vh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-light);
+      position: relative;
+    }
+
+    /* ── Main scrollable area (between sticky top-nav & fixed bottom-nav) ── */
+    .main-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 80px; /* room for fixed bottom nav */
+    }
+
+    /* ── Booking card left border ── */
+    .booking-card {
+      border-left: 5px solid var(--green);
+    }
+
+    /* ── Banner carousel ── */
+    .banner-track {
+      display: flex;
+      transition: transform 0.4s ease;
+    }
+    .banner-slide {
+      flex-shrink: 0;
+      width: 100%;
+    }
+
+    /* ── Dot indicators ── */
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 1.5px solid #ededed;
+      background: transparent;
+      transition: all 0.3s;
+    }
+    .dot.active {
+      width: 18px;
+      border-radius: 9px;
+      background: #ededed;
+      border-color: #ededed;
+    }
+
+    /* ── Bottom nav active ── */
+    .nav-label-active { color: var(--primary-blue); }
+    .nav-label-inactive { color: var(--text-heading); }
+    .nav-icon-wrap-active {
+      background-color: rgba(18, 93, 205, 0.10);
+      border-radius: 16px;
+    }
+
+    /* ── Greeting time colour ── */
+    .greeting-sub { color: #999; }
+    .greeting-name { color: var(--primary-blue); }
+
+    /* ── Stats card ── */
+    .stats-card {
+      background: var(--white-pure);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+    }
+
+    /* ── No-scrollbar ── */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body>
+
+<div class="mobile-shell">
+
+  <!-- ════════ STICKY TOP NAV ════════ -->
+  <header class="sticky top-0 z-40 bg-white border-b border-[var(--bg-container)]">
+    <div class="flex items-center justify-between px-4 h-[72px]">
+
+      <!-- Avatar initials -->
+      <div class="w-[30px] h-[30px] rounded-full bg-[#d9d9d9] flex items-center justify-center flex-shrink-0">
+        <span class="text-[var(--primary-blue)] text-[14px] font-normal leading-tight select-none">fs</span>
+      </div>
+
+      <!-- App name -->
+      <span class="text-[var(--text-heading)] text-[20px] font-medium leading-7 tracking-[0.04px]">
+        Fabzia Vendor App
+      </span>
+
+      <!-- Notification bell -->
+      <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-50 transition-colors" aria-label="Notifications">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.37 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.64 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="var(--text-heading)"/>
+        </svg>
+      </button>
+
+    </div>
+  </header>
+
+  <!-- ════════ SCROLLABLE MAIN ════════ -->
+  <main class="main-scroll no-scrollbar">
+
+    <!-- ── Greeting + Stats ── -->
+    <section class="px-4 pt-[18px] pb-4 flex flex-col gap-4">
+
+      <!-- Greeting -->
+      <div class="leading-none">
+        <p class="greeting-sub text-[24px] font-medium leading-[32px] tracking-[0.04px]">Good Afternoon,&nbsp;</p>
+        <p class="greeting-name text-[24px] font-semibold leading-[32px] tracking-[0.04px]">Anand!</p>
+      </div>
+
+      <!-- Stats card -->
+      <div class="stats-card flex items-center justify-between px-5 py-5">
+
+        <!-- Left: numbers -->
+        <div class="flex flex-col gap-1">
+          <p class="text-[var(--text-body)] text-[14px] font-normal leading-[21px] tracking-[0.04px]">Total Revenue</p>
+          <p class="text-[var(--text-heading)] text-[24px] font-semibold leading-[32px]">₹5,00,000</p>
+          <p class="text-[var(--text-body)] text-[14px] font-normal leading-[21px] tracking-[0.04px]">24 Turfs</p>
+        </div>
+
+        <!-- Right: View Details link -->
+        <a href="Dashboard.html" class="text-[var(--text-body)] text-[14px] font-normal underline leading-[21px] tracking-[0.04px] hover:text-[var(--primary-blue)] transition-colors">
+          View Details
+        </a>
+
+      </div>
+
+    </section>
+
+    <!-- ── Hero Banner Carousel ── -->
+    <section class="px-4 pb-4">
+      <div class="relative rounded-lg overflow-hidden" style="height: 185px;" id="banner-wrapper">
+
+        <!-- Track -->
+        <div class="banner-track h-full" id="banner-track">
+
+          <!-- Slide 1 -->
+          <div class="banner-slide h-full">
+            <div class="h-full w-full rounded-lg overflow-hidden relative"
+                 style="background: linear-gradient(135deg, #1a4fa0 0%, #125dcd 50%, #3b82f6 100%);">
+              <div class="absolute inset-0 flex flex-col justify-center px-6">
+                <p class="text-white text-[11px] font-semibold uppercase tracking-widest mb-1 opacity-80">Featured</p>
+                <p class="text-white text-[20px] font-bold leading-tight mb-1">Manage Your Turfs</p>
+                <p class="text-white text-[13px] font-normal opacity-80 leading-snug">All your bookings at a glance</p>
+              </div>
+              <!-- Decorative circles -->
+              <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white opacity-[0.05]"></div>
+              <div class="absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-white opacity-[0.07]"></div>
+            </div>
+          </div>
+
+          <!-- Slide 2 -->
+          <div class="banner-slide h-full">
+            <div class="h-full w-full rounded-lg overflow-hidden relative"
+                 style="background: linear-gradient(135deg, #065f46 0%, #059669 100%);">
+              <div class="absolute inset-0 flex flex-col justify-center px-6">
+                <p class="text-white text-[11px] font-semibold uppercase tracking-widest mb-1 opacity-80">Tip</p>
+                <p class="text-white text-[20px] font-bold leading-tight mb-1">Grow Your Revenue</p>
+                <p class="text-white text-[13px] font-normal opacity-80 leading-snug">Enable online payments today</p>
+              </div>
+              <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white opacity-[0.05]"></div>
+              <div class="absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-white opacity-[0.07]"></div>
+            </div>
+          </div>
+
+          <!-- Slide 3 -->
+          <div class="banner-slide h-full">
+            <div class="h-full w-full rounded-lg overflow-hidden relative"
+                 style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);">
+              <div class="absolute inset-0 flex flex-col justify-center px-6">
+                <p class="text-white text-[11px] font-semibold uppercase tracking-widest mb-1 opacity-80">New</p>
+                <p class="text-white text-[20px] font-bold leading-tight mb-1">Download Reports</p>
+                <p class="text-white text-[13px] font-normal opacity-80 leading-snug">Export your booking summaries</p>
+              </div>
+              <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white opacity-[0.05]"></div>
+              <div class="absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-white opacity-[0.07]"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Dot indicators -->
+        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1" id="banner-dots">
+          <div class="dot active" data-idx="0"></div>
+          <div class="dot" data-idx="1"></div>
+          <div class="dot" data-idx="2"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Today's Bookings ── -->
+    <section class="px-4 pb-6">
+
+      <!-- Section header -->
+      <div class="border-b border-[var(--border-light)] mb-3">
+        <div class="flex items-center h-12">
+          <h2 class="text-[var(--text-heading)] text-[18px] font-medium leading-7">Today's Booking</h2>
+        </div>
+      </div>
+
+      <!-- Booking cards list -->
+      <div class="flex flex-col gap-2" id="bookings-list">
+
+        <!-- Card (repeated via JS below, with static fallback) -->
+        <!-- JS-rendered below -->
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ════════ FIXED BOTTOM NAV ════════ -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[var(--bg-container)] flex justify-center">
+    <div class="w-full max-w-[430px] h-16 flex items-center justify-between px-2">
+
+      <!-- Home (active) -->
+      <a href="Home.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full">
+        <div class="w-14 h-8 flex items-center justify-center nav-icon-wrap-active">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.98416C12.1774 2.98416 12.349 3.04727 12.4844 3.1619L19.9844 9.52518H19.9854C20.0683 9.59554 20.1349 9.68334 20.1807 9.78201C20.2264 9.88075 20.25 9.98864 20.25 10.0974V19.4998C20.25 19.6986 20.1709 19.8894 20.0303 20.0301C19.8896 20.1707 19.6989 20.2498 19.5 20.2498H14.75V13.2498H9.25V20.2498H4.5C4.30109 20.2498 4.11038 20.1707 3.96973 20.0301C3.82914 19.8894 3.75 19.6986 3.75 19.4998V10.0974L3.75488 10.0154C3.76373 9.93481 3.78512 9.85592 3.81934 9.78201C3.86505 9.68334 3.93173 9.59554 4.01465 9.52518H4.01562L11.5156 3.1619L11.5146 3.16092C11.6161 3.07498 11.7388 3.01899 11.8682 2.99588L12 2.98416Z" fill="var(--primary-blue)" stroke="var(--primary-blue)" stroke-width="0.5"/>
+          </svg>
+        </div>
+        <span class="text-[12px] font-semibold nav-label-active tracking-[0.5px]">Home</span>
+      </a>
+
+      <!-- Booking -->
+      <a href="Booking.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full">
+        <div class="w-14 h-8 flex items-center justify-center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke="var(--text-heading)" stroke-width="1.5"/>
+            <path d="M16 2V6M8 2V6M3 10H21" stroke="var(--text-heading)" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8 14H16M8 17H13" stroke="var(--text-heading)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="text-[12px] font-semibold nav-label-inactive tracking-[0.5px]">Booking</span>
+      </a>
+
+      <!-- Download Report -->
+      <a href="DownloadReport.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full">
+        <div class="w-14 h-8 flex items-center justify-center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3V15M12 15L8 11M12 15L16 11" stroke="var(--text-heading)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 17V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V17" stroke="var(--text-heading)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="text-[12px] font-semibold nav-label-inactive tracking-[0.5px]">Reports</span>
+      </a>
+
+      <!-- More -->
+      <a href="More.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full">
+        <div class="w-14 h-8 flex items-center justify-center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="5" cy="12" r="1.5" fill="var(--text-heading)"/>
+            <circle cx="12" cy="12" r="1.5" fill="var(--text-heading)"/>
+            <circle cx="19" cy="12" r="1.5" fill="var(--text-heading)"/>
+          </svg>
+        </div>
+        <span class="text-[12px] font-semibold nav-label-inactive tracking-[0.5px]">More</span>
+      </a>
+
+    </div>
+  </nav>
+
+</div>
+
+<!-- ════════ Scripts ════════ -->
+<script>
+  /* ─────────────────────────────────────
+     Greeting  (time-aware)
+  ───────────────────────────────────── */
+  (function () {
+    const h = new Date().getHours();
+    let greeting = 'Good Morning';
+    if (h >= 12 && h < 17) greeting = 'Good Afternoon';
+    else if (h >= 17)      greeting = 'Good Evening';
+
+    const greetEl = document.querySelector('.greeting-sub');
+    if (greetEl) greetEl.textContent = greeting + ',\u00A0';
+  })();
+
+  /* ─────────────────────────────────────
+     Booking data
+  ───────────────────────────────────── */
+  const todayBookings = [
+    {
+      id: 'B001',
+      turf: 'The Multi-Sports Turf (7v7)',
+      date: '16 Mar 2026',
+      time: '6:00 – 7:00 AM',
+      status: 'booked',
+    },
+    {
+      id: 'B002',
+      turf: 'Ultimate Powerplay Turf',
+      date: '16 Mar 2026',
+      time: '8:00 – 9:00 AM',
+      status: 'booked',
+    },
+    {
+      id: 'B003',
+      turf: 'Battlefield Delhi Vaishali Nagar',
+      date: '16 Mar 2026',
+      time: '10:00 – 11:30 AM',
+      status: 'payment-due',
+    },
+    {
+      id: 'B004',
+      turf: 'Kes Turf',
+      date: '16 Mar 2026',
+      time: '2:00 – 3:00 PM',
+      status: 'booked',
+    },
+    {
+      id: 'B005',
+      turf: 'Strike Hill Side Turf',
+      date: '16 Mar 2026',
+      time: '5:00 – 6:30 PM',
+      status: 'booked',
+    },
+  ];
+
+  /* ─────────────────────────────────────
+     Render booking cards
+  ───────────────────────────────────── */
+  function getBorderColor(status) {
+    if (status === 'payment-due') return 'var(--warning)';
+    if (status === 'cancelled')   return 'var(--error-red)';
+    return 'var(--green)';
+  }
+
+  function renderBookings() {
+    const list = document.getElementById('bookings-list');
+    if (!list) return;
+
+    if (todayBookings.length === 0) {
+      list.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-16 gap-3 text-center">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke="var(--text-placeholder)" stroke-width="1.5"/>
+            <path d="M16 2V6M8 2V6M3 10H21" stroke="var(--text-placeholder)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <p class="text-[var(--text-body)] text-sm">No bookings for today.</p>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = todayBookings.map(b => `
+      <a href="Booking.html"
+         class="bg-white rounded-[4px] flex items-center justify-between px-4 py-3 hover:shadow-sm transition-shadow"
+         style="border-left: 5px solid ${getBorderColor(b.status)};"
+         aria-label="Booking ${b.id}"
+      >
+        <div class="flex flex-col gap-1 min-w-0 flex-1 pr-3">
+          <p class="text-[var(--text-heading)] text-[16px] font-semibold leading-7 truncate">${b.turf}</p>
+          <p class="text-[var(--text-body)] text-[14px] font-normal leading-[21px] tracking-[0.04px]">${b.date}\u00A0\u2022\u00A0${b.time}</p>
+        </div>
+        <!-- Chevron right -->
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" flex-shrink="0">
+          <path d="M9 18L15 12L9 6" stroke="var(--text-body)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    `).join('');
+  }
+
+  renderBookings();
+
+  /* ─────────────────────────────────────
+     Banner carousel (auto-slide + dots)
+  ───────────────────────────────────── */
+  (function () {
+    const track = document.getElementById('banner-track');
+    const dots  = document.querySelectorAll('#banner-dots .dot');
+    if (!track || !dots.length) return;
+
+    const total = dots.length;
+    let current = 0;
+    let timer;
+
+    function goTo(idx) {
+      current = idx;
+      track.style.transform = `translateX(-${current * 100}%)`;
+      dots.forEach((d, i) => {
+        d.classList.toggle('active', i === current);
+      });
+    }
+
+    function next() { goTo((current + 1) % total); }
+
+    function startTimer() {
+      clearInterval(timer);
+      timer = setInterval(next, 4000);
+    }
+
+    // Dot click
+    dots.forEach(d => {
+      d.addEventListener('click', () => {
+        goTo(parseInt(d.dataset.idx));
+        startTimer();
+      });
+    });
+
+    // Swipe support
+    let startX = 0;
+    const wrapper = document.getElementById('banner-wrapper');
+    wrapper.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    wrapper.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 40) {
+        goTo(dx < 0 ? (current + 1) % total : (current - 1 + total) % total);
+        startTimer();
+      }
+    });
+
+    startTimer();
+  })();
+</script>
+
+</body>
+</html>

@@ -120,11 +120,10 @@
         <div id="cardsContainer" class="flex-1 overflow-y-auto px-4 py-2 flex flex-col gap-4 pb-20 no-scrollbar relative z-0">
             
             <!-- Booking Card 1 -->
-            <div class="bg-[var(--white-pure)] rounded-xl p-4 shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-1">
-                <div class="flex justify-between items-start mb-1">
-                    <div class="text-[var(--primary-blue)] font-bold text-[14px] font-inter">12VB</div>
-                    <!-- Three dots button -->
-                    <button class="p-1 -mr-1 -mt-1 rounded-full hover:bg-gray-100 relative" onclick="toggleMenu('menu-1')">
+            <div class="bg-[var(--white-pure)] rounded-xl p-4 pr-[70px] shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-1">
+                <!-- Right corner actions -->
+                <div class="absolute right-4 top-3 bottom-0 pb-3 flex flex-col items-end justify-between z-10">
+                    <button class="w-[24px] h-[24px] rounded-full flex items-center justify-center hover:bg-gray-100 relative" onclick="toggleMenu('menu-1')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-gray-700">
                             <circle cx="5" cy="12" r="2"></circle>
                             <circle cx="12" cy="12" r="2"></circle>
@@ -132,18 +131,22 @@
                         </svg>
                     </button>
                     <!-- Dropdown Menu -->
-                    <div id="menu-1" class="three-dots-menu absolute top-8 right-2 w-36 bg-white rounded-lg shadow-lg border border-[var(--border-light)] py-1 z-20">
+                    <div id="menu-1" class="three-dots-menu absolute top-8 right-0 w-36 bg-white rounded-lg shadow-lg border border-[var(--border-light)] py-1 z-20">
                         <button onclick="openEditModal('card-1')" class="w-full text-left px-4 py-2 text-[14px] text-[var(--text-heading)] hover:bg-gray-50 transition-colors">Edit</button>
                         <button onclick="openCancelModal('card-1')" class="w-full text-left px-4 py-2 text-[14px] text-red-600 hover:bg-red-50 transition-colors">Cancel Booking</button>
                     </div>
+                    <span class="bg-[#2c7a3f] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">Booked</span>
                 </div>
 
-                <div class="flex justify-between items-center mb-1 pr-8">
-                    <h3 class="text-[15px] font-semibold text-[var(--text-heading)] font-inter truncate">The Multi-Sports Turf (7v7)</h3>
-                    <span class="bg-[#2c7a3f] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full flex-shrink-0 ml-2">Booked</span>
+                <div class="flex justify-start items-start mb-1">
+                    <div class="text-[var(--primary-blue)] font-bold text-[14px] font-inter">12VB</div>
                 </div>
 
-                <div class="text-[13px] text-[var(--text-body)] font-inter mb-3 flex items-center gap-1 flex-wrap">
+                <div class="flex justify-start items-center mb-1">
+                    <h3 class="text-[15px] font-semibold text-[var(--text-heading)] font-inter truncate pr-2">The Multi-Sports Turf (7v7)</h3>
+                </div>
+
+                <div class="text-[13px] text-[var(--text-body)] font-inter mb-3 flex items-center gap-1 flex-wrap pr-2">
                     <span>Anand</span>
                     <span class="text-[10px] text-gray-300">•</span>
                     <span>12 Jan 2026</span>
@@ -151,35 +154,40 @@
                     <span>5-6pm</span>
                 </div>
 
-                <div class="border-t border-[var(--bg-container)] pt-3 flex justify-between items-center text-[13px] font-inter">
-                    <span class="text-[var(--text-body)]">Paid/Total</span>
-                    <span class="text-[var(--text-heading)] font-medium"><span class="advance-amt">200</span>/1000</span>
+                <div class="border-t border-[var(--bg-container)] pt-3 flex justify-start items-center text-[13px] font-inter pr-2 gap-2">
+                    <span class="text-[var(--text-body)]">Paid/Total:</span>
+                    <span class="text-[var(--text-heading)] font-medium">₹<span class="advance-amt">200</span> / 1000</span>
                 </div>
             </div>
 
             <!-- Booking Card 2 -->
-            <div class="bg-[var(--white-pure)] rounded-xl p-4 shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-2">
-                <div class="flex justify-between items-start mb-1">
-                    <div class="text-[var(--primary-blue)] font-bold text-[14px] font-inter">15AC</div>
-                    <button class="p-1 -mr-1 -mt-1 rounded-full hover:bg-gray-100 relative" onclick="toggleMenu('menu-2')">
+            <div class="bg-[var(--white-pure)] rounded-xl p-4 pr-[70px] shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-2">
+                <!-- Right corner actions -->
+                <div class="absolute right-4 top-3 bottom-0 pb-3 flex flex-col items-end justify-between z-10">
+                    <button class="w-[24px] h-[24px] rounded-full flex items-center justify-center hover:bg-gray-100 relative" onclick="toggleMenu('menu-2')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-gray-700">
                             <circle cx="5" cy="12" r="2"></circle>
                             <circle cx="12" cy="12" r="2"></circle>
                             <circle cx="19" cy="12" r="2"></circle>
                         </svg>
                     </button>
-                    <div id="menu-2" class="three-dots-menu absolute top-8 right-2 w-36 bg-white rounded-lg shadow-lg border border-[var(--border-light)] py-1 z-20">
+                    <!-- Dropdown Menu -->
+                    <div id="menu-2" class="three-dots-menu absolute top-8 right-0 w-36 bg-white rounded-lg shadow-lg border border-[var(--border-light)] py-1 z-20">
                         <button onclick="openEditModal('card-2')" class="w-full text-left px-4 py-2 text-[14px] text-[var(--text-heading)] hover:bg-gray-50 transition-colors">Edit</button>
                         <button onclick="openCancelModal('card-2')" class="w-full text-left px-4 py-2 text-[14px] text-red-600 hover:bg-red-50 transition-colors">Cancel Booking</button>
                     </div>
+                    <span class="bg-[#2c7a3f] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">Booked</span>
                 </div>
 
-                <div class="flex justify-between items-center mb-1 pr-8">
-                    <h3 class="text-[15px] font-semibold text-[var(--text-heading)] font-inter truncate">Play Field Turf</h3>
-                    <span class="bg-[#2c7a3f] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full flex-shrink-0 ml-2">Booked</span>
+                <div class="flex justify-start items-start mb-1">
+                    <div class="text-[var(--primary-blue)] font-bold text-[14px] font-inter">15AC</div>
                 </div>
 
-                <div class="text-[13px] text-[var(--text-body)] font-inter mb-3 flex items-center gap-1 flex-wrap">
+                <div class="flex justify-start items-center mb-1">
+                    <h3 class="text-[15px] font-semibold text-[var(--text-heading)] font-inter truncate pr-2">Play Field Turf</h3>
+                </div>
+
+                <div class="text-[13px] text-[var(--text-body)] font-inter mb-3 flex items-center gap-1 flex-wrap pr-2">
                     <span>Rahul</span>
                     <span class="text-[10px] text-gray-300">•</span>
                     <span>13 Jan 2026</span>
@@ -187,97 +195,112 @@
                     <span>6-7pm</span>
                 </div>
 
-                <div class="border-t border-[var(--bg-container)] pt-3 flex justify-between items-center text-[13px] font-inter">
-                    <span class="text-[var(--text-body)]">Paid/Total</span>
-                    <span class="text-[var(--text-heading)] font-medium"><span class="advance-amt">400</span>/800</span>
+                <div class="border-t border-[var(--bg-container)] pt-3 flex justify-start items-center text-[13px] font-inter pr-2 gap-2">
+                    <span class="text-[var(--text-body)]">Paid/Total:</span>
+                    <span class="text-[var(--text-heading)] font-medium">₹<span class="advance-amt">400</span> / 800</span>
                 </div>
             </div>
 
         </div>
 
         <!-- Bottom Navigation -->
-        <nav class="absolute bottom-0 left-0 bg-[var(--white-pure)] border-t border-[var(--bg-container)] flex justify-center w-full z-10">
-            <div class="w-full h-[66px] flex items-center justify-between px-6 pt-1">
+        <nav class="fixed bottom-0 left-0 bg-white border-t border-[#d7d7d7] w-full z-40 h-[64px]">
+            <div class="w-full h-full flex items-center justify-between px-2">
+
                 <!-- Home -->
-                <a href="Home.html" class="flex flex-col items-center justify-center gap-[4px] min-w-14 group">
-                    <div class="w-[24px] h-[24px] flex items-center justify-center text-gray-400 group-hover:text-gray-600 transition-colors">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                <a href="Home.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full cursor-pointer group">
+                    <div class="w-[56px] h-[32px] flex items-center justify-center rounded-[16px] group-hover:bg-gray-100 transition-colors text-[var(--text-heading)]">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <path d="M12 3L4 9v12h5v-7h6v7h5V9z"/>
                         </svg>
                     </div>
-                    <span class="text-[12px] font-medium text-gray-500 font-inter">Home</span>
+                    <span class="text-[12px] font-semibold text-[var(--text-heading)] tracking-[0.5px]">Home</span>
                 </a>
 
                 <!-- Book -->
-                <a href="BookPage.html" class="flex flex-col items-center justify-center gap-[4px] min-w-14 group">
-                    <div class="w-[24px] h-[24px] flex items-center justify-center text-gray-400 group-hover:text-gray-600 transition-colors">
+                <a href="BookPage.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full cursor-pointer group">
+                    <div class="w-[56px] h-[32px] flex items-center justify-center rounded-[16px] group-hover:bg-gray-100 transition-colors text-[var(--text-heading)]">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22 10V6C22 4.9 21.1 4 20 4H4C2.9 4 2.01 4.9 2.01 6V10C3.11 10 4 10.9 4 12C4 13.1 3.11 14 2.01 14V18C2.01 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V14C20.9 14 20 13.1 20 12C20 10.9 22 10ZM11 15H9V13H11V15ZM11 11H9V9H11V11ZM15 15H13V13H15V15ZM15 11H13V9H15V11Z" />
                         </svg>
                     </div>
-                    <span class="text-[12px] font-medium text-gray-500 font-inter">Book</span>
+                    <span class="text-[12px] font-semibold text-[var(--text-heading)] tracking-[0.5px]">Book</span>
                 </a>
 
-                <!-- Show Booking (Active) -->
-                <a href="showbooking.html" class="flex flex-col items-center justify-center gap-[4px] min-w-14 group">
-                    <div class="relative w-[50px] h-[32px] bg-[var(--bg-soft)] rounded-full flex items-center justify-center">
-                        <div class="absolute inset-0 bg-[var(--primary-blue)] opacity-10 rounded-full"></div>
-                        <div class="w-[22px] h-[22px] flex items-center justify-center text-[var(--primary-blue)]">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                        </div>
+                <!-- More -->
+                <a href="More.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full cursor-pointer group">
+                    <div class="w-[56px] h-[32px] flex items-center justify-center rounded-[16px] group-hover:bg-gray-100 transition-colors text-[var(--text-heading)]">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <circle cx="5" cy="12" r="2"></circle>
+                            <circle cx="12" cy="12" r="2"></circle>
+                            <circle cx="19" cy="12" r="2"></circle>
+                        </svg>
                     </div>
-                    <span class="text-[12px] font-bold text-[var(--text-heading)] font-inter">Shows</span>
+                    <span class="text-[12px] font-semibold text-[var(--text-heading)] tracking-[0.5px]">More</span>
                 </a>
 
                 <!-- Profile -->
-                <a href="More.html" class="flex flex-col items-center justify-center gap-[4px] min-w-14 group">
-                    <div class="w-[24px] h-[24px] flex items-center justify-center text-gray-400 group-hover:text-gray-600 transition-colors">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <a href="Profile.html" class="flex-1 flex flex-col items-center justify-center gap-1 h-full cursor-pointer group">
+                    <div class="w-[56px] h-[32px] flex items-center justify-center rounded-[16px] group-hover:bg-gray-100 transition-colors text-[var(--text-heading)]">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                     </div>
-                    <span class="text-[12px] font-medium text-gray-500 font-inter">Profile</span>
+                    <span class="text-[12px] font-semibold text-[var(--text-heading)] tracking-[0.5px]">Profile</span>
                 </a>
+
             </div>
         </nav>
 
-        <!-- Edit Advance Modal -->
-        <div id="editModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 hidden opacity-0 transition-opacity duration-300 px-4">
-            <div class="bg-white rounded-2xl p-5 w-[100%] max-w-[340px] shadow-xl transform scale-95 transition-transform duration-300 ease-out" id="editModalContent">
-                <h3 class="text-lg font-semibold text-[var(--text-heading)] mb-4 font-inter">Edit Advance Amount</h3>
-                <div class="mb-5">
-                    <label class="block text-[12px] text-[var(--text-body)] mb-1 font-medium font-inter">Amount (₹)</label>
-                    <input type="number" id="advanceInput" class="w-full border border-[var(--border-light)] rounded-lg px-3 py-2.5 outline-none focus:border-[var(--primary-blue)] transition-colors font-inter text-[15px]">
-                </div>
-                <div class="flex gap-3 mt-2">
-                    <button onclick="closeEditModal()" class="flex-1 py-2.5 rounded-lg border border-[var(--border-light)] text-[var(--text-heading)] font-medium hover:bg-gray-50 transition-colors font-inter text-[14px]">
-                        Cancel
-                    </button>
-                    <button onclick="saveEdit()" class="flex-1 py-2.5 rounded-lg bg-[var(--primary-blue)] text-white font-medium hover:opacity-90 transition-colors font-inter text-[14px]">
-                        Update
-                    </button>
-                </div>
+        <!-- Edit Advance Bottom Sheet -->
+        <div id="editOverlay" class="fixed inset-0 bg-black/40 z-[60] transition-opacity duration-300 opacity-0 pointer-events-none" onclick="closeEditModal()"></div>
+        <div id="editSheet" class="fixed bottom-0 left-1/2 -translate-x-1/2 translate-y-[100%] transition-transform duration-300 ease-out w-full max-w-[430px] bg-white rounded-t-[16px] z-[70] flex flex-col p-5">
+            <!-- Header -->
+            <div class="flex justify-between items-start w-full mb-1">
+                <h3 id="editTurfName" class="text-[20px] font-semibold text-[var(--text-heading)] font-inter leading-[28px]">Fabzia Arena</h3>
+                <button onclick="closeEditModal()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <p id="editSlotDetails" class="text-[14px] text-[#4d4d4d] font-inter mb-6">12 Jan 2026 • 5-6pm • 5v5</p>
+
+            <label class="block text-[14px] text-[var(--text-heading)] mb-2 font-semibold font-inter">Change Paid Amount</label>
+            <div class="relative flex items-center bg-white border border-[#d7d7d7] rounded-[8px] h-[52px] px-3 mb-6 focus-within:border-[var(--primary-blue)] transition-colors">
+                <span class="text-[16px] text-[#3d3d3d] font-inter mr-2">₹</span>
+                <input type="number" id="advanceInput" inputmode="numeric" pattern="[0-9]*" class="flex-1 w-full bg-transparent outline-none font-semibold font-inter text-[16px] text-[#4d4d4d]">
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="closeEditModal()" class="flex-1 h-[52px] rounded-[8px] border border-[#a3a3a3] text-[var(--text-heading)] font-medium hover:bg-gray-50 transition-colors font-inter text-[16px]">
+                    Back
+                </button>
+                <button onclick="saveEdit()" class="flex-1 h-[52px] rounded-[8px] bg-[#125dcd] text-white font-semibold hover:bg-blue-700 transition-colors font-inter text-[16px]">
+                    Update
+                </button>
             </div>
         </div>
 
         <!-- Cancel Confirmation Modal -->
         <div id="cancelModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 hidden opacity-0 transition-opacity duration-300 px-4">
-            <div class="bg-white rounded-2xl p-6 w-[100%] max-w-[340px] shadow-xl transform scale-95 transition-transform duration-300 ease-out text-center" id="cancelModalContent">
-                <h3 class="text-lg font-semibold text-[var(--text-heading)] mb-2 font-inter">Cancel Booking</h3>
-                <p class="text-[14px] text-[var(--text-body)] mb-6 font-inter">Are you sure you want to Cancel Booking?</p>
-                <div class="flex gap-3">
-                    <button onclick="closeCancelModal()" class="flex-1 py-2.5 rounded-lg border border-[var(--border-light)] text-[var(--text-heading)] font-medium hover:bg-gray-50 transition-colors font-inter text-[14px]">
+            <div class="bg-white rounded-[16px] p-5 w-[100%] max-w-[340px] shadow-xl transform scale-95 transition-transform duration-300 ease-out" id="cancelModalContent">
+                <div class="flex justify-between items-start mb-1">
+                    <h3 class="text-[20px] font-semibold text-[var(--text-heading)] font-inter leading-[28px]">Are you Sure you want to<br>Cancel Slot?</h3>
+                    <button onclick="closeCancelModal()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <p id="cancelSlotDetails" class="text-[14px] text-[#4d4d4d] font-inter mb-6">12 Jan 2026 • 5-6pm • 5v5</p>
+                <div class="flex gap-2">
+                    <button onclick="closeCancelModal()" class="flex-1 h-[52px] rounded-[8px] border border-[#a3a3a3] text-[var(--text-heading)] font-medium hover:bg-gray-50 transition-colors font-inter text-[16px]">
                         Back
                     </button>
-                    <button onclick="confirmCancel()" class="flex-1 py-2.5 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors font-inter text-[14px]">
-                        Cancel Booking
+                    <button onclick="confirmCancel()" class="flex-1 h-[52px] rounded-[8px] bg-[#b3261e] text-white font-semibold hover:bg-red-700 transition-colors font-inter text-[16px]">
+                        Cancel Slot
                     </button>
                 </div>
             </div>
@@ -431,31 +454,67 @@
             }
         });
 
+        // Helper to extract turf info from card
+        function extractTurfInfo(cardId) {
+            const card = document.querySelector(`[data-id="${cardId}"]`);
+            if (!card) return {};
+            
+            const nameElem = card.querySelector('h3');
+            const fullTitle = nameElem ? nameElem.innerText : 'Turf';
+            const turfName = fullTitle.split('(')[0].trim();
+            const squadSizeMatch = fullTitle.match(/\(([^)]+)\)/);
+            const squadSize = squadSizeMatch ? squadSizeMatch[1] : '5v5';
+
+            const spans = card.querySelectorAll('.text-\\[13px\\] span');
+            let dateStr = '12 Jan 2026';
+            let timeStr = '5-6pm';
+            if(spans.length >= 5) {
+                dateStr = spans[2].innerText;
+                timeStr = spans[4].innerText;
+            }
+
+            return {
+                turfName,
+                details: `${dateStr}  •  ${timeStr}  •  ${squadSize}`
+            };
+        }
+
         // Modals Logic
         function openEditModal(cardId) {
             currentCardId = cardId;
-            document.getElementById(cardId).querySelector('.three-dots-menu').classList.remove('show');
+            const card = document.querySelector(`[data-id="${cardId}"]`);
+            if (card) {
+                card.querySelector('.three-dots-menu').classList.remove('show');
+            }
             
+            // Extract and set turf info
+            const turfInfo = extractTurfInfo(cardId);
+            document.getElementById('editTurfName').innerText = turfInfo.turfName || 'Turf';
+            document.getElementById('editSlotDetails').innerText = turfInfo.details || '';
+
             // prefill value
             const amtBox = document.querySelector(`[data-id="${cardId}"] .advance-amt`);
-            document.getElementById('advanceInput').value = amtBox.innerText;
+            if (amtBox) {
+                document.getElementById('advanceInput').value = amtBox.innerText;
+            }
 
-            const modal = document.getElementById('editModal');
-            const content = document.getElementById('editModalContent');
-            modal.classList.remove('hidden');
-            void modal.offsetWidth;
-            modal.classList.remove('opacity-0');
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
+            const overlay = document.getElementById('editOverlay');
+            const sheet = document.getElementById('editSheet');
+            
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100', 'pointer-events-auto');
+            sheet.classList.remove('translate-y-[100%]');
+            sheet.classList.add('translate-y-0');
         }
 
         function closeEditModal() {
-            const modal = document.getElementById('editModal');
-            const content = document.getElementById('editModalContent');
-            modal.classList.add('opacity-0');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 300);
+            const overlay = document.getElementById('editOverlay');
+            const sheet = document.getElementById('editSheet');
+            
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100', 'pointer-events-auto');
+            sheet.classList.add('translate-y-[100%]');
+            sheet.classList.remove('translate-y-0');
         }
 
         function saveEdit() {
@@ -468,7 +527,15 @@
 
         function openCancelModal(cardId) {
             currentCardId = cardId;
-            document.getElementById(cardId).querySelector('.three-dots-menu').classList.remove('show');
+            const card = document.querySelector(`[data-id="${cardId}"]`);
+            if (card) {
+                card.querySelector('.three-dots-menu').classList.remove('show');
+            }
+            
+            // Extract and set turf info
+            const turfInfo = extractTurfInfo(cardId);
+            document.getElementById('cancelSlotDetails').innerText = turfInfo.details || '';
+
             const modal = document.getElementById('cancelModal');
             const content = document.getElementById('cancelModalContent');
             modal.classList.remove('hidden');
