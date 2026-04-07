@@ -207,7 +207,7 @@
 
             <!-- Apply Offers -->
             <div class="px-5 mt-4" id="offers-placeholder">
-                <button id="apply-offers-btn" onclick="openCouponSheet()" class="w-full flex items-center justify-between p-3 border border-[var(--border-light)] rounded-lg hover:bg-gray-50 transition-colors">
+                <button id="apply-offers-btn" onclick="window.location.href='Coupons.html'" class="w-full flex items-center justify-between p-3 border border-[var(--border-light)] rounded-lg hover:bg-gray-50 transition-colors">
                     <div class="flex items-center gap-3">
                         <img src="assets/Icons/New folder/discount.svg" alt="" class="w-6 h-6" onerror="this.style.display='none'">
                         <span class="text-[14px] font-medium">Apply Offers</span>
@@ -221,7 +221,7 @@
                         <img src="assets/Icons/New folder/discount.svg" alt="" class="w-6 h-6" onerror="this.style.display='none'">
                         <div class="flex flex-col">
                             <span class="text-sm font-medium text-black">₹125 saved with TURF2025</span>
-                            <button onclick="openCouponSheet()" class="text-[10px] text-[var(--text-secondary)] text-left hover:underline">View all coupons</button>
+                            <button onclick="window.location.href='Coupons.html'" class="text-[10px] text-[var(--text-secondary)] text-left hover:underline">View all coupons</button>
                         </div>
                     </div>
                     <div class="flex items-center gap-1">
@@ -280,133 +280,7 @@
     ═══════════════════════════════ -->
     <div id="sheet-backdrop" class="sheet-backdrop" onclick="closeAllSheets()"></div>
 
-    <!-- ═══════════════════════════════
-         COUPON BOTTOM SHEET
-    ═══════════════════════════════ -->
-    <div id="coupon-sheet" class="bottom-sheet">
-        <div class="flex justify-center pt-3 pb-1 shrink-0">
-            <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
-        </div>
-        <div class="flex items-center justify-between px-5 pt-2 pb-4 shrink-0 border-b border-gray-100">
-            <h2 class="text-[20px] font-semibold text-[var(--text-primary)]">Coupon Details</h2>
-            <button onclick="closeCouponSheet()" class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M18 6L6 18M6 6L18 18" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-        </div>
-        <div class="flex-1 overflow-y-auto px-5 pt-5 pb-4 space-y-4">
-            <!-- Turf Name -->
-            <div class="flex flex-col gap-2">
-                <label class="text-[14px] font-semibold text-[var(--text-primary)]">Turf Name</label>
-                <div class="select-wrap">
-                    <select id="coupon-turf">
-                        <option value="">Select Turf</option>
-                        <option value="multisports">The Multisports Turf</option>
-                        <option value="fabzia">Fabzia Arena</option>
-                    </select>
-                </div>
-            </div>
-            <!-- Coupon Name -->
-            <div class="flex flex-col gap-2">
-                <label class="text-[14px] font-semibold text-[var(--text-primary)]">Coupon Name</label>
-                <div class="flex h-[52px] items-center rounded-lg border border-[var(--border-light)] bg-white px-3 input-focus">
-                    <input id="coupon-name" type="text" placeholder="Coupon Name"
-                        class="flex-1 bg-transparent text-[15px] outline-none placeholder:text-[var(--text-placeholder)]">
-                </div>
-            </div>
-            <!-- Discount % -->
-            <div class="flex flex-col gap-2">
-                <label class="text-[14px] font-semibold text-[var(--text-primary)]">Discount Percentage</label>
-                <div class="flex h-[52px] items-center rounded-lg border border-[var(--border-light)] bg-white px-3 gap-2 input-focus">
-                    <input id="coupon-discount" type="text" placeholder="20% ,10%"
-                        class="flex-1 bg-transparent text-[15px] outline-none placeholder:text-[var(--text-placeholder)]">
-                    <span class="text-[18px] text-[var(--text-secondary)] font-medium">%</span>
-                </div>
-            </div>
-            <!-- Validity Range — date pickers open a calendar sheet -->
-            <div class="flex flex-col gap-2">
-                <label class="text-[14px] font-semibold text-[var(--text-primary)]">Validity Range</label>
-                <div class="flex items-center gap-2">
-                    <div id="from-trigger" class="date-trigger" onclick="openCalSheet('from')">
-                        <span id="from-display">18 Mar ,26</span>
-                    </div>
-                    <span class="text-[var(--text-secondary)] font-semibold text-lg">—</span>
-                    <div id="to-trigger" class="date-trigger" onclick="openCalSheet('to')">
-                        <span id="to-display">20 Mar ,26</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="shrink-0 px-5 pt-3 pb-8 border-t border-gray-100">
-            <button onclick="addCoupon()" class="w-full h-[52px] bg-[var(--primary-blue)] text-white rounded-lg text-[16px] font-semibold active:opacity-90">
-                Add Coupon
-            </button>
-        </div>
-    </div>
 
-    <!-- ═══════════════════════════════
-         CALENDAR BOTTOM SHEET (Figma 1858-2517)
-    ═══════════════════════════════ -->
-    <div id="cal-sheet" class="bottom-sheet" style="z-index:70;">
-        <div class="flex justify-center pt-3 pb-1 shrink-0">
-            <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
-        </div>
-        <div class="px-4 pt-2 pb-4 flex flex-col gap-3">
-            <!-- Month + Year row -->
-            <div class="flex items-center gap-3">
-                <!-- Month nav -->
-                <div class="flex items-center gap-1 flex-1">
-                    <button class="cal-nav-btn" onclick="calNav('month',-1)">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                    <div class="flex items-center gap-1">
-                        <span id="cal-month-label" class="text-[15px] font-semibold text-[#1a1a1a]">Jan</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 9L12 15L18 9" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </div>
-                    <button class="cal-nav-btn" onclick="calNav('month',1)">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                </div>
-                <!-- Year nav -->
-                <div class="flex items-center gap-1">
-                    <button class="cal-nav-btn" onclick="calNav('year',-1)">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                    <div class="flex items-center gap-1">
-                        <span id="cal-year-label" class="text-[15px] font-semibold text-[#1a1a1a]">2026</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 9L12 15L18 9" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </div>
-                    <button class="cal-nav-btn" onclick="calNav('year',1)">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Day headers -->
-            <div class="cal-sheet-grid">
-                <div class="cal-day-header">S</div>
-                <div class="cal-day-header">M</div>
-                <div class="cal-day-header">T</div>
-                <div class="cal-day-header">W</div>
-                <div class="cal-day-header">T</div>
-                <div class="cal-day-header">F</div>
-                <div class="cal-day-header">S</div>
-            </div>
-
-            <!-- Day grid -->
-            <div id="cal-days-grid" class="cal-sheet-grid"></div>
-
-            <!-- Cancel / OK -->
-            <div class="flex justify-end gap-6 pt-2 pb-2">
-                <button onclick="closeCalSheet()" class="text-[14px] font-semibold text-[var(--text-secondary)] px-2 py-1">Cancel</button>
-                <button onclick="confirmCalDate()" class="text-[14px] font-semibold text-[var(--primary-blue)] px-2 py-1">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Second backdrop for calendar (sits above coupon sheet backdrop) -->
-    <div id="cal-backdrop" class="sheet-backdrop" style="z-index:65;" onclick="closeCalSheet()"></div>
 
     <!-- ═══════════════════════════════
          CONFIRM DETAILS SHEET
@@ -494,132 +368,7 @@
             document.getElementById('final-total').textContent = '₹' + total.toLocaleString('en-IN');
         }
 
-        /* ════════════════════════════════════
-           COUPON SHEET
-        ════════════════════════════════════ */
-        function openCouponSheet() {
-            document.getElementById('sheet-backdrop').classList.add('open');
-            document.getElementById('coupon-sheet').classList.add('open');
-        }
-        function closeCouponSheet() {
-            document.getElementById('coupon-sheet').classList.remove('open');
-            document.getElementById('sheet-backdrop').classList.remove('open');
-        }
-        function addCoupon() {
-            const name = document.getElementById('coupon-name').value.trim();
-            if (!name) { alert('Please enter a coupon name.'); return; }
-            localStorage.setItem('couponApplied', 'true');
-            closeCouponSheet();
-            setTimeout(checkCouponState, 350);
-        }
 
-        /* ════════════════════════════════════
-           CALENDAR SHEET (Figma 1858-2517)
-        ════════════════════════════════════ */
-        const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-        const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-        let calTarget  = 'from';   // 'from' or 'to'
-        let calYear    = new Date().getFullYear();
-        let calMonth   = new Date().getMonth();
-        let calPending = null;     // Date object being selected
-
-        // Stored date values
-        const calDates = { from: new Date(2026,2,18), to: new Date(2026,2,20) };
-
-        function formatDateLabel(d) {
-            if (!d) return '';
-            // Format: "18 Mar ,26"
-            const day = d.getDate();
-            const mon = MONTHS_SHORT[d.getMonth()];
-            const yr  = String(d.getFullYear()).slice(-2);
-            return `${day} ${mon} ,${yr}`;
-        }
-
-        function openCalSheet(target) {
-            calTarget  = target;
-            const base = calDates[target] || new Date();
-            calYear    = base.getFullYear();
-            calMonth   = base.getMonth();
-            calPending = new Date(base);
-            renderCalSheet();
-            document.getElementById('cal-backdrop').classList.add('open');
-            document.getElementById('cal-sheet').classList.add('open');
-        }
-
-        function closeCalSheet() {
-            document.getElementById('cal-sheet').classList.remove('open');
-            document.getElementById('cal-backdrop').classList.remove('open');
-        }
-
-        function confirmCalDate() {
-            if (calPending) {
-                calDates[calTarget] = calPending;
-                document.getElementById(calTarget + '-display').textContent = formatDateLabel(calPending);
-                document.getElementById(calTarget + '-trigger').classList.add('has-value');
-            }
-            closeCalSheet();
-        }
-
-        function calNav(unit, dir) {
-            if (unit === 'month') {
-                calMonth += dir;
-                if (calMonth > 11) { calMonth = 0; calYear++; }
-                if (calMonth < 0)  { calMonth = 11; calYear--; }
-            } else {
-                calYear += dir;
-            }
-            renderCalSheet();
-        }
-
-        function renderCalSheet() {
-            document.getElementById('cal-month-label').textContent = MONTHS_SHORT[calMonth];
-            document.getElementById('cal-year-label').textContent  = calYear;
-
-            const grid     = document.getElementById('cal-days-grid');
-            grid.innerHTML = '';
-
-            const today     = new Date();
-            const firstDay  = new Date(calYear, calMonth, 1).getDay();
-            const daysInMon = new Date(calYear, calMonth + 1, 0).getDate();
-            const prevDays  = new Date(calYear, calMonth, 0).getDate();
-
-            // Prev month padding
-            for (let i = firstDay - 1; i >= 0; i--) {
-                const el = document.createElement('div');
-                el.className = 'cal-day other-month empty';
-                el.textContent = prevDays - i;
-                grid.appendChild(el);
-            }
-
-            // Current month
-            for (let d = 1; d <= daysInMon; d++) {
-                const el  = document.createElement('div');
-                const dt  = new Date(calYear, calMonth, d);
-                const isToday = dt.toDateString() === today.toDateString();
-                const isSel   = calPending && dt.toDateString() === calPending.toDateString();
-
-                el.className = 'cal-day';
-                if (isToday) el.classList.add('cal-today');
-                if (isSel)   el.classList.add('cal-selected');
-                el.textContent = d;
-                el.onclick = () => {
-                    calPending = new Date(calYear, calMonth, d);
-                    renderCalSheet();
-                };
-                grid.appendChild(el);
-            }
-
-            // Next month padding (fill to 6 rows if needed)
-            const totalCells = firstDay + daysInMon;
-            const remaining  = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
-            for (let d = 1; d <= remaining; d++) {
-                const el = document.createElement('div');
-                el.className = 'cal-day other-month empty';
-                el.textContent = d;
-                grid.appendChild(el);
-            }
-        }
 
         /* ════════════════════════════════════
            CONFIRM SHEET
@@ -634,7 +383,7 @@
         }
 
         function closeAllSheets() {
-            closeCouponSheet();
+            closeConfirmSheet();
         }
 
         function formatSheetPhone(el) {
@@ -678,14 +427,7 @@
 
         /* ── Init ── */
         window.onload = () => {
-            localStorage.setItem('couponApplied', 'false');
-            localStorage.removeItem('selectedCouponId');
             checkCouponState();
-            // Set default display labels
-            document.getElementById('from-display').textContent = formatDateLabel(calDates.from);
-            document.getElementById('to-display').textContent   = formatDateLabel(calDates.to);
-            document.getElementById('from-trigger').classList.add('has-value');
-            document.getElementById('to-trigger').classList.add('has-value');
         };
     </script>
 </body>

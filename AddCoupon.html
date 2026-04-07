@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Coupon Code - Fabzia Turf</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="utility.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        body { font-family: 'Inter', 'Lato', sans-serif; background-color: #f5f5f5; }
+        .font-inter { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* BOTTOM SHEETS */
+        .bs-overlay { position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.45); display:none; align-items:flex-end; justify-content:center; }
+        .bs-overlay.open { display:flex; }
+        .bs-panel { position:relative; width:100%; max-width:430px; background:#fff; border-radius:16px 16px 0 0; animation:bsSlideUp 0.3s cubic-bezier(0.4,0,0.2,1); max-height: 80vh; display: flex; flex-direction: column; }
+        @keyframes bsSlideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+        
+        .chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; background: #eef4fd; color: #125dcd; border-radius: 16px; font-size: 14px; font-weight: 500; }
+        
+        .radio-btn { width:24px; height:24px; border-radius:50%; border:1.5px solid #d7d7d7; display:flex; align-items:center; justify-content:center; }
+        .radio-btn.active { border-color:#125dcd; background:#125dcd; }
+        .radio-btn.active::after { content:''; width:8px; height:8px; border-radius:50%; background:#fff; }
+        
+        .check-box { width:24px; height:24px; border-radius:4px; border:1.5px solid #d7d7d7; display:flex; align-items:center; justify-content:center; cursor: pointer; transition: all 0.2s; }
+        .check-box.active { border-color:#125dcd; background:#125dcd; }
+        
+        /* Inline Calendar */
+        .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-top:12px; }
+        .cal-cell { text-align:center; padding:8px 4px; font-size:14px; cursor:pointer; border-radius:8px; color: #1a1a1a; font-weight: 500; transition: all 0.15s; }
+        .cal-cell.selected { background:#125dcd; color:#fff; }
+        .cal-cell.other-month { color:#ababab; }
+        
+        /* Time Grid */
+        .time-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
+        .time-cell { text-align:center; padding:10px 4px; font-size:14px; cursor:pointer; border-radius:8px; border: 1px solid #d7d7d7; color: #1a1a1a; font-weight: 500;}
+        .time-cell.selected { background:#125dcd; border-color:#125dcd; color:#fff; }
+
+        /* Disable Number Input Arrows */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+</head>
+<body class="bg-gray-50 text-[var(--text-body)] antialiased flex items-center justify-center min-h-screen">
+    
+    <div class="relative w-full max-w-[430px] h-[100dvh] max-h-[812px] bg-[var(--white-pure)] shadow-2xl overflow-hidden flex flex-col font-inter">
+        
+        <!-- Top Navigation -->
+        <div class="flex items-center gap-2 px-1 py-2 border-b border-[var(--bg-container)] bg-white h-16 flex-shrink-0 z-10">
+            <button onclick="window.history.back()" class="flex items-center justify-center w-12 h-12 flex-shrink-0">
+                <i data-lucide="chevron-left" class="w-6 h-6 text-[#1a1a1a]"></i>
+            </button>
+            <div class="flex-1">
+                <h1 class="text-[#1a1a1a] text-[18px] font-medium leading-[28px]">Add Coupon Code</h1>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="flex-1 overflow-y-auto no-scrollbar pb-[90px]">
+            <div class="flex flex-col gap-[20px] px-4 pt-4 pb-4">
+                
+                <!-- User Wise -->
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">User Wise</label>
+                    <div class="flex items-center gap-2">
+                        <div class="border border-[#d7d7d7] flex items-center px-[12px] py-[8px] h-[52px] rounded-lg flex-1 bg-white focus-within:border-[var(--primary-blue)] focus-within:ring-1 focus-within:ring-[var(--primary-blue)] transition-colors">
+                            <input type="text" id="user-input" placeholder="Enter User id" class="form-input w-full h-full text-[#0f0f0f] text-[16px] outline-none bg-transparent placeholder-[#ababab] border-none focus:ring-0">
+                        </div>
+                        <button type="button" onclick="addUser()" class="h-[52px] px-5 bg-[var(--primary-blue)] text-white rounded-lg text-[16px] font-medium hover:bg-blue-600 transition-colors">
+                            Add
+                        </button>
+                    </div>
+                    <div id="user-chips-container" class="flex flex-wrap gap-2 mt-1 empty:hidden"></div>
+                </div>
+
+                <!-- Turf Wise -->
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">Turf Wise</label>
+                    <div class="border border-[#d7d7d7] flex items-center px-[12px] py-[8px] h-[52px] rounded-lg w-full bg-white relative cursor-pointer" onclick="openBS('turf-select')">
+                        <input type="text" id="turf-display" readonly placeholder="Select Turf" class="w-full h-full text-[#0f0f0f] text-[16px] outline-none bg-transparent placeholder-[#ababab] pointer-events-none border-none focus:ring-0 cursor-pointer">
+                        <div class="absolute right-3 pointer-events-none text-[#1A1A1A]">
+                            <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day Wise -->
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">Day Wise</label>
+                    <div class="border border-[#d7d7d7] flex items-center px-[12px] py-[8px] h-[52px] rounded-lg w-full bg-white relative cursor-pointer" onclick="openBS('day-type')">
+                        <input type="text" id="day-wise-display" readonly placeholder="Select Days" class="w-full h-full text-[#0f0f0f] text-[16px] outline-none bg-transparent placeholder-[#ababab] pointer-events-none border-none focus:ring-0 cursor-pointer">
+                        <div class="absolute right-3 pointer-events-none text-[#1A1A1A]">
+                            <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Settings -->
+                <div class="flex flex-col gap-3 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">Time Settings</label>
+                    
+                    <!-- Peak Hours -->
+                    <div class="w-full">
+                        <label class="text-[13px] text-[#4d4d4d] font-semibold mb-2 block">Peak Hours</label>
+                        <div class="flex items-center gap-2">
+                            <div class="flex-1 border border-[#d7d7d7] rounded-[6px] h-[48px] flex items-center px-3 cursor-pointer" onclick="openPureTimePicker('peak-start')">
+                                <input type="text" id="peak-start-display" readonly placeholder="Start Time" class="w-full text-[14px] text-[#0f0f0f] bg-transparent outline-none pointer-events-none text-center">
+                            </div>
+                            <span class="text-[#ababab] font-medium text-[14px]">to</span>
+                            <div class="flex-1 border border-[#d7d7d7] rounded-[6px] h-[48px] flex items-center px-3 cursor-pointer" onclick="openPureTimePicker('peak-end')">
+                                <input type="text" id="peak-end-display" readonly placeholder="End Time" class="w-full text-[14px] text-[#0f0f0f] bg-transparent outline-none pointer-events-none text-center">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Non-Peak Hours -->
+                    <div class="w-full mt-2">
+                        <label class="text-[13px] text-[#4d4d4d] font-semibold mb-2 block">Non-Peak Hours</label>
+                        <div class="flex items-center gap-2">
+                            <div class="flex-1 border border-[#d7d7d7] rounded-[6px] h-[48px] flex items-center px-3 cursor-pointer" onclick="openPureTimePicker('nonpeak-start')">
+                                <input type="text" id="nonpeak-start-display" readonly placeholder="Start Time" class="w-full text-[14px] text-[#0f0f0f] bg-transparent outline-none pointer-events-none text-center">
+                            </div>
+                            <span class="text-[#ababab] font-medium text-[14px]">to</span>
+                            <div class="flex-1 border border-[#d7d7d7] rounded-[6px] h-[48px] flex items-center px-3 cursor-pointer" onclick="openPureTimePicker('nonpeak-end')">
+                                <input type="text" id="nonpeak-end-display" readonly placeholder="End Time" class="w-full text-[14px] text-[#0f0f0f] bg-transparent outline-none pointer-events-none text-center">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coupon Name -->
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">Coupon Name</label>
+                    <div class="border border-[#d7d7d7] flex items-center px-[12px] py-[8px] h-[52px] rounded-lg w-full bg-white focus-within:border-[var(--primary-blue)] focus-within:ring-1 focus-within:ring-[var(--primary-blue)] transition-colors">
+                        <input type="text" placeholder="Coupon Name" class="w-full h-full text-[#0f0f0f] text-[16px] outline-none bg-transparent placeholder-[#ababab] border-none focus:ring-0">
+                    </div>
+                </div>
+
+                <!-- Coupon Code -->
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">Coupon Code</label>
+                    <div class="border border-[#d7d7d7] flex items-center px-[12px] py-[8px] h-[52px] rounded-lg w-full bg-white focus-within:border-[var(--primary-blue)] focus-within:ring-1 focus-within:ring-[var(--primary-blue)] transition-colors">
+                        <input type="text" placeholder="Coupon Code" class="w-full h-full text-[#0f0f0f] text-[16px] outline-none bg-transparent uppercase placeholder-[#ababab] border-none focus:ring-0">
+                    </div>
+                </div>
+
+                <!-- Coupon Description -->
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">Coupon Description</label>
+                    <div class="border border-[#d7d7d7] flex items-start px-[12px] py-[8px] h-[100px] rounded-lg w-full bg-white focus-within:border-[var(--primary-blue)] focus-within:ring-1 focus-within:ring-[var(--primary-blue)] transition-colors">
+                        <textarea placeholder="Description" class="w-full h-full text-[#0f0f0f] text-[16px] outline-none bg-transparent resize-none placeholder-[#ababab] border-none focus:ring-0"></textarea>
+                    </div>
+                </div>
+
+                <!-- Discount Type -->
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">Discount Type</label>
+                    <div class="flex flex-col gap-3">
+                        <label class="border border-[#d7d7d7] flex items-center gap-3 px-[12px] py-[8px] h-[52px] rounded-lg w-full bg-white cursor-pointer focus-within:border-[var(--primary-blue)] transition-colors">
+                            <input type="radio" name="discount_type" value="flat" checked onchange="updateDiscountSymbol()" class="w-5 h-5 accent-[var(--primary-blue)] cursor-pointer">
+                            <span class="text-[#4d4d4d] text-[16px]">Flat</span>
+                        </label>
+                        <label class="border border-[#d7d7d7] flex items-center gap-3 px-[12px] py-[8px] h-[52px] rounded-lg w-full bg-white cursor-pointer focus-within:border-[var(--primary-blue)] transition-colors">
+                            <input type="radio" name="discount_type" value="percentage" onchange="updateDiscountSymbol()" class="w-5 h-5 accent-[var(--primary-blue)] cursor-pointer">
+                            <span class="text-[#4d4d4d] text-[16px]">Percentage</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Discount Amount -->
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">Discount Amount</label>
+                    <div class="border border-[#d7d7d7] flex items-center px-[12px] py-[8px] h-[52px] rounded-lg w-full bg-white focus-within:border-[var(--primary-blue)] focus-within:ring-1 focus-within:ring-[var(--primary-blue)] transition-colors gap-2">
+                        <span id="discount-symbol" class="text-[16px] text-[#4d4d4d] font-medium border-r border-[#d7d7d7] pr-2 w-[24px] text-center">₹</span>
+                        <input type="number" min="0" oninput="validateAmount(this)" placeholder="Amount" class="w-full h-full text-[#0f0f0f] text-[16px] outline-none bg-transparent placeholder-[#ababab] border-none focus:ring-0">
+                    </div>
+                </div>
+
+                <!-- Minimum Amount for Discount -->
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">Minimum Amount for Discount</label>
+                    <div class="border border-[#d7d7d7] flex items-center px-[12px] py-[8px] h-[52px] rounded-lg w-full bg-white focus-within:border-[var(--primary-blue)] focus-within:ring-1 focus-within:ring-[var(--primary-blue)] transition-colors gap-2">
+                        <span class="text-[16px] text-[#4d4d4d] font-medium border-r border-[#d7d7d7] pr-2 w-[24px] text-center">₹</span>
+                        <input type="number" min="0" oninput="if(this.value < 0) this.value = Math.abs(this.value);" placeholder="Amount" class="w-full h-full text-[#0f0f0f] text-[16px] outline-none bg-transparent placeholder-[#ababab] border-none focus:ring-0">
+                    </div>
+                </div>
+
+                <!-- Maximum Amount for Discount -->
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">Maximum Amount for Discount</label>
+                    <div class="border border-[#d7d7d7] flex items-center px-[12px] py-[8px] h-[52px] rounded-lg w-full bg-white focus-within:border-[var(--primary-blue)] focus-within:ring-1 focus-within:ring-[var(--primary-blue)] transition-colors gap-2">
+                        <span class="text-[16px] text-[#4d4d4d] font-medium border-r border-[#d7d7d7] pr-2 w-[24px] text-center">₹</span>
+                        <input type="number" min="0" oninput="if(this.value < 0) this.value = Math.abs(this.value);" placeholder="Amount" class="w-full h-full text-[#0f0f0f] text-[16px] outline-none bg-transparent placeholder-[#ababab] border-none focus:ring-0">
+                    </div>
+                </div>
+
+                <!-- Max Redeem Count -->
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">Max Redeem Count</label>
+                    <div class="border border-[#d7d7d7] flex items-center px-[12px] py-[8px] h-[52px] rounded-lg w-full bg-white focus-within:border-[var(--primary-blue)] focus-within:ring-1 focus-within:ring-[var(--primary-blue)] transition-colors">
+                        <input type="number" min="0" oninput="if(this.value < 0) this.value = Math.abs(this.value);" placeholder="Redeem Count" class="w-full h-full text-[#0f0f0f] text-[16px] outline-none bg-transparent placeholder-[#ababab] border-none focus:ring-0">
+                    </div>
+                </div>
+
+                <!-- Coupon Start date & Time -->
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">Coupon Start date & Time</label>
+                    <div class="border border-[#d7d7d7] flex items-center px-[12px] py-[8px] h-[52px] rounded-lg w-full bg-white relative cursor-pointer" onclick="openDateTimepicker('start')">
+                        <input type="text" id="start-date-display" readonly placeholder="Select Date & Time" class="w-full h-full text-[#0f0f0f] text-[16px] outline-none bg-transparent placeholder-[#ababab] pr-10 pointer-events-none border-none focus:ring-0 cursor-pointer">
+                        <div class="absolute right-3 pointer-events-none text-[#1A1A1A]">
+                            <i data-lucide="calendar" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coupon End date & Time -->
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[#1a1a1a] text-[14px] font-semibold leading-[1.6]">Coupon End date & Time</label>
+                    <div class="border border-[#d7d7d7] flex items-center px-[12px] py-[8px] h-[52px] rounded-lg w-full bg-white relative cursor-pointer" onclick="openDateTimepicker('end')">
+                        <input type="text" id="end-date-display" readonly placeholder="Select Date & Time" class="w-full h-full text-[#0f0f0f] text-[16px] outline-none bg-transparent placeholder-[#ababab] pr-10 pointer-events-none border-none focus:ring-0 cursor-pointer">
+                        <div class="absolute right-3 pointer-events-none text-[#1A1A1A]">
+                            <i data-lucide="calendar" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Bottom Action Buttons -->
+        <div class="px-4 py-2 flex items-center justify-center border-t border-[#d7d7d7] shadow-[0px_-2px_10px_rgba(0,0,0,0.05)] bg-[#fffefe] h-[80px] w-full z-20 flex-shrink-0">
+            <div class="flex items-center w-full h-[48px] gap-2">
+                <button onclick="window.history.back()" class="flex-1 flex justify-center items-center rounded-lg h-full text-[#1a1a1a] font-medium text-[16px]">
+                    Cancel
+                </button>
+                <button class="flex-1 flex justify-center items-center rounded-lg h-full bg-[var(--primary-blue)] text-white font-medium text-[16px] hover:bg-blue-600 transition-colors">
+                    Save Coupon
+                </button>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         BOTTOM SHEETS
+    ═══════════════════════════════════════ -->
+
+    <!-- Turf Selection Sheet -->
+    <div id="bs-turf-select" class="bs-overlay" onclick="closeBS('turf-select')">
+        <div class="bs-panel bg-white" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-[#d7d7d7]">
+                <h3 class="text-[18px] font-semibold text-[#1a1a1a]">Select Turf</h3>
+                <button onclick="closeBS('turf-select')"><i data-lucide="x" class="w-5 h-5 text-[#1a1a1a]"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto px-2 py-2" id="turf-list"></div>
+            <div class="p-4 border-t border-[#d7d7d7]">
+                <button onclick="applyTurfSelect()" class="w-full h-[52px] rounded-lg bg-[var(--primary-blue)] text-white font-medium text-[16px] hover:bg-blue-600">
+                    Apply Selection
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day Type Sheet -->
+    <div id="bs-day-type" class="bs-overlay" onclick="closeBS('day-type')">
+        <div class="bs-panel bg-white" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-[#d7d7d7]">
+                <h3 class="text-[18px] font-semibold text-[#1a1a1a]">Select Days</h3>
+                <button onclick="closeBS('day-type')"><i data-lucide="x" class="w-5 h-5 text-[#1a1a1a]"></i></button>
+            </div>
+            <div class="flex-1 px-4 py-4" id="day-type-list"></div>
+        </div>
+    </div>
+
+    <!-- Custom Days Checkboxes Sheet -->
+    <div id="bs-custom-days" class="bs-overlay" onclick="closeBS('custom-days')" style="z-index: 105;">
+        <div class="bs-panel bg-white" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-[#d7d7d7]">
+                <h3 class="text-[18px] font-semibold text-[#1a1a1a]">Custom Days</h3>
+                <button onclick="closeBS('custom-days')"><i data-lucide="x" class="w-5 h-5 text-[#1a1a1a]"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto px-2 py-2" id="custom-days-list"></div>
+            <div class="p-4 border-t border-[#d7d7d7]">
+                <button onclick="applyCustomDays()" class="w-full h-[52px] rounded-lg bg-[var(--primary-blue)] text-white font-medium text-[16px] hover:bg-blue-600">
+                    Confirm Selection
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Dates Calendar Multi-Select Sheet -->
+    <div id="bs-custom-dates" class="bs-overlay" onclick="closeBS('custom-dates')" style="z-index: 105;">
+        <div class="bs-panel bg-white" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-[#d7d7d7]">
+                <h3 class="text-[18px] font-semibold text-[#1a1a1a]">Custom Dates</h3>
+                <button onclick="closeBS('custom-dates')"><i data-lucide="x" class="w-5 h-5 text-[#1a1a1a]"></i></button>
+            </div>
+            <div class="p-5 flex-col flex gap-2">
+                <div class="flex items-center justify-between mb-2">
+                    <button class="w-8 h-8 flex items-center justify-center"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                    <span class="text-[16px] font-semibold">January 2025</span>
+                    <button class="w-8 h-8 flex items-center justify-center"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                </div>
+                <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-[#4d4d4d] mb-2">
+                    <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+                </div>
+                <div class="cal-grid mt-0" id="bs-custom-dates-grid">
+                    <!-- Javascript populates dates -->
+                </div>
+            </div>
+            <div class="p-4 border-t border-[#d7d7d7]">
+                <button onclick="applyCustomDates()" class="w-full h-[52px] rounded-lg bg-[var(--primary-blue)] text-white font-medium text-[16px] hover:bg-blue-600">
+                    Confirm Dates
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pure Time Selection Sheet -->
+    <div id="bs-pure-time-select" class="bs-overlay" onclick="closeBS('pure-time-select')" style="z-index: 105;">
+        <div class="bs-panel bg-white" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-[#d7d7d7]">
+                <h3 class="text-[18px] font-semibold text-[#1a1a1a]">Select Time</h3>
+                <button onclick="closeBS('pure-time-select')"><i data-lucide="x" class="w-5 h-5 text-[#1a1a1a]"></i></button>
+            </div>
+            <div class="p-5 flex-1 overflow-y-auto">
+                <div class="time-grid" id="pure-time-list">
+                    <!-- Javascript populates times -->
+                </div>
+            </div>
+            <div class="p-4 border-t border-[#d7d7d7]">
+                <button onclick="applyPureTime()" class="w-full h-[52px] rounded-lg bg-[var(--primary-blue)] text-white font-medium text-[16px] hover:bg-blue-600">
+                    Confirm Time
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Selection Sheet (for start/end timeline) -->
+    <div id="bs-date-select" class="bs-overlay" onclick="closeBS('date-select')">
+        <div class="bs-panel bg-white" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-[#d7d7d7]">
+                <h3 class="text-[18px] font-semibold text-[#1a1a1a]">Select Date</h3>
+                <button onclick="closeBS('date-select')"><i data-lucide="x" class="w-5 h-5 text-[#1a1a1a]"></i></button>
+            </div>
+            <div class="p-5 flex-col flex gap-2">
+                <div class="flex items-center justify-between mb-2">
+                    <button class="w-8 h-8 flex items-center justify-center"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                    <span class="text-[16px] font-semibold">January 2025</span>
+                    <button class="w-8 h-8 flex items-center justify-center"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                </div>
+                <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-[#4d4d4d] mb-2">
+                    <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+                </div>
+                <div class="cal-grid mt-0" id="bs-calendar-dates">
+                    <!-- Javascript populates dates -->
+                </div>
+            </div>
+            <div class="flex gap-2 p-4 border-t border-[#d7d7d7]">
+                <button onclick="closeBS('date-select')" class="flex-1 h-[52px] rounded-lg border border-[#a3a3a3] text-[#1a1a1a] font-medium text-[16px] bg-white hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+                <button onclick="confirmDate()" class="flex-1 h-[52px] rounded-lg bg-[var(--primary-blue)] text-white font-medium text-[16px] hover:bg-blue-600 transition-colors">
+                    Ok
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time Selection Sheet (for start/end timeline) -->
+    <div id="bs-time-select" class="bs-overlay" onclick="closeBS('time-select')">
+        <div class="bs-panel bg-white" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-[#d7d7d7]">
+                <button onclick="backToDate()"><i data-lucide="arrow-left" class="w-5 h-5 text-[#1a1a1a]"></i></button>
+                <h3 class="text-[18px] font-semibold text-[#1a1a1a]">Select Time</h3>
+                <button onclick="closeBS('time-select')"><i data-lucide="x" class="w-5 h-5 text-[#1a1a1a]"></i></button>
+            </div>
+            <div class="p-5 flex-1 overflow-y-auto">
+                <div class="text-[14px] font-medium text-[#4d4d4d] mb-3 pb-2 border-b border-[#f0f0f0]" id="selected-date-preview">12th Jan, 2025</div>
+                <div class="time-grid" id="bs-time-list">
+                    <!-- Javascript populates times -->
+                </div>
+            </div>
+            <div class="p-4 border-t border-[#d7d7d7]">
+                <button onclick="applyDateTime()" class="w-full h-[52px] rounded-lg bg-[var(--primary-blue)] text-white font-medium text-[16px] hover:bg-blue-600">
+                    Set Date & Time
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        /* Discount Input Restrictions */
+        function validateAmount(input) {
+            if(input.value < 0) {
+                input.value = Math.abs(input.value);
+            }
+            const isPercentage = document.querySelector('input[name="discount_type"][value="percentage"]').checked;
+            if (isPercentage && input.value > 100) {
+                input.value = 100;
+            }
+        }
+        function updateDiscountSymbol() {
+            const isPercentage = document.querySelector('input[name="discount_type"][value="percentage"]').checked;
+            const symbolEl = document.getElementById('discount-symbol');
+            const inputEl = document.getElementById('discount-amount-input');
+            if (isPercentage) {
+                symbolEl.textContent = '%';
+                if(inputEl.value > 100) inputEl.value = 100;
+            } else {
+                symbolEl.textContent = '₹';
+            }
+        }
+
+        /* 1. User Add logic */
+        function addUser() {
+            const input = document.getElementById('user-input');
+            const val = input.value.trim();
+            if(!val) return;
+            
+            const container = document.getElementById('user-chips-container');
+            const chip = document.createElement('div');
+            chip.className = 'chip';
+            chip.innerHTML = `
+                <span>${val}</span>
+                <button onclick="this.parentElement.remove()" class="flex items-center justify-center p-0.5 ml-1">
+                    <i data-lucide="x" class="w-3 h-3"></i>
+                </button>
+            `;
+            container.appendChild(chip);
+            input.value = '';
+            lucide.createIcons();
+        }
+
+        /* 2. Turf Selection */
+        const turfs = ['Fabzia Arena', 'Skyline Sports Turf', 'Green Park Turf', 'Urban Kick Arena', 'Olympia Turf', 'City Kickers'];
+        const selectedTurfs = new Set();
+        function renderTurfs() {
+            const list = document.getElementById('turf-list');
+            list.innerHTML = '';
+            turfs.forEach(turf => {
+                const isSelected = selectedTurfs.has(turf);
+                const el = document.createElement('div');
+                el.className = 'flex items-center justify-between px-3 py-3 hover:bg-gray-50 cursor-pointer rounded-lg mb-1';
+                el.onclick = () => {
+                    if (selectedTurfs.has(turf)) selectedTurfs.delete(turf);
+                    else selectedTurfs.add(turf);
+                    renderTurfs();
+                };
+                el.innerHTML = `
+                    <span class="text-[15px] text-[#1a1a1a] font-medium">${turf}</span>
+                    <div class="check-box ${isSelected ? 'active' : ''}">
+                        ${isSelected ? '<i data-lucide="check" class="w-4 h-4 text-white"></i>' : ''}
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+            lucide.createIcons();
+        }
+        function applyTurfSelect() {
+            const display = document.getElementById('turf-display');
+            display.value = selectedTurfs.size === 0 ? '' : selectedTurfs.size === 1 ? Array.from(selectedTurfs)[0] : `${selectedTurfs.size} Turfs Selected`;
+            closeBS('turf-select');
+        }
+        renderTurfs();
+
+        /* Day Wise Logic */
+        const dayOptions = [
+            { id: 'all', label: 'All Days' },
+            { id: 'weekdays', label: 'Weekdays (Mon - Fri)' },
+            { id: 'weekends', label: 'Weekends (Sat - Sun)' },
+            { id: 'custom_days', label: 'Custom days' },
+            { id: 'custom_dates', label: 'Custom Dates' }
+        ];
+        let currentDayOption = '';
+        function renderDayType() {
+            const list = document.getElementById('day-type-list');
+            list.innerHTML = '';
+            dayOptions.forEach(opt => {
+                const isSelected = currentDayOption === opt.id;
+                const el = document.createElement('div');
+                el.className = 'flex items-center gap-3 px-1 py-3 cursor-pointer mb-2';
+                el.onclick = () => { 
+                    currentDayOption = opt.id; 
+                    renderDayType(); 
+                    
+                    if (opt.id === 'custom_days') {
+                        closeBS('day-type');
+                        renderCustomDaysCheckboxes();
+                        openBS('custom-days');
+                    } else if (opt.id === 'custom_dates') {
+                        closeBS('day-type');
+                        renderCustomDatesCal();
+                        openBS('custom-dates');
+                    } else {
+                        closeBS('day-type');
+                        document.getElementById('day-wise-display').value = opt.label;
+                    }
+                };
+                el.innerHTML = `
+                    <div class="radio-btn ${isSelected ? 'active' : ''}"></div>
+                    <span class="text-[16px] text-[#4d4d4d] font-medium">${opt.label}</span>
+                `;
+                list.appendChild(el);
+            });
+        }
+        renderDayType();
+
+        /* Custom Days Logic */
+        const weekDaysArr = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const selectedCustomDays = new Set();
+        function renderCustomDaysCheckboxes() {
+            const list = document.getElementById('custom-days-list');
+            list.innerHTML = '';
+            weekDaysArr.forEach(day => {
+                const isSelected = selectedCustomDays.has(day);
+                const el = document.createElement('div');
+                el.className = 'flex items-center justify-between px-3 py-3 hover:bg-gray-50 cursor-pointer rounded-lg mb-1';
+                el.onclick = () => {
+                    if (selectedCustomDays.has(day)) selectedCustomDays.delete(day);
+                    else selectedCustomDays.add(day);
+                    renderCustomDaysCheckboxes();
+                };
+                el.innerHTML = `
+                    <span class="text-[15px] text-[#1a1a1a] font-medium">${day}</span>
+                    <div class="check-box ${isSelected ? 'active' : ''}">
+                        ${isSelected ? '<i data-lucide="check" class="w-4 h-4 text-white"></i>' : ''}
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+            lucide.createIcons();
+        }
+        function applyCustomDays() {
+            if (selectedCustomDays.size > 0) {
+                const count = selectedCustomDays.size;
+                document.getElementById('day-wise-display').value = count === 1 ? Array.from(selectedCustomDays)[0] : `${count} Custom Days`;
+            } else {
+                document.getElementById('day-wise-display').value = '';
+            }
+            closeBS('custom-days');
+        }
+
+        /* Custom Dates (Multiselect) Logic */
+        const customSelectedDatesList = new Set();
+        function renderCustomDatesCal() {
+            const cal = document.getElementById('bs-custom-dates-grid');
+            let html = '';
+            for(let i=0; i<3; i++) html += `<div class="cal-cell other-month"></div>`;
+            for(let d=1; d<=31; d++) {
+                const isSelected = customSelectedDatesList.has(d);
+                const selClass = isSelected ? 'selected' : '';
+                html += `<div class="cal-cell ${selClass}" onclick="toggleCustomDate(${d})">${d}</div>`;
+            }
+            cal.innerHTML = html;
+        }
+        function toggleCustomDate(day) {
+            if(customSelectedDatesList.has(day)) customSelectedDatesList.delete(day);
+            else customSelectedDatesList.add(day);
+            renderCustomDatesCal();
+        }
+        function applyCustomDates() {
+            if (customSelectedDatesList.size > 0) {
+                document.getElementById('day-wise-display').value = `${customSelectedDatesList.size} Custom Date${customSelectedDatesList.size>1?'s':''}`;
+            } else {
+                document.getElementById('day-wise-display').value = '';
+            }
+            closeBS('custom-dates');
+        }
+
+        /* Pure Time Picker */
+        let pureTimeEditingField = null; // 'peak-start' | 'peak-end' | 'nonpeak-start' | 'nonpeak-end'
+        let selectedPureTime = null;
+
+        function openPureTimePicker(fieldId) {
+            pureTimeEditingField = fieldId;
+            selectedPureTime = null;
+            renderPureTimeList();
+            openBS('pure-time-select');
+        }
+
+        function renderPureTimeList() {
+            const timeList = document.getElementById('pure-time-list');
+            let timeHtml = '';
+            const times = ["06:00 AM", "07:00 AM", "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM", "06:00 PM", "07:00 PM", "08:00 PM", "09:00 PM", "10:00 PM", "11:00 PM"];
+            times.forEach((t) => {
+                timeHtml += `<div class="time-cell" onclick="selectPureTime(this, '${t}')">${t}</div>`;
+            });
+            timeList.innerHTML = timeHtml;
+        }
+
+        function selectPureTime(el, timeStr) {
+            document.querySelectorAll('#pure-time-list .time-cell').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedPureTime = timeStr;
+        }
+
+        function applyPureTime() {
+            if(!selectedPureTime) {
+                alert("Please select a time");
+                return;
+            }
+            document.getElementById(pureTimeEditingField + '-display').value = selectedPureTime;
+            closeBS('pure-time-select');
+        }
+
+        /* Tiemline Start/End Select Logic */
+        let currentEditingField = null; // 'start' or 'end'
+        let tempSelectedDate = null;
+        let tempSelectedTime = null;
+        let pendingDateNumber = null;
+        let tempTimeIndex = null;
+        let startInfo = null; // { day, timeIndex }
+        let endInfo = null;   // { day, timeIndex }
+
+        function openDateTimepicker(fieldId) {
+            currentEditingField = fieldId;
+            tempSelectedDate = null;
+            tempSelectedTime = null;
+            pendingDateNumber = null;
+            tempTimeIndex = null;
+            renderTimelineBSCal();
+            openBS('date-select');
+        }
+
+        function renderTimelineBSCal() {
+            const cal = document.getElementById('bs-calendar-dates');
+            let html = '';
+            for(let i=0; i<3; i++) html += `<div class="cal-cell other-month"></div>`;
+            for(let d=1; d<=31; d++) {
+                let disabledAttr = '';
+                let extClass = '';
+                if (currentEditingField === 'end' && startInfo && d < startInfo.day) {
+                    disabledAttr = 'pointer-events-none opacity-40';
+                    extClass = 'text-gray-300';
+                }
+                const selectedClass = (pendingDateNumber === d) ? 'selected' : '';
+                html += `<div class="cal-cell ${extClass} ${selectedClass} ${disabledAttr}" onclick="selectTimelineDate(this, ${d})">${d}</div>`;
+            }
+            cal.innerHTML = html;
+        }
+
+        function selectTimelineDate(el, day) {
+            pendingDateNumber = day;
+            tempSelectedDate = `${day}th Jan 2025`;
+            renderTimelineBSCal(); // refresh highlights
+        }
+
+        function confirmDate() {
+            if(!tempSelectedDate) {
+                alert("Please select a date from the calendar");
+                return;
+            }
+            closeBS('date-select');
+            
+            // Render Times
+            const timeList = document.getElementById('bs-time-list');
+            document.getElementById('selected-date-preview').textContent = tempSelectedDate;
+            let timeHtml = '';
+            const times = ["06:00 AM", "07:00 AM", "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM", "06:00 PM", "07:00 PM", "08:00 PM", "09:00 PM", "10:00 PM", "11:00 PM"];
+            
+            times.forEach((t, index) => {
+                timeHtml += `<div class="time-cell" onclick="selectTimelineTime(this, '${t}', ${index})">${t}</div>`;
+            });
+            timeList.innerHTML = timeHtml;
+            openBS('time-select');
+        }
+
+        function selectTimelineTime(el, timeStr, index) {
+            document.querySelectorAll('.time-cell').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            tempSelectedTime = timeStr;
+            tempTimeIndex = index;
+        }
+
+        function backToDate() {
+            closeBS('time-select');
+            openBS('date-select');
+        }
+
+        function applyDateTime() {
+            if(!tempSelectedTime) {
+                alert("Please select a time");
+                return;
+            }
+            
+            if (currentEditingField === 'start') {
+                if (endInfo && (pendingDateNumber > endInfo.day || (pendingDateNumber === endInfo.day && tempTimeIndex >= endInfo.timeIndex))) {
+                    alert("Start date & time cannot be after the End date & time.");
+                    return;
+                }
+                startInfo = { day: pendingDateNumber, timeIndex: tempTimeIndex };
+            } else if (currentEditingField === 'end') {
+                if (startInfo && (pendingDateNumber < startInfo.day || (pendingDateNumber === startInfo.day && tempTimeIndex <= startInfo.timeIndex))) {
+                    alert("End date & time must be after the Start date & time.");
+                    return;
+                }
+                endInfo = { day: pendingDateNumber, timeIndex: tempTimeIndex };
+            }
+
+            const displayId = currentEditingField + '-date-display';
+            document.getElementById(displayId).value = `${tempSelectedDate} | ${tempSelectedTime}`;
+            closeBS('time-select');
+        }
+
+        // Bottom Sheet Utilities
+        function openBS(id) {
+            document.getElementById('bs-' + id).classList.add('open');
+        }
+        function closeBS(id) {
+            document.getElementById('bs-' + id).classList.remove('open');
+        }
+
+    </script>
+</body>
+</html>

@@ -73,6 +73,11 @@
     .slot-card.booked .slot-time { color:#2e7d32; font-weight:600; }
     .slot-card.booked .slot-price { color:#2e7d32; font-size:11px; }
 
+    /* Cancelled – light red bg + red border */
+    .slot-card.cancelled { background:#fdecea; border:1.5px solid #b3261e; cursor:pointer; }
+    .slot-card.cancelled .slot-time { color:#b3261e; font-weight:600; }
+    .slot-card.cancelled .slot-price { color:#b3261e; font-size:11px; }
+
     /* Blocked – diagonal stripes, shows "Blocked" label */
     .slot-card.blocked { cursor:pointer; background:transparent; border:1px solid var(--slot-border-default); }
     .slot-card.blocked .slot-time { color:var(--slot-text-blocked); font-weight:600; }
@@ -203,6 +208,8 @@
       <div class="flex items-center gap-2">
         <div class="w-5 h-5 rounded-[4px]" style="background:#e8f5e9; border:1.5px solid #2e7d32;"></div>
         <span class="text-xs font-normal text-black">Booked</span>
+        <div class="w-5 h-5 rounded-[4px] ml-2" style="background:#fdecea; border:1.5px solid #b3261e;"></div>
+        <span class="text-xs font-normal text-black">Cancelled</span>
         <div class="legend-blocked ml-2"></div>
         <span class="text-xs font-normal text-black">Blocked</span>
       </div>
@@ -270,13 +277,7 @@
       <button onclick="closeBS('cancel-confirm')"><i data-lucide="x" class="w-5 h-5"></i></button>
     </div>
     <h2 class="text-[20px] font-semibold text-text-heading leading-[28px] mb-1">Are you Sure you want to<br>Cancel Slot?</h2>
-    <p class="text-sm text-[#4d4d4d] mb-4" id="cancel-meta">12 Jan 2026 • 5-6pm • 5v5</p>
-
-    <div class="mb-6">
-      <label class="text-sm font-semibold text-text-heading block mb-2">Reason for Cancellation</label>
-      <textarea id="cancel-reason" class="w-full border border-[#d7d7d7] rounded-lg p-3 text-sm outline-none focus:border-[var(--primary-blue)] transition-colors resize-none" rows="3" placeholder="Type reason here..."></textarea>
-    </div>
-
+    <p class="text-sm text-[#4d4d4d] mb-6" id="cancel-meta">12 Jan 2026 • 5-6pm • 5v5</p>
     <div class="flex gap-2">
       <button onclick="closeBS('cancel-confirm')" class="flex-1 h-[52px] rounded-lg text-base font-medium border border-[#a3a3a3] text-text-heading bg-white">Back</button>
       <button onclick="confirmCancelSlot()" class="flex-1 h-[52px] rounded-lg text-base font-semibold text-white" style="background:#b3261e;">Cancel Slot</button>
@@ -340,20 +341,39 @@
   </div>
 </div>
 
-<!-- 6. BLOCK SLOT confirmation (stacked over cancelled/available) -->
+<!-- 5. CANCELLED SLOT sheet (click on cancelled slot) -->
+<div id="bs-cancelled" class="bs-overlay" onclick="closeBS('cancelled')">
+  <div class="bs-panel px-5 pb-6 pt-4" onclick="event.stopPropagation()">
+    <div class="flex justify-end mb-3">
+      <button onclick="closeBS('cancelled')"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="mb-3">
+      <h2 class="text-[20px] font-semibold text-text-heading mb-1">Fabzia Arena</h2>
+      <p class="text-sm text-[#4d4d4d]" id="cancelled-meta">12 Jan 2026 • 5-6pm • 5v5</p>
+    </div>
+    <label class="text-sm font-semibold text-text-heading block mb-2">Change Slot Price</label>
+    <div class="slot-input-wrap mb-1" style="justify-content:space-between;">
+      <div class="flex items-center gap-2 flex-1">
+        <span class="slot-input-symbol">₹</span>
+        <input id="cancelled-price" type="number" style="font-weight:600; font-size:16px; color:#4d4d4d;">
+      </div>
+      <i data-lucide="pencil" class="w-5 h-5 text-text-body shrink-0"></i>
+    </div>
+    <div class="flex flex-col gap-2 mt-4">
+      <button onclick="bookFromCancelled()" class="w-full h-[52px] rounded-lg text-base font-semibold text-white" style="background:#125dcd;">Book Slot</button>
+      <button onclick="openBlockFromCancelled()" class="w-full h-[52px] flex items-center justify-center text-base font-medium underline text-text-heading">Block Slot</button>
+    </div>
+  </div>
+</div>
+
+<!-- 6. BLOCK SLOT confirmation (stacked over cancelled) -->
 <div id="bs-block-confirm" class="bs-overlay" onclick="closeBS('block-confirm')" style="z-index:70;">
   <div class="bs-panel px-5 pb-6 pt-4" onclick="event.stopPropagation()">
     <div class="flex justify-end mb-3">
       <button onclick="closeBS('block-confirm')"><i data-lucide="x" class="w-5 h-5"></i></button>
     </div>
     <h2 class="text-[20px] font-semibold text-text-heading leading-[28px] mb-1">Are you Sure you want to<br>Block Slot?</h2>
-    <p class="text-sm text-[#4d4d4d] mb-4" id="block-meta">12 Jan 2026 • 5-6pm • 5v5</p>
-
-    <div class="mb-6">
-      <label class="text-sm font-semibold text-text-heading block mb-2">Reason for Blocking</label>
-      <textarea id="block-reason" class="w-full border border-[#d7d7d7] rounded-lg p-3 text-sm outline-none focus:border-[var(--primary-blue)] transition-colors resize-none" rows="3" placeholder="Type reason here..."></textarea>
-    </div>
-
+    <p class="text-sm text-[#4d4d4d] mb-6" id="block-meta">12 Jan 2026 • 5-6pm • 5v5</p>
     <div class="flex gap-2">
       <button onclick="closeBS('block-confirm')" class="flex-1 h-[52px] rounded-lg text-base font-medium border border-[#a3a3a3] text-text-heading bg-white">Back</button>
       <button onclick="confirmBlockSlot()" class="flex-1 h-[52px] rounded-lg text-base font-semibold text-white" style="background:#b3261e;">Block Slot</button>
@@ -369,16 +389,27 @@
     </div>
     <h2 class="text-[20px] font-semibold text-text-heading mb-1">Fabzia Arena</h2>
     <p class="text-sm text-[#4d4d4d] mb-4" id="blocked-meta">12 Jan 2026 • 5-6pm • 5v5</p>
-    <div class="detail-row"><span class="detail-label">Client Name</span><span class="detail-value">Rohan</span></div>
-    <div class="detail-row"><span class="detail-label">Blocked by</span><span class="detail-value">Kartik</span></div>
-    <div class="detail-row"><span class="detail-label">Date Blocked</span><span class="detail-value">10 Jan 2026</span></div>
-    <div class="mt-3 mb-2 flex flex-col gap-1">
-      <span class="text-sm font-semibold text-text-heading block">Reason for Blocking</span>
-      <span class="text-sm text-[#4d4d4d] block">Already Booked Slot in other Turf</span>
-    </div>
+    <div class="detail-row"><span class="detail-label">Vendor Name</span><span class="detail-value">Kartik</span></div>
+    <div class="detail-row"><span class="detail-label">Client Name</span><span class="detail-value">Anand</span></div>
     <div class="flex gap-2 mt-4">
       <button onclick="closeBS('blocked')" class="flex-1 h-[52px] rounded-lg text-base font-medium border border-[#a3a3a3] text-text-heading bg-white">Cancel</button>
       <button onclick="unblockSlot()" class="flex-1 h-[52px] rounded-lg text-base font-semibold text-white" style="background:#125dcd;">Unblock Slot</button>
+    </div>
+  </div>
+</div>
+
+<!-- 8. CANCELLED STATE (4th flow) sheet -->
+<div id="bs-cancelled-state" class="bs-overlay" onclick="closeBS('cancelled-state')">
+  <div class="bs-panel px-5 pb-6 pt-4" onclick="event.stopPropagation()">
+    <div class="flex justify-end mb-3">
+      <button onclick="closeBS('cancelled-state')"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <h2 class="text-[20px] font-semibold text-text-heading mb-1">Fabzia Arena</h2>
+    <p class="text-sm text-[#4d4d4d] mb-4" id="cancelled-state-meta">12 Jan 2026 • 5-6pm • 5v5</p>
+    <div class="detail-row mb-2"><span class="detail-label">Vendor Name</span><span class="detail-value">Kartik</span></div>
+    <div class="flex gap-2 mt-4">
+      <button onclick="openBlockFromCancelledState()" class="flex-1 h-[52px] rounded-lg text-base font-medium border border-[#a3a3a3] text-text-heading bg-white">Block Slot</button>
+      <button onclick="bookFromCancelledState()" class="flex-1 h-[52px] rounded-lg text-base font-semibold text-white" style="background:#125dcd;">Book Slot</button>
     </div>
   </div>
 </div>
@@ -540,6 +571,7 @@
     // Demo statuses
     [2,8,20].forEach(i => { if(slots[i]) slots[i].status='blocked'; });
     [4,14].forEach(i => { if(slots[i]) slots[i].status='booked'; });
+    [7,18].forEach(i => { if(slots[i]) slots[i].status='cancelled'; });
     [5,12].forEach(i => { if(slots[i]) slots[i].status='partial'; });
     return slots;
   }
@@ -619,6 +651,7 @@
   /* ── Slot Grid ── */
   function slotLabel(s) {
     if (s.status==='booked')    return 'Booked';
+    if (s.status==='cancelled') return 'Cancelled';
     if (s.status==='blocked')   return 'Blocked';
     return '₹'+s.price;
   }
@@ -688,7 +721,13 @@
       openBS('booked'); return;
     }
 
-    // (No cancelled state handler anymore)
+    if (s.status==='cancelled') {
+      document.getElementById('cancelled-meta').textContent = metaStr;
+      document.getElementById('cancelled-state-meta').textContent = metaStr;
+      document.getElementById('cancelled-price').value = s.price;
+      // Show the Cancelled state sheet (flow 4 — has vendor name + Block/Book)
+      openBS('cancelled-state'); return;
+    }
 
     if (s.status==='blocked') {
       document.getElementById('blocked-meta').textContent = metaStr;
@@ -775,13 +814,53 @@
     if (activeSlotId !== null) {
       const slots = allDaysSlots[selectedDateIndex];
       const s = slots.find(x => x.id===activeSlotId);
-      if (s) {
-        s.status = 'available';
-        document.getElementById('cancel-reason').value = '';
-      }
+      if (s) s.status = 'cancelled';
     }
     closeBS('cancel-confirm');
     closeBS('booked');
+    renderSlots(); renderCalendar();
+    lucide.createIcons();
+  }
+
+  /* ── Cancelled state actions ── */
+  function openBlockFromCancelled() {
+    const slots = allDaysSlots[selectedDateIndex];
+    const s = slots.find(x => x.id===activeSlotId);
+    if (s) {
+      const metaStr = `${calendarDates[selectedDateIndex]?.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} • ${s.time} • ${selectedSquad}`;
+      document.getElementById('block-meta').textContent = metaStr;
+    }
+    openBS('block-confirm');
+  }
+
+  function openBlockFromCancelledState() {
+    const slots = allDaysSlots[selectedDateIndex];
+    const s = slots.find(x => x.id===activeSlotId);
+    if (s) {
+      const metaStr = `${calendarDates[selectedDateIndex]?.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} • ${s.time} • ${selectedSquad}`;
+      document.getElementById('block-meta').textContent = metaStr;
+    }
+    openBS('block-confirm');
+  }
+
+  function bookFromCancelled() {
+    if (activeSlotId !== null) {
+      const slots = allDaysSlots[selectedDateIndex];
+      const s = slots.find(x => x.id===activeSlotId);
+      if (s) s.status = 'selected';
+    }
+    closeBS('cancelled');
+    renderSlots(); renderCalendar();
+    lucide.createIcons();
+  }
+
+  function bookFromCancelledState() {
+    if (activeSlotId !== null) {
+      const slots = allDaysSlots[selectedDateIndex];
+      const s = slots.find(x => x.id===activeSlotId);
+      if (s) s.status = 'selected';
+    }
+    closeBS('cancelled-state');
     renderSlots(); renderCalendar();
     lucide.createIcons();
   }
@@ -790,12 +869,11 @@
     if (activeSlotId !== null) {
       const slots = allDaysSlots[selectedDateIndex];
       const s = slots.find(x => x.id===activeSlotId);
-      if (s) {
-        s.status = 'blocked';
-        document.getElementById('block-reason').value = '';
-      }
+      if (s) s.status = 'blocked';
     }
     closeBS('block-confirm');
+    closeBS('cancelled');
+    closeBS('cancelled-state');
     closeBS('available');
     renderSlots(); renderCalendar();
     lucide.createIcons();
