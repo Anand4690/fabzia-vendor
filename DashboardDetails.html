@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Details - Fabzia Turf</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="utility.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .font-inter { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .modal-overlay {
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+            pointer-events: none;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .radio-custom:checked + div {
+            border-color: #125dcd;
+            background-color: #f0f5ff;
+        }
+        .radio-custom:checked + div .radio-inner {
+            background-color: #125dcd;
+            border-color: #125dcd;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen font-inter">
+    
+    <div class="relative w-full max-w-[430px] h-[100dvh] bg-white shadow-2xl flex flex-col overflow-hidden mx-auto">
+        
+        <!-- Top Nav -->
+        <div class="bg-white border-b border-[#d7d7d7] flex items-center h-[60px] px-2 shrink-0 z-10 w-full relative">
+            <button onclick="window.history.back()" class="w-12 h-12 flex items-center justify-center text-gray-800 hover:bg-gray-100 rounded-full transition-colors absolute left-2">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+            <div class="flex-1 flex justify-center">
+                <button onclick="openTurfModal()" class="flex items-center gap-1 font-semibold text-[16px] text-[#1a1a1a]">
+                    <span id="headerTurfName">The multiSport..</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto no-scrollbar relative w-full bg-white pb-6">
+            <!-- Period Nav & Revenue -->
+            <div class="flex items-center justify-between px-4 mt-8 mb-6">
+                <button onclick="changePeriod(-1)" class="w-10 h-10 flex items-center justify-center text-gray-800 hover:bg-gray-100 rounded-full transition-colors">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+                <div class="flex flex-col items-center">
+                    <h2 class="text-[32px] font-semibold text-black tracking-[0.04px] font-inter">₹700.00</h2>
+                    <button onclick="openTimeRangeModal()" class="bg-[#f5f5f5] rounded-full px-3 py-1.5 mt-1 flex items-center gap-1.5 hover:bg-gray-200 transition-colors">
+                        <span id="selectedTimeRange" class="text-[14px] text-[#3d3d3d]">Weekly</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <button onclick="changePeriod(1)" class="w-10 h-10 flex items-center justify-center text-gray-800 hover:bg-gray-100 rounded-full transition-colors">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Revenue Bar Chart -->
+            <div class="px-0 relative w-full h-[220px] mb-8">
+                <canvas id="revenueChart"></canvas>
+            </div>
+
+            <!-- Orders Stats Header -->
+            <div class="px-5 flex items-center justify-between mb-4">
+                <h3 class="text-[20px] font-semibold text-black tracking-[0.04px]">Orders Stats</h3>
+                <button onclick="openStatusModal()" class="bg-[#f5f5f5] rounded-full px-3 py-1.5 flex items-center gap-1.5 hover:bg-gray-200 transition-colors">
+                    <span id="selectedOrderStatus" class="text-[14px] text-[#3d3d3d]">Booked</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Orders Info Graph -->
+            <div class="px-2 w-full h-[180px] mb-6">
+                <!-- we need space for Y axis and bar graph -->
+                <canvas id="ordersChart"></canvas>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="px-5 grid grid-cols-4 gap-2 mb-6">
+                <div class="flex flex-col">
+                    <span class="text-[14px] text-[#3d3d3d]">Lowest</span>
+                    <span class="text-[16px] font-semibold text-[#1a1a1a]" id="statLowest">1</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[14px] text-[#3d3d3d]">Average</span>
+                    <span class="text-[16px] font-semibold text-[#1a1a1a]" id="statAverage">12</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[14px] text-[#3d3d3d]">Highest</span>
+                    <span class="text-[16px] font-semibold text-[#1a1a1a]" id="statHighest">15</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[14px] text-[#3d3d3d]">Total</span>
+                    <span class="text-[16px] font-semibold text-[#1a1a1a]" id="statTotal">25</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================== MODALS AND BOTTOM SHEETS ================== -->
+
+    <!-- Select Turf Modal -->
+    <div id="turfOverlay" class="fixed inset-0 bg-black/40 z-[60] modal-overlay" onclick="closeTurfModal()"></div>
+    <div id="turfSheet" class="fixed bottom-0 left-1/2 -translate-x-1/2 translate-y-[100%] transition-transform duration-300 ease-out w-full max-w-[430px] bg-white rounded-t-3xl z-[70] flex flex-col p-5">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-[18px] font-semibold text-black">Select Turf</h2>
+            <button onclick="closeTurfModal()" class="w-8 h-8 flex items-center justify-center text-gray-800">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div class="flex flex-col gap-4 mb-6">
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" name="turfSelect" value="The Multisport Turf" class="w-5 h-5 border border-gray-400 rounded-sm accent-[var(--primary-blue)] transition-all cursor-pointer">
+                <span class="text-[16px] text-gray-800">The Multisport Turf</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" name="turfSelect" value="Academia Turf" class="w-5 h-5 border border-gray-400 rounded-sm accent-[var(--primary-blue)] transition-all cursor-pointer">
+                <span class="text-[16px] text-gray-800">Academia Turf</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" name="turfSelect" value="New Era Turf" class="w-5 h-5 border border-gray-400 rounded-sm accent-[var(--primary-blue)] transition-all cursor-pointer">
+                <span class="text-[16px] text-gray-800">New Era Turf</span>
+            </label>
+        </div>
+        <div class="flex gap-4">
+            <button onclick="closeTurfModal()" class="flex-1 py-3 text-[16px] font-medium text-black border border-gray-300 rounded-lg">Cancel</button>
+            <button onclick="applyTurfSelection()" class="flex-1 py-3 bg-[var(--primary-blue)] text-white text-[16px] font-medium rounded-lg">Confirm</button>
+        </div>
+    </div>
+
+
+    <!-- Time Range Modal -->
+    <div id="timeRangeOverlay" class="fixed inset-0 bg-black/40 z-[60] modal-overlay" onclick="closeTimeRangeModal()"></div>
+    <div id="timeRangeSheet" class="fixed bottom-0 left-1/2 -translate-x-1/2 translate-y-[100%] transition-transform duration-300 ease-out w-full max-w-[430px] bg-white rounded-t-3xl z-[70] flex flex-col p-5">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-[18px] font-semibold text-black">Select Time range</h2>
+            <button onclick="closeTimeRangeModal()" class="w-8 h-8 flex items-center justify-center text-gray-800">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div class="flex flex-col gap-4 mb-6">
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="radio" name="timeRangeSelect" value="Weekly" class="appearance-none w-5 h-5 border border-gray-400 rounded-full checked:border-[var(--primary-blue)] checked:border-[6px] transition-all">
+                <span class="text-[16px] text-gray-800">Weekly</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="radio" name="timeRangeSelect" value="Monthly" class="appearance-none w-5 h-5 border border-gray-400 rounded-full checked:border-[var(--primary-blue)] checked:border-[6px] transition-all">
+                <span class="text-[16px] text-gray-800">Monthly</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="radio" name="timeRangeSelect" value="Custom Date" class="appearance-none w-5 h-5 border border-gray-400 rounded-full checked:border-[var(--primary-blue)] checked:border-[6px] transition-all">
+                <span class="text-[16px] text-gray-800">Custom Date</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="radio" name="timeRangeSelect" value="Custom Range" class="appearance-none w-5 h-5 border border-gray-400 rounded-full checked:border-[var(--primary-blue)] checked:border-[6px] transition-all">
+                <span class="text-[16px] text-gray-800">Custom Range</span>
+            </label>
+        </div>
+        <div class="flex gap-4">
+            <button onclick="closeTimeRangeModal()" class="flex-1 py-3 text-[16px] font-medium text-black border border-gray-300 rounded-lg">Cancel</button>
+            <button onclick="applyTimeRangeSelection()" class="flex-1 py-3 bg-[var(--primary-blue)] text-white text-[16px] font-medium rounded-lg">Confirm</button>
+        </div>
+    </div>
+
+
+    <!-- Order Status Modal -->
+    <div id="statusOverlay" class="fixed inset-0 bg-black/40 z-[60] modal-overlay" onclick="closeStatusModal()"></div>
+    <div id="statusSheet" class="fixed bottom-0 left-1/2 -translate-x-1/2 translate-y-[100%] transition-transform duration-300 ease-out w-full max-w-[430px] bg-white rounded-t-3xl z-[70] flex flex-col p-5">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-[18px] font-semibold text-black">Status</h2>
+            <button onclick="closeStatusModal()" class="w-8 h-8 flex items-center justify-center text-gray-800">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div class="flex flex-col gap-4 mb-6">
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="radio" name="statusSelect" value="Booked" class="appearance-none w-5 h-5 border border-gray-400 rounded-full checked:border-[var(--primary-blue)] checked:border-[6px] transition-all">
+                <span class="text-[16px] text-gray-800">Booked</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="radio" name="statusSelect" value="Cancelled" class="appearance-none w-5 h-5 border border-gray-400 rounded-full checked:border-[var(--primary-blue)] checked:border-[6px] transition-all">
+                <span class="text-[16px] text-gray-800">Cancelled</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="radio" name="statusSelect" value="Pending Payment" class="appearance-none w-5 h-5 border border-gray-400 rounded-full checked:border-[var(--primary-blue)] checked:border-[6px] transition-all">
+                <span class="text-[16px] text-gray-800">Pending Payment</span>
+            </label>
+        </div>
+        <div class="flex gap-4">
+            <button onclick="closeStatusModal()" class="flex-1 py-3 text-[16px] font-medium text-black border border-gray-300 rounded-lg">Cancel</button>
+            <button onclick="applyStatusSelection()" class="flex-1 py-3 bg-[var(--primary-blue)] text-white text-[16px] font-medium rounded-lg">Confirm</button>
+        </div>
+    </div>
+
+
+    <!-- Custom Date Range Picker Modal -->
+    <div id="datePickerOverlay" class="fixed inset-0 bg-black/40 z-[80] modal-overlay" onclick="closeDatePicker()"></div>
+    <div id="datePickerSheet" class="fixed bottom-0 left-1/2 -translate-x-1/2 translate-y-[100%] transition-transform duration-300 ease-out w-full max-w-[430px] bg-[#f9f9f9] rounded-t-3xl z-[90] flex flex-col p-5 shadow-2xl">
+        <div class="flex justify-between items-center mb-4">
+            <!-- Left Header -->
+            <div class="flex items-center gap-2">
+                <button class="text-gray-600"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"></path></svg></button>
+                <div class="font-medium text-gray-800 flex items-center gap-1 cursor-pointer">Apr <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"></path></svg></div>
+                <button class="text-gray-600"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"></path></svg></button>
+            </div>
+            <!-- Right Header -->
+            <div class="flex items-center gap-2">
+                <button class="text-gray-600"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"></path></svg></button>
+                <div class="font-medium text-gray-800 flex items-center gap-1 cursor-pointer">2026 <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"></path></svg></div>
+                <button class="text-gray-600"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"></path></svg></button>
+            </div>
+        </div>
+
+        <!-- From / To Date UI Block -->
+        <div id="dateInputFields" class="flex items-center gap-3 mb-4 hidden">
+            <div class="flex-1 flex flex-col gap-1">
+                <span class="text-[12px] text-gray-500 font-medium">From Date</span>
+                <div id="fromDateStr" class="bg-white border border-gray-300 h-10 flex items-center px-3 rounded-lg text-[14px] text-gray-700 font-medium">Select</div>
+            </div>
+            <div class="flex-1 flex flex-col gap-1">
+                <span class="text-[12px] text-gray-500 font-medium">To Date</span>
+                <div id="toDateStr" class="bg-white border border-gray-300 h-10 flex items-center px-3 rounded-lg text-[14px] text-gray-700 font-medium">Select</div>
+            </div>
+        </div>
+
+        <div id="singleDateInputField" class="flex flex-col gap-1 mb-4 hidden">
+            <span class="text-[12px] text-gray-500 font-medium">Selected Date</span>
+            <div id="singleDateStr" class="bg-white border border-gray-300 h-10 flex items-center px-3 rounded-lg text-[14px] text-gray-700 font-medium">Select</div>
+        </div>
+
+        <div class="grid grid-cols-7 mb-2 text-center text-[14px] text-gray-600 font-medium">
+            <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+        </div>
+
+        <div class="grid grid-cols-7 gap-y-2 text-center text-[15px] font-medium text-gray-800 mb-6" id="calendarGrid">
+            <!-- Rendered by JS -->
+        </div>
+
+        <div class="flex justify-end gap-6 pt-2">
+            <button onclick="closeDatePicker()" class="text-[15px] font-medium text-[var(--primary-blue)] hover:text-[#0b4296] transition-colors">Cancel</button>
+            <button onclick="applyDatePickerSelection()" class="text-[15px] font-medium text-[var(--primary-blue)] hover:text-[#0b4296] transition-colors">OK</button>
+        </div>
+    </div>
+
+
+    <script>
+        // Modal Handlers
+        const modals = {
+            turf: { overlay: 'turfOverlay', sheet: 'turfSheet' },
+            timeRange: { overlay: 'timeRangeOverlay', sheet: 'timeRangeSheet' },
+            status: { overlay: 'statusOverlay', sheet: 'statusSheet' },
+            datePicker: { overlay: 'datePickerOverlay', sheet: 'datePickerSheet' }
+        };
+
+        function openModal(id) {
+            const overlay = document.getElementById(modals[id].overlay);
+            const sheet = document.getElementById(modals[id].sheet);
+            if(overlay) overlay.classList.add('open');
+            if(sheet) sheet.classList.remove('translate-y-[100%]');
+        }
+
+        function closeModal(id) {
+            const overlay = document.getElementById(modals[id].overlay);
+            const sheet = document.getElementById(modals[id].sheet);
+            if(overlay) overlay.classList.remove('open');
+            if(sheet) sheet.classList.add('translate-y-[100%]');
+        }
+
+        const openTurfModal = () => openModal('turf');
+        const closeTurfModal = () => closeModal('turf');
+        const applyTurfSelection = () => {
+            const checkboxes = document.querySelectorAll('input[name="turfSelect"]:checked');
+            if(checkboxes.length > 0) {
+                if(checkboxes.length === 1) {
+                    document.getElementById('headerTurfName').innerText = checkboxes[0].value;
+                } else {
+                    document.getElementById('headerTurfName').innerText = checkboxes.length + ' Turfs Selected';
+                }
+            } else {
+                document.getElementById('headerTurfName').innerText = 'Select Turf';
+            }
+            closeTurfModal();
+        };
+
+        const openTimeRangeModal = () => openModal('timeRange');
+        const closeTimeRangeModal = () => closeModal('timeRange');
+
+        let activeDateSelectionMode = 'Weekly'; 
+        let selectedDates = [];
+
+        function updateDateFieldsUI() {
+           if (activeDateSelectionMode === 'Custom Date') {
+               const dIF = document.getElementById('dateInputFields');
+               if(dIF) dIF.classList.add('hidden');
+               const sDIF = document.getElementById('singleDateInputField');
+               if(sDIF) sDIF.classList.remove('hidden');
+               const sDS = document.getElementById('singleDateStr');
+               if(sDS) sDS.innerText = selectedDates.length ? `${selectedDates[0]} Apr 2026` : 'Select';
+           } else {
+               const dIF = document.getElementById('dateInputFields');
+               if(dIF) dIF.classList.remove('hidden');
+               const sDIF = document.getElementById('singleDateInputField');
+               if(sDIF) sDIF.classList.add('hidden');
+               const fdS = document.getElementById('fromDateStr');
+               const tdS = document.getElementById('toDateStr');
+               if(fdS) fdS.innerText = selectedDates.length > 0 ? `${selectedDates[0]} Apr 2026` : 'Select';
+               if(tdS) tdS.innerText = selectedDates.length > 1 ? `${selectedDates[1]} Apr 2026` : 'Select';
+           }
+        }
+
+        const applyTimeRangeSelection = () => {
+            const val = document.querySelector('input[name="timeRangeSelect"]:checked')?.value;
+            if(val) {
+                if(val === 'Custom Date' || val === 'Custom Range') {
+                    activeDateSelectionMode = val;
+                    selectedDates = [];
+                    updateDateFieldsUI();
+                    renderCalendar();
+                    setTimeout(() => openModal('datePicker'), 300);
+                } else {
+                    document.getElementById('selectedTimeRange').innerText = val;
+                    activeDateSelectionMode = val;
+                    updateChartsBasedOnTimeRange(val);
+                }
+            }
+            closeTimeRangeModal();
+        };
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            if(!grid) return;
+            let html = '';
+            for(let i=26; i<=31; i++) {
+                html += `<div class="text-gray-300 py-1.5 flex items-center justify-center">${i}</div>`;
+            }
+            for(let i=1; i<=30; i++) {
+                let isSelected = false;
+                let isInRange = false;
+                
+                if (selectedDates.length === 1 && selectedDates[0] === i) isSelected = true;
+                if (selectedDates.length === 2) {
+                    const min = Math.min(selectedDates[0], selectedDates[1]);
+                    const max = Math.max(selectedDates[0], selectedDates[1]);
+                    if (i === min || i === max) isSelected = true;
+                    if (i > min && i < max) isInRange = true;
+                }
+                
+                let classes = "py-1.5 flex items-center justify-center cursor-pointer ";
+                if(isSelected) {
+                    classes += "bg-[var(--primary-blue)] text-white w-8 h-8 rounded-full mx-auto shadow-md";
+                } else if (isInRange) {
+                    classes += "bg-blue-100 w-full h-8 mx-auto text-[#125dcd]";
+                }
+                html += `<div class="${classes}" onclick="handleDateClick(${i})">${i}</div>`;
+            }
+            grid.innerHTML = html;
+        }
+
+        function handleDateClick(day) {
+            if (activeDateSelectionMode === 'Custom Date') {
+                selectedDates = [day];
+            } else if (activeDateSelectionMode === 'Custom Range') {
+                if (selectedDates.length === 2) {
+                    selectedDates = [day];
+                } else if (selectedDates.length === 1) {
+                    if(day > selectedDates[0]) {
+                        selectedDates.push(day);
+                    } else if (day < selectedDates[0]) {
+                        selectedDates.unshift(day);
+                    }
+                } else {
+                    selectedDates.push(day);
+                }
+            }
+            renderCalendar();
+            updateDateFieldsUI();
+        }
+
+        function applyDatePickerSelection() {
+            if (selectedDates.length === 0) {
+                closeDatePicker();
+                return;
+            }
+            
+            let label = "";
+            if (activeDateSelectionMode === 'Custom Date') {
+                label = `${selectedDates[0]} Apr`;
+            } else if (activeDateSelectionMode === 'Custom Range') {
+                if (selectedDates.length === 1) {
+                    label = `${selectedDates[0]} Apr`;
+                } else {
+                    const minD = Math.min(selectedDates[0], selectedDates[1]);
+                    const maxD = Math.max(selectedDates[0], selectedDates[1]);
+                    label = `${minD} Apr - ${maxD} Apr`;
+                }
+            }
+            
+            document.getElementById('selectedTimeRange').innerText = label;
+            if (revenueChartInst) {
+                 revenueChartInst.data.labels = selectedDates.map(d => d + '\nApr');
+                 revenueChartInst.data.datasets[0].data = selectedDates.map(d => Math.floor(Math.random() * 500) + 100);
+                 revenueChartInst.update();
+            }
+            closeDatePicker();
+        }
+
+        const openStatusModal = () => openModal('status');
+        const closeStatusModal = () => closeModal('status');
+        const applyStatusSelection = () => {
+            const val = document.querySelector('input[name="statusSelect"]:checked')?.value;
+            if(val) {
+                document.getElementById('selectedOrderStatus').innerText = val;
+                updateOrdersChartColor(val);
+            }
+            closeStatusModal();
+        };
+
+        const closeDatePicker = () => closeModal('datePicker');
+
+        // Set Defaults in Radio Buttons
+        document.querySelector('input[name="turfSelect"][value="The Multisport Turf"]').checked = true;
+        document.querySelector('input[name="timeRangeSelect"][value="Weekly"]').checked = true;
+        document.querySelector('input[name="statusSelect"][value="Booked"]').checked = true;
+
+        // Chart Initializations
+        let revenueChartInst = null;
+        let ordersChartInst = null;
+
+        // Dotted line plugin removed as requested.
+
+        function initCharts() {
+            // Revenue Chart (Top)
+            const ctxRev = document.getElementById('revenueChart').getContext('2d');
+            revenueChartInst = new Chart(ctxRev, {
+                type: 'bar',
+                data: {
+                    labels: ['1\nHMon', '2\nTue', '3\nWed', '4\nThu', '5\nFri', '6\nSat', '7\nSun'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [300, 700, 300, 0, 0, 0, 0],
+                        backgroundColor: '#125dcd', // brand blue
+                        borderRadius: 2,
+                        barPercentage: 0.5,
+                        categoryPercentage: 0.8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '₹' + context.parsed.y;
+                                }
+                            }
+                        },
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 2000,
+                            ticks: {
+                                stepSize: 500,
+                                font: { size: 10, family: "'Manrope', sans-serif" },
+                                color: '#6a567e',
+                                padding: 5,
+                                callback: function(val) {
+                                    if(val === 0) return '';
+                                    return '₹' + val;
+                                }
+                            },
+                            grid: { drawBorder: false, color: '#f0f0f0' },
+                            border: { display: false }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: true, borderColor: '#d7d7d7' },
+                            ticks: {
+                                color: '#3d3d3d',
+                                font: {
+                                    family: "'Inter', sans-serif",
+                                    size: 11
+                                },
+                                callback: function(value, index, values) {
+                                    const lines = this.getLabelForValue(value).split('\n');
+                                    return lines;
+                                }
+                            }
+                        }
+                    },
+                    onHover: (e, elements) => {
+                        // Optional hover effect
+                        e.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+                    }
+                }
+            });
+
+            // Orders Chart (Bottom)
+            const ctxOrd = document.getElementById('ordersChart').getContext('2d');
+            
+            const hoursLabels = Array.from({length: 24}, (_, i) => {
+                if (i % 3 === 0) return `${i}:00`; 
+                return ''; 
+            });
+            const hoursData = [1, 2, 2, 2, 3, 5, 4, 7, 6, 11, 15, 16, 11, 9, 8, 5, 5, 6, 4, 3, 1, 0, 2, 1];
+
+            ordersChartInst = new Chart(ctxOrd, {
+                type: 'bar',
+                data: {
+                    labels: hoursLabels,
+                    datasets: [{
+                        label: 'Orders',
+                        data: hoursData,
+                        backgroundColor: '#d8e5f8',
+                        hoverBackgroundColor: '#125dcd',
+                        borderRadius: 2,
+                        barPercentage: 0.9,
+                        categoryPercentage: 1.0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return context[0].dataIndex + ':00 hr';
+                                },
+                                label: function(context) {
+                                    return context.parsed.y + ' orders';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 20,
+                            ticks: {
+                                maxTicksLimit: 5,
+                                font: { size: 10, family: "'Manrope', sans-serif" },
+                                color: '#6a567e',
+                                padding: 5
+                            },
+                            grid: { drawBorder: false, color: '#f0f0f0' },
+                            border: { display: false }
+                        },
+                        x: {
+                            grid: { display: false },
+                            border: { display: true, color: '#d7d7d7' },
+                            ticks: {
+                                font: { size: 10, family: "'Manrope', sans-serif" },
+                                color: '#6a567e',
+                                maxRotation: 0,
+                                callback: function(val, index) {
+                                    return this.getLabelForValue(val);
+                                }
+                            }
+                        }
+                    },
+                    onClick: (e, elements) => {
+                        if(elements.length > 0) {
+                            const datasetIndex = elements[0].datasetIndex;
+                            const index = elements[0].index;
+                            
+                            const currentStatus = document.getElementById('selectedOrderStatus').innerText;
+                            const activeBg = getStatusColor(currentStatus);
+                            const defaultBg = getBaseColor(currentStatus);
+                            
+                            const bgColors = ordersChartInst.data.datasets[datasetIndex].data.map((_, i) => i === index ? activeBg : defaultBg);
+                            ordersChartInst.data.datasets[datasetIndex].backgroundColor = bgColors;
+                            ordersChartInst.update();
+                        }
+                    }
+                }
+            });
+        }
+
+        function getStatusColor(status) {
+            if(status === 'Cancelled') return '#e11d48';
+            if(status === 'Pending Payment') return '#d97706';
+            return '#125dcd';
+        }
+
+        function getBaseColor(status) {
+            if(status === 'Cancelled') return '#ffe4e6';
+            if(status === 'Pending Payment') return '#fef3c7';
+            return '#d8e5f8';
+        }
+
+        function updateOrdersChartColor(status) {
+            if(!ordersChartInst) return;
+            const activeColor = getStatusColor(status);
+            const baseColor = getBaseColor(status);
+            
+            // Remove blue hover from cancelled, meaning dynamically adjust the hover element itself.
+            ordersChartInst.data.datasets[0].hoverBackgroundColor = activeColor;
+            
+            const bgColors = ordersChartInst.data.datasets[0].data.map(() => baseColor);
+            ordersChartInst.data.datasets[0].backgroundColor = bgColors;
+            
+            ordersChartInst.options.plugins.tooltip.backgroundColor = 'white';
+            ordersChartInst.options.plugins.tooltip.titleColor = activeColor;
+            ordersChartInst.options.plugins.tooltip.bodyColor = activeColor;
+            ordersChartInst.update();
+        }
+
+        function updateChartsBasedOnTimeRange(range) {
+            if(!revenueChartInst) return;
+            
+            if(range === 'Monthly') {
+                revenueChartInst.data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+                revenueChartInst.data.datasets[0].data = [5000, 7000, 8000, 6000, 9000, 12000, 15000];
+            } else if (range === 'Weekly' || range === 'Custom') {
+                revenueChartInst.data.labels = ['1\nMon', '2\nTue', '3\nWed', '4\nThu', '5\nFri', '6\nSat', '7\nSun'];
+                revenueChartInst.data.datasets[0].data = [300, 700, 300, 0, 0, 0, 0];
+            }
+            revenueChartInst.update();
+        }
+
+        function changePeriod(dir) {
+            if (activeDateSelectionMode === 'Weekly') {
+                if(!revenueChartInst) return;
+                const newLabels = revenueChartInst.data.labels.map(l => {
+                    const parts = l.split('\n');
+                    const oldNum = parseInt(parts[0]);
+                    let newNum = oldNum + (dir * 7);
+                    // rudimentary wrap for visualization
+                    if(newNum > 30) newNum -= 30;
+                    if(newNum <= 0) newNum += 30;
+                    return newNum + '\n' + parts[1];
+                });
+                revenueChartInst.data.labels = newLabels;
+                revenueChartInst.update();
+            }
+        }
+
+        // Init on load
+        window.addEventListener('DOMContentLoaded', initCharts);
+
+    </script>
+</body>
+</html>

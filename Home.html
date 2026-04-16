@@ -43,6 +43,11 @@
             opacity: 1;
             pointer-events: auto;
         }
+
+        /* Custom scrollbar for small dropdowns */
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #D7D7D7; border-radius: 2px; }
     </style>
 </head>
 <body class="bg-gray-50 flex items-center justify-center min-h-screen font-inter">
@@ -66,10 +71,18 @@
             </div>
             
             <!-- Total Revenue Panel -->
-            <div class="px-[18px] mt-3 flex flex-col gap-[13px] absolute top-[83px] w-[294px]">
-                <div class="flex flex-col items-start gap-1">
-                    <p class="text-[14px] text-black font-inter tracking-[0.04px] leading-[1.5]">Total Revenue </p>
-                    <p class="text-[24px] font-semibold text-[var(--text-heading)] font-inter tracking-[0.04px] leading-[32px]">₹5,00,000</p>
+            <div class="px-[18px] mt-3 flex flex-col gap-[13px] absolute top-[83px] w-full pr-6">
+                <div class="flex items-center justify-between w-full">
+                    <div class="flex flex-col items-start gap-1">
+                        <p class="text-[14px] text-black font-inter tracking-[0.04px] leading-[1.5]">Total Revenue </p>
+                        <p class="text-[24px] font-semibold text-[var(--text-heading)] font-inter tracking-[0.04px] leading-[32px]">₹5,00,000</p>
+                    </div>
+                    <a href="DashboardDetails.html" class="flex items-center gap-1.5 text-[12px] text-[#125dcd] font-semibold px-3 py-1.5 bg-[#d8e5f8] rounded-full hover:opacity-80 transition-opacity">
+                        View details
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </a>
                 </div>
                 
                 <div class="flex gap-5 w-full">
@@ -94,9 +107,36 @@
 
             <!-- Today's Bookings -->
             <div class="px-4 pb-[80px]">
-                <h2 class="text-[16px] font-medium text-[var(--text-heading)] font-inter mt-6 mb-5">Today’s Booking</h2>
                 
-                <div class="flex flex-col gap-4">
+                <!-- Sticky Header Wrapper -->
+                <div class=" top-0 bg-[#f5f5f5] z-30 pt-4 pb-2 mt-2 mb-4">
+                    <h2 class="text-[16px] font-medium text-[var(--text-heading)] font-inter mb-4">Today’s Booking</h2>
+                    
+                    <!-- Search and Filter -->
+                    <div class="flex gap-2 items-center relative z-20 mb-2">
+                    <div class="flex-1 relative flex items-center px-3 py-2.5 bg-white border border-[var(--border-light)] rounded-lg focus-within:border-[var(--primary-blue)] transition-colors shadow-sm">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Search for turf" class="flex-1 bg-transparent border-none outline-none ml-2 text-[14px] text-[var(--text-heading)] font-inter" autocomplete="off">
+                        
+                        <!-- Autocomplete Dropdown -->
+                        <div id="searchDropdown" class="absolute top-full left-0 right-0 mt-1 bg-white border border-[var(--border-light)] rounded-lg shadow-lg z-30 hidden max-h-40 overflow-y-auto custom-scroll">
+                            <div class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-[14px] text-[var(--text-heading)] border-b border-gray-100 search-option">12VB - The Multi-Sports Turf (7v7)</div>
+                            <div class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-[14px] text-[var(--text-heading)] search-option">45XY - Play Field Turf</div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="openFilter()" class="w-11 h-11 flex-shrink-0 flex items-center justify-center border border-[var(--border-light)] rounded-lg bg-white shadow-sm hover:bg-gray-50 transition-colors">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-600">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <!-- End Sticky Header -->
+                
+                <div class="flex flex-col gap-4 pt-1">
                     <!-- Booking Card 1 -->
                     <div class="bg-[var(--white-pure)] rounded-xl p-4 pr-[70px] shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-1">
                         <!-- Right corner actions -->
@@ -177,6 +217,125 @@
                         </div>
                     </div>
 
+                    <!-- Booking Card 3 -->
+                    <div class="bg-[var(--white-pure)] rounded-xl p-4 pr-[70px] shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-1">
+                        <!-- Right corner actions -->
+                        <div class="absolute right-4 top-3 bottom-0 pb-3 flex flex-col items-end justify-between">
+                            <button class="w-[24px] h-[24px] rounded-full flex items-center justify-center hover:bg-gray-100 relative" onclick="toggleMenu('menu-1')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-gray-700">
+                                    <circle cx="5" cy="12" r="2"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
+                                    <circle cx="19" cy="12" r="2"></circle>
+                                </svg>
+                            </button>
+                            <div id="menu-1" class="three-dots-menu absolute top-8 right-0 w-36 bg-white rounded-lg shadow-lg border border-[var(--border-light)] py-1 z-20">
+                                <button onclick="openEditModal('card-1')" class="w-full text-left px-4 py-2 text-[14px] text-[var(--text-heading)] hover:bg-gray-50 transition-colors">Edit</button>
+                                <button onclick="openCancelModal('card-1')" class="w-full text-left px-4 py-2 text-[14px] text-red-600 hover:bg-red-50 transition-colors">Cancel Booking</button>
+                            </div>
+                            <span class="bg-[#2c7a3f] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">Booked</span>
+                        </div>
+
+                        <div class="flex justify-start items-start mb-1">
+                            <div class="text-[var(--primary-blue)] font-bold text-[14px] font-inter">12VB</div>
+                        </div>
+
+                        <div class="flex justify-start items-center mb-1">
+                            <h3 class="text-[15px] font-semibold text-[var(--text-heading)] font-inter truncate pr-2">The Multi-Sports Turf (7v7)</h3>
+                        </div>
+
+                        <div class="text-[13px] text-[var(--text-body)] font-inter mb-3 flex items-center gap-1 flex-wrap pr-2">
+                            <span>Anand</span>
+                            <span class="text-[10px] text-gray-300">•</span>
+                            <span>12 Jan 2026</span>
+                            <span class="text-[10px] text-gray-300">•</span>
+                            <span>5-6pm</span>
+                        </div>
+
+                        <div class="border-t border-[var(--bg-container)] pt-3 flex justify-start items-center text-[13px] font-inter pr-2 gap-2">
+                            <span class="text-[var(--text-body)]">Paid/Total:</span>
+                            <span class="text-[var(--text-heading)] font-medium">₹<span class="advance-amt">200</span> / 1000</span>
+                        </div>
+                    </div>
+
+                    <!-- Booking Card 5 -->
+                    <div class="bg-[var(--white-pure)] rounded-xl p-4 pr-[70px] shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-1">
+                        <!-- Right corner actions -->
+                        <div class="absolute right-4 top-3 bottom-0 pb-3 flex flex-col items-end justify-between">
+                            <button class="w-[24px] h-[24px] rounded-full flex items-center justify-center hover:bg-gray-100 relative" onclick="toggleMenu('menu-1')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-gray-700">
+                                    <circle cx="5" cy="12" r="2"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
+                                    <circle cx="19" cy="12" r="2"></circle>
+                                </svg>
+                            </button>
+                            <div id="menu-1" class="three-dots-menu absolute top-8 right-0 w-36 bg-white rounded-lg shadow-lg border border-[var(--border-light)] py-1 z-20">
+                                <button onclick="openEditModal('card-1')" class="w-full text-left px-4 py-2 text-[14px] text-[var(--text-heading)] hover:bg-gray-50 transition-colors">Edit</button>
+                                <button onclick="openCancelModal('card-1')" class="w-full text-left px-4 py-2 text-[14px] text-red-600 hover:bg-red-50 transition-colors">Cancel Booking</button>
+                            </div>
+                            <span class="bg-[#2c7a3f] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">Booked</span>
+                        </div>
+
+                        <div class="flex justify-start items-start mb-1">
+                            <div class="text-[var(--primary-blue)] font-bold text-[14px] font-inter">12VB</div>
+                        </div>
+
+                        <div class="flex justify-start items-center mb-1">
+                            <h3 class="text-[15px] font-semibold text-[var(--text-heading)] font-inter truncate pr-2">The Multi-Sports Turf (7v7)</h3>
+                        </div>
+
+                        <div class="text-[13px] text-[var(--text-body)] font-inter mb-3 flex items-center gap-1 flex-wrap pr-2">
+                            <span>Anand</span>
+                            <span class="text-[10px] text-gray-300">•</span>
+                            <span>12 Jan 2026</span>
+                            <span class="text-[10px] text-gray-300">•</span>
+                            <span>5-6pm</span>
+                        </div>
+
+                        <div class="border-t border-[var(--bg-container)] pt-3 flex justify-start items-center text-[13px] font-inter pr-2 gap-2">
+                            <span class="text-[var(--text-body)]">Paid/Total:</span>
+                            <span class="text-[var(--text-heading)] font-medium">₹<span class="advance-amt">200</span> / 1000</span>
+                        </div>
+                    </div>
+
+                    <!-- Booking Card 5 -->
+                    <div class="bg-[var(--white-pure)] rounded-xl p-4 pr-[70px] shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-1">
+                        <!-- Right corner actions -->
+                        <div class="absolute right-4 top-3 bottom-0 pb-3 flex flex-col items-end justify-between">
+                            <button class="w-[24px] h-[24px] rounded-full flex items-center justify-center hover:bg-gray-100 relative" onclick="toggleMenu('menu-1')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-gray-700">
+                                    <circle cx="5" cy="12" r="2"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
+                                    <circle cx="19" cy="12" r="2"></circle>
+                                </svg>
+                            </button>
+                            <div id="menu-1" class="three-dots-menu absolute top-8 right-0 w-36 bg-white rounded-lg shadow-lg border border-[var(--border-light)] py-1 z-20">
+                                <button onclick="openEditModal('card-1')" class="w-full text-left px-4 py-2 text-[14px] text-[var(--text-heading)] hover:bg-gray-50 transition-colors">Edit</button>
+                                <button onclick="openCancelModal('card-1')" class="w-full text-left px-4 py-2 text-[14px] text-red-600 hover:bg-red-50 transition-colors">Cancel Booking</button>
+                            </div>
+                            <span class="bg-[#2c7a3f] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">Booked</span>
+                        </div>
+
+                        <div class="flex justify-start items-start mb-1">
+                            <div class="text-[var(--primary-blue)] font-bold text-[14px] font-inter">12VB</div>
+                        </div>
+
+                        <div class="flex justify-start items-center mb-1">
+                            <h3 class="text-[15px] font-semibold text-[var(--text-heading)] font-inter truncate pr-2">The Multi-Sports Turf (7v7)</h3>
+                        </div>
+
+                        <div class="text-[13px] text-[var(--text-body)] font-inter mb-3 flex items-center gap-1 flex-wrap pr-2">
+                            <span>Anand</span>
+                            <span class="text-[10px] text-gray-300">•</span>
+                            <span>12 Jan 2026</span>
+                            <span class="text-[10px] text-gray-300">•</span>
+                            <span>5-6pm</span>
+                        </div>
+
+                        <div class="border-t border-[var(--bg-container)] pt-3 flex justify-start items-center text-[13px] font-inter pr-2 gap-2">
+                            <span class="text-[var(--text-body)]">Paid/Total:</span>
+                            <span class="text-[var(--text-heading)] font-medium">₹<span class="advance-amt">200</span> / 1000</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -282,16 +441,168 @@
                     </button>
                 </div>
             </div>
+        </div>        <!-- Filter Bottom Sheet -->
+        <div id="filterOverlay" class="fixed inset-0 bg-black/40 z-[60] modal-overlay" onclick="closeFilter()"></div>
+        <div id="filterSheet" class="fixed bottom-0 left-1/2 -translate-x-1/2 translate-y-[100%] transition-transform duration-300 ease-out w-full max-w-[430px] bg-[#f9f9f9] rounded-t-3xl z-[70] flex flex-col h-[85vh] shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+            
+            <!-- Sheet Header -->
+            <div class="flex justify-between items-center px-5 py-4 border-b border-[var(--border-light)] bg-white rounded-t-3xl shrink-0">
+                <h2 class="text-[18px] font-medium text-[var(--text-heading)] font-inter">Availability</h2>
+                <button onclick="closeFilter()" class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Sheet Content -->
+            <div class="p-5 overflow-y-auto flex-1 flex flex-col gap-6">
+                
+                <!-- Turf Selection -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-[14px] font-semibold text-[var(--text-heading)] font-inter">Select Your Turf</label>
+                    <div class="relative">
+                        <select class="w-full bg-white border border-[var(--border-light)] rounded-lg px-4 py-3 outline-none focus:border-[var(--primary-blue)] appearance-none font-inter text-[15px] text-[var(--text-heading)] pr-10">
+                            <option>Select</option>
+                            <option>The Multi-Sports Turf</option>
+                            <option>Play Field Turf</option>
+                            <option>Olympia Arena</option>
+                        </select>
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date Picker -->
+                <div class="relative bg-white border border-[var(--border-light)] rounded-lg px-4 py-2 flex items-center gap-3 cursor-pointer" onclick="openDatePicker()">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-600 pointer-events-none">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <div class="flex flex-col flex-1 pl-1 pointer-events-none">
+                        <span class="text-[12px] text-[var(--text-body)] font-inter leading-tight pointer-events-none">Date</span>
+                        <input type="text" readonly id="filter-date-display" value="17 Jan 2026" class="w-full outline-none font-medium text-[15px] font-inter text-[var(--text-heading)] bg-transparent pointer-events-none cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- Preferred Time -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-[14px] font-semibold text-[var(--text-heading)] font-inter">Preferred Time</label>
+                    <div class="flex items-center gap-3">
+                        <button class="text-gray-500 hover:text-gray-800">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6V20a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                        <div class="relative flex-1">
+                            <select class="w-full h-full bg-white border border-[var(--border-light)] rounded-lg pl-3 pr-8 py-2.5 outline-none font-medium font-inter text-[15px] appearance-none">
+                                <option>14:00</option>
+                                <option>14:30</option>
+                                <option>15:00</option>
+                            </select>
+                            <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        <span class="text-gray-400">→</span>
+                        <div class="relative flex-1">
+                            <select class="w-full h-full bg-white border border-[var(--border-light)] rounded-lg pl-3 pr-8 py-2.5 outline-none font-medium font-inter text-[15px] appearance-none">
+                                <option>16:00</option>
+                                <option>16:30</option>
+                                <option>17:00</option>
+                            </select>
+                            <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter by status -->
+                <div class="flex flex-col gap-2 mb-6">
+                    <label class="text-[14px] font-semibold text-[var(--text-heading)] font-inter">Filter by</label>
+                    <div class="flex gap-2 flex-wrap">
+                        <button class="px-4 py-2 bg-white border border-[var(--border-light)] rounded-lg text-[13px] font-medium font-inter hover:bg-gray-50 filter-chip">Booked</button>
+                        <button class="px-4 py-2 bg-white border border-[var(--border-light)] rounded-lg text-[13px] font-medium font-inter hover:bg-gray-50 filter-chip">Cancelled</button>
+                        <button class="px-4 py-2 bg-white border border-[var(--border-light)] rounded-lg text-[13px] font-medium font-inter hover:bg-gray-50 filter-chip">Pending</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sheet Footer -->
+            <div class="px-5 py-4 border-t border-[var(--border-light)] bg-white flex shrink-0 gap-4 w-full">
+                <button onclick="closeFilter()" class="flex-1 py-3 text-[var(--text-heading)] font-medium font-inter hover:bg-gray-50 rounded-lg">Reset</button>
+                <button onclick="closeFilter()" class="flex-1 py-3 bg-[var(--primary-blue)] text-white font-medium rounded-lg font-inter shadow-md hover:bg-[var(--primary-blue-active)]">Show (12) turf</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Date Picker Bottom Sheet (Stacked above filter) -->
+    <div id="dpOverlay" class="fixed inset-0 bg-black/40 z-[90] modal-overlay" onclick="closeDatePicker()"></div>
+    <div id="dpSheet" class="fixed bottom-0 left-1/2 -translate-x-1/2 translate-y-[100%] transition-transform duration-300 ease-out w-full max-w-[430px] bg-[#f5f5f5] rounded-t-3xl z-[100] flex flex-col shadow-[0_-4px_20px_rgba(0,0,0,0.1)] pt-2 pb-5">
+        
+        <div class="px-4 pt-5 pb-2 flex justify-between items-center w-full">
+            <!-- Month Control -->
+            <div class="flex items-center gap-1">
+                <button onclick="changeDpMonth(-1)" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <div class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-gray-200 cursor-pointer text-[14px] font-medium text-gray-800 min-w-[70px] justify-center">
+                    <span id="dp-month-lbl" class="select-none font-inter text-gray-700">Jan</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <button onclick="changeDpMonth(1)" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+            </div>
+            <!-- Year Control -->
+            <div class="flex items-center gap-1">
+                <button onclick="changeDpYear(-1)" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <div class="flex items-center gap-1 px-3 py-2 rounded-full hover:bg-gray-200 cursor-pointer text-[14px] font-medium text-gray-800 min-w-[80px] justify-center">
+                    <span id="dp-year-lbl" class="select-none font-inter text-gray-700">2026</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <button onclick="changeDpYear(1)" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+            </div>
         </div>
 
-        <!-- Toaster -->
-        <div id="toast" class="bg-[var(--primary-blue-dark)] text-white px-6 py-3 rounded-lg text-[14px] font-medium flex items-center gap-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-            <span id="toastMsg">Slot has been Cancelled Successfully</span>
+        <!-- Days Header -->
+        <div class="grid grid-cols-7 px-4 mb-2">
+            <div class="text-center text-[15px] text-gray-800 w-10 h-10 flex items-center justify-center mx-auto">S</div>
+            <div class="text-center text-[15px] text-gray-800 w-10 h-10 flex items-center justify-center mx-auto">M</div>
+            <div class="text-center text-[15px] text-gray-800 w-10 h-10 flex items-center justify-center mx-auto">T</div>
+            <div class="text-center text-[15px] text-gray-800 w-10 h-10 flex items-center justify-center mx-auto">W</div>
+            <div class="text-center text-[15px] text-gray-800 w-10 h-10 flex items-center justify-center mx-auto">T</div>
+            <div class="text-center text-[15px] text-gray-800 w-10 h-10 flex items-center justify-center mx-auto">F</div>
+            <div class="text-center text-[15px] text-gray-800 w-10 h-10 flex items-center justify-center mx-auto">S</div>
         </div>
 
+        <!-- Dates Grid -->
+        <div id="dp-grid" class="grid grid-cols-7 px-4 gap-y-2 mb-4">
+            <!-- Rendered by JS -->
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="px-5 pb-2 pt-3 flex justify-end gap-3">
+            <button onclick="closeDatePicker()" class="px-5 py-2 text-[14px] font-medium text-[var(--primary-blue)] hover:bg-blue-50 rounded-full transition-colors font-inter">Cancel</button>
+            <button onclick="applyDatePicker()" class="px-5 py-2 text-[14px] font-medium text-[var(--primary-blue)] hover:bg-blue-50 rounded-full transition-colors font-inter">OK</button>
+        </div>
     </div>
 
     <!-- Scripts -->
@@ -458,6 +769,152 @@
                 }, 3000);
             }
         }
+
+        // Search Input Logic
+        const searchInput = document.getElementById('searchInput');
+        const searchDropdown = document.getElementById('searchDropdown');
+        
+        if (searchInput && searchDropdown) {
+            searchInput.addEventListener('focus', () => {
+                if(searchInput.value) searchDropdown.classList.remove('hidden');
+            });
+            
+            searchInput.addEventListener('input', () => {
+                if(searchInput.value) {
+                    searchDropdown.classList.remove('hidden');
+                } else {
+                    searchDropdown.classList.add('hidden');
+                }
+            });
+
+            document.querySelectorAll('.search-option').forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    searchInput.value = e.target.innerText;
+                    searchDropdown.classList.add('hidden');
+                });
+            });
+
+            // Click outside search
+            document.addEventListener('click', (e) => {
+                if(!e.target.closest('.relative.flex.items-center')) {
+                    searchDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Filter Bottom Sheet Logic
+        function openFilter() {
+            const overlay = document.getElementById('filterOverlay');
+            const sheet = document.getElementById('filterSheet');
+            if(overlay) overlay.classList.add('open');
+            if(sheet) {
+                sheet.classList.remove('translate-y-[100%]');
+                sheet.classList.add('translate-y-0');
+            }
+        }
+        function closeFilter() {
+            const overlay = document.getElementById('filterOverlay');
+            const sheet = document.getElementById('filterSheet');
+            if(sheet) {
+                sheet.classList.remove('translate-y-0');
+                sheet.classList.add('translate-y-[100%]');
+            }
+            if(overlay) overlay.classList.remove('open');
+        }
+
+        // Date Picker JavaScript
+        let dpDate = new Date(2026, 0, 17); // Target initial
+        let dpViewMonth = dpDate.getMonth();
+        let dpViewYear = dpDate.getFullYear();
+
+        function openDatePicker() {
+            renderDatePicker();
+            const overlay = document.getElementById('dpOverlay');
+            const sheet = document.getElementById('dpSheet');
+            if(overlay) overlay.classList.add('open');
+            if(sheet) {
+                sheet.classList.remove('translate-y-[100%]');
+                sheet.classList.add('translate-y-0');
+            }
+        }
+
+        function closeDatePicker() {
+            const overlay = document.getElementById('dpOverlay');
+            const sheet = document.getElementById('dpSheet');
+            if(sheet) {
+                sheet.classList.remove('translate-y-0');
+                sheet.classList.add('translate-y-[100%]');
+            }
+            if(overlay) overlay.classList.remove('open');
+        }
+
+        function changeDpMonth(delta) {
+            dpViewMonth += delta;
+            if (dpViewMonth > 11) { dpViewMonth = 0; dpViewYear++; }
+            if (dpViewMonth < 0) { dpViewMonth = 11; dpViewYear--; }
+            renderDatePicker();
+        }
+
+        function changeDpYear(delta) {
+            dpViewYear += delta;
+            renderDatePicker();
+        }
+
+        function selectDpDate(y, m, d) {
+            dpDate = new Date(y, m, d);
+            renderDatePicker();
+        }
+
+        function applyDatePicker() {
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const formatted = `${dpDate.getDate() < 10 ? '0': ''}${dpDate.getDate()} ${months[dpDate.getMonth()]} ${dpDate.getFullYear()}`;
+            const input = document.getElementById('filter-date-display');
+            if(input) input.value = formatted;
+            closeDatePicker();
+        }
+
+        function renderDatePicker() {
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            document.getElementById('dp-month-lbl').textContent = months[dpViewMonth];
+            document.getElementById('dp-year-lbl').textContent = dpViewYear;
+
+            const grid = document.getElementById('dp-grid');
+            grid.innerHTML = '';
+            
+            const firstDay = new Date(dpViewYear, dpViewMonth, 1).getDay();
+            const daysInMonth = new Date(dpViewYear, dpViewMonth + 1, 0).getDate();
+            const daysInPrev = new Date(dpViewYear, dpViewMonth, 0).getDate();
+            
+            // Previous month padding
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const d = daysInPrev - i;
+                grid.innerHTML += `<div class="w-10 h-10 flex items-center justify-center mx-auto text-[15px] font-inter text-gray-300 pointer-events-none cursor-default">${d}</div>`;
+            }
+            
+            // Current month days
+            for (let d = 1; d <= daysInMonth; d++) {
+                const isSelected = (d === dpDate.getDate() && dpViewMonth === dpDate.getMonth() && dpViewYear === dpDate.getFullYear());
+                const clx = isSelected ? 'bg-[#125dcd] text-white rounded-full' : 'text-gray-800 hover:bg-gray-100 rounded-full cursor-pointer transition-colors';
+                grid.innerHTML += `<div class="w-10 h-10 flex items-center justify-center mx-auto text-[15px] font-inter ${clx}" onclick="selectDpDate(${dpViewYear}, ${dpViewMonth}, ${d})">${d}</div>`;
+            }
+            
+            // Add trailing days
+            const trailing = 42 - (firstDay + daysInMonth);
+            for (let i = 1; i <= trailing; i++) {
+                grid.innerHTML += `<div class="w-10 h-10 flex items-center justify-center mx-auto text-[15px] font-inter text-gray-300 pointer-events-none cursor-default">${i}</div>`;
+            }
+        }
+
+        // Toggle filter chips active state
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                this.classList.toggle('bg-[var(--primary-blue)]');
+                this.classList.toggle('text-white');
+                this.classList.toggle('border-[var(--primary-blue)]');
+                this.classList.toggle('bg-white');
+                this.classList.toggle('hover:bg-gray-50');
+            });
+        });
     </script>
 </body>
 </html>

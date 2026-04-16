@@ -439,42 +439,34 @@
   </div>
 </div>
 
-<!-- AVAILABLE SLOT sheet (click on any available/selected slot) -->
-<div id="bs-available" class="bs-overlay" onclick="closeBS('available')">
+<!-- EDIT PRICE sheet -->
+<div id="bs-edit-price" class="bs-overlay" onclick="closeBS('edit-price')" style="z-index:70;">
   <div class="bs-panel px-5 pb-6 pt-4" onclick="event.stopPropagation()">
     <!-- Close -->
     <div class="flex justify-end mb-3">
-      <button onclick="closeBS('available')"><i data-lucide="x" class="w-5 h-5 text-text-heading"></i></button>
+      <button onclick="closeBS('edit-price')"><i data-lucide="x" class="w-5 h-5 text-text-heading"></i></button>
     </div>
     <!-- Title + meta -->
     <div class="mb-4">
-      <h2 class="text-[20px] font-semibold text-text-heading mb-1">Fabzia Arena</h2>
-      <p class="text-sm text-[#4d4d4d]" id="avail-meta">12 Jan 2026 • 5-6pm • 5v5</p>
+      <h2 class="text-[20px] font-semibold text-text-heading mb-1">Change Slot Price</h2>
+      <p class="text-sm text-[#4d4d4d]" id="edit-price-meta">12 Jan 2026 • 5-6pm • 5v5</p>
     </div>
     <!-- Slot price field -->
     <label class="text-sm font-semibold text-text-heading block mb-2">Slot Price</label>
     <div class="slot-input-wrap mb-1" style="justify-content:space-between;">
       <div class="flex items-center gap-2 flex-1">
         <span class="slot-input-symbol">₹</span>
-        <input id="avail-price-input" type="number"
-               style="font-weight:600; font-size:16px; color:#4d4d4d;"
-               oninput="document.getElementById('avail-price-display').textContent=this.value">
+        <input id="edit-price-input" type="number"
+               style="font-weight:600; font-size:16px; color:#4d4d4d;">
       </div>
       <i data-lucide="pencil" class="w-5 h-5 text-text-body shrink-0"></i>
     </div>
-    <!-- hidden display span used to sync price label -->
-    <span id="avail-price-display" style="display:none;"></span>
     <!-- Actions -->
     <div class="flex flex-col gap-2 mt-5">
-      <button id="avail-book-btn"
-              onclick="bookAvailableSlot()"
+      <button onclick="confirmSlotPriceChange()"
               class="w-full h-[52px] rounded-lg text-base font-semibold text-white"
               style="background:#125dcd; border:none;">
-        Book Slot
-      </button>
-      <button onclick="openBlockFromAvailable()"
-              class="w-full h-[52px] flex items-center justify-center text-base font-medium underline text-text-heading">
-        Block Slot
+        Confirm Price
       </button>
     </div>
   </div>
@@ -482,15 +474,26 @@
 
 <!-- Confirm (selected slots) Sheet -->
 <div id="bs-confirm" class="bs-overlay" onclick="closeBS('confirm')">
-  <div class="bs-panel" onclick="event.stopPropagation()">
-    <div class="bs-header">
-      <span class="bs-title">Confirm Your Slot</span>
-      <button onclick="closeBS('confirm')"><i data-lucide="x" class="w-5 h-5"></i></button>
+  <div class="bs-panel flex flex-col max-h-[85vh]" onclick="event.stopPropagation()">
+    <div class="bs-header shrink-0">
+      <span class="bs-title">Confirm Your Slots</span>
+      <div class="flex items-center gap-4">
+        <button id="toggle-edit-pricing-btn" onclick="toggleEditPricingMode()" class="text-sm font-medium text-[#125dcd] underline">Edit Pricing</button>
+        <button onclick="closeBS('confirm')"><i data-lucide="x" class="w-5 h-5 text-text-heading"></i></button>
+      </div>
     </div>
-    <div id="confirm-list" class="flex flex-col"></div>
-    <div class="p-4">
-      <button onclick="closeBS('confirm')" class="w-full h-12 rounded-lg text-base font-semibold"
+    <div class="px-4 py-3 border-b border-container-border flex items-center justify-between shrink-0" id="confirm-select-all-wrap" style="display:none;">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="toggleSelectAllConfirm()">
+        <div id="confirm-chk-all" class="w-5 h-5 rounded border border-[#d7d7d7] flex items-center justify-center"></div>
+        <span class="text-sm font-medium text-text-heading">Select All</span>
+      </div>
+    </div>
+    <div id="confirm-list" class="flex flex-col overflow-y-auto"></div>
+    <div class="p-4 shrink-0 bg-white">
+      <button id="confirm-close-btn" onclick="closeBS('confirm')" class="w-full h-12 rounded-lg text-base font-semibold"
               style="background-color:var(--primary-blue-dark); color:var(--white-pure);">Close</button>
+      <button id="confirm-edit-price-btn" onclick="openBulkEditPrice()" class="w-full h-12 rounded-lg text-base font-semibold hidden opacity-50"
+              style="background-color:#125dcd; color:var(--white-pure);" disabled>Change Price</button>
     </div>
   </div>
 </div>
@@ -661,25 +664,9 @@
     const metaStr = `${calendarDates[selectedDateIndex]?.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} • ${s.time} • ${selectedSquad}`;
 
     if (s.status==='available' || s.status==='selected') {
-      // Open the available-slot bottom sheet
-      const isSelected = s.status === 'selected';
-      document.getElementById('avail-meta').textContent = metaStr;
-      document.getElementById('avail-price-display').textContent = s.price;
-      document.getElementById('avail-price-input').value = s.price;
-      // Show Book Slot as filled-blue if already selected, outline if not
-      const bookBtn = document.getElementById('avail-book-btn');
-      if (isSelected) {
-        bookBtn.textContent = '✓ Booked';
-        bookBtn.style.background = '#e8f0fe';
-        bookBtn.style.color = '#125dcd';
-        bookBtn.style.border = '2px solid #125dcd';
-      } else {
-        bookBtn.textContent = 'Book Slot';
-        bookBtn.style.background = '#125dcd';
-        bookBtn.style.color = '#fff';
-        bookBtn.style.border = 'none';
-      }
-      openBS('available'); return;
+      s.status = s.status === 'selected' ? 'available' : 'selected';
+      renderSlots(); renderCalendar();
+      return;
     }
 
     if (s.status==='booked') {
@@ -715,35 +702,52 @@
     openBS('edit-details');
   }
 
-  /* ── Available slot sheet actions ── */
-  function bookAvailableSlot() {
-    if (activeSlotId !== null) {
-      const slots = allDaysSlots[selectedDateIndex];
-      const s = slots.find(x => x.id === activeSlotId);
-      if (s) {
-        // Toggle: if already selected, unselect; otherwise select
-        s.status = s.status === 'selected' ? 'available' : 'selected';
-        // Update price if user changed it in the field
-        const newPrice = parseInt(document.getElementById('avail-price-input').value);
-        if (!isNaN(newPrice) && newPrice > 0) s.price = newPrice;
-      }
-    }
-    closeBS('available');
-    renderSlots(); renderCalendar();
-    lucide.createIcons();
+  /* ── Edit Pricing Sheet Logic ── */
+  let singleEditDateIndex = null;
+  let singleEditSlotId = null;
+
+  function openBulkEditPrice() {
+    if (confirmSelectedSlotIds.size === 0) return;
+    singleEditSlotId = null;
+    singleEditDateIndex = null;
+    document.getElementById('edit-price-meta').textContent = confirmSelectedSlotIds.size + ' Slots Selected';
+    document.getElementById('edit-price-input').value = '';
+    openBS('edit-price');
   }
 
-  function openBlockFromAvailable() {
-    if (activeSlotId !== null) {
-      const slots = allDaysSlots[selectedDateIndex];
-      const s = slots.find(x => x.id === activeSlotId);
-      if (s) {
-        const metaStr = `${calendarDates[selectedDateIndex]?.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} • ${s.time} • ${selectedSquad}`;
-        document.getElementById('block-meta').textContent = metaStr;
-      }
+  function openSingleEditPrice(id, dateIndex) {
+    singleEditSlotId = id;
+    singleEditDateIndex = dateIndex;
+    const slots = allDaysSlots[dateIndex];
+    const s = slots.find(x => x.id === id);
+    if (s) {
+       const dateStr = calendarDates[dateIndex].toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+       document.getElementById('edit-price-meta').textContent = `${dateStr} • ${s.time} • ${selectedSquad}`;
+       document.getElementById('edit-price-input').value = s.price;
     }
-    // Keep available sheet open behind; block-confirm is z-70
-    openBS('block-confirm');
+    openBS('edit-price');
+  }
+
+  function confirmSlotPriceChange() {
+    const newPrice = parseInt(document.getElementById('edit-price-input').value);
+    if (isNaN(newPrice) || newPrice <= 0) return;
+
+    if (singleEditSlotId !== null && singleEditDateIndex !== null) {
+      const s = allDaysSlots[singleEditDateIndex].find(x => x.id === singleEditSlotId);
+      if (s) s.price = newPrice;
+    } else {
+      confirmSelectedSlotIds.forEach(id => {
+         for (let i=0;i<30;i++) {
+           const s = allDaysSlots[i].find(x => x.id === id);
+           if (s && (s.status==='selected' || s.status==='partial-selected')) s.price = newPrice;
+         }
+      });
+      toggleEditPricingMode(); // exit edit mode after bulk edit
+    }
+    closeBS('edit-price');
+    renderConfirm();
+    renderSlots();
+    updateBottom();
   }
 
   function confirmEditDetails() {
@@ -796,7 +800,6 @@
       }
     }
     closeBS('block-confirm');
-    closeBS('available');
     renderSlots(); renderCalendar();
     lucide.createIcons();
   }
@@ -902,6 +905,78 @@
     document.getElementById('bs-'+id).classList.remove('open');
   }
 
+  let isEditingPricing = false;
+  let confirmSelectedSlotIds = new Set();
+  
+  function toggleEditPricingMode() {
+    isEditingPricing = !isEditingPricing;
+    confirmSelectedSlotIds.clear();
+    
+    const btn = document.getElementById('toggle-edit-pricing-btn');
+    btn.textContent = isEditingPricing ? 'Cancel' : 'Edit Pricing';
+    
+    document.getElementById('confirm-select-all-wrap').style.display = isEditingPricing ? 'flex' : 'none';
+    
+    if (isEditingPricing) {
+      document.getElementById('confirm-close-btn').classList.add('hidden');
+      document.getElementById('confirm-edit-price-btn').classList.remove('hidden');
+    } else {
+      document.getElementById('confirm-close-btn').classList.remove('hidden');
+      document.getElementById('confirm-edit-price-btn').classList.add('hidden');
+    }
+    
+    renderConfirm();
+    lucide.createIcons();
+  }
+
+  function toggleSelectAllConfirm() {
+    const allSelectedSlots = [];
+    for (let i=0;i<30;i++) {
+      allSelectedSlots.push(...allDaysSlots[i].filter(x=>x.status==='selected'||x.status==='partial-selected'));
+    }
+    if (confirmSelectedSlotIds.size === allSelectedSlots.length) {
+      confirmSelectedSlotIds.clear();
+    } else {
+      allSelectedSlots.forEach(s => confirmSelectedSlotIds.add(s.id));
+    }
+    renderConfirm();
+  }
+
+  function updateSelectAllCheckbox() {
+    const chk = document.getElementById('confirm-chk-all');
+    if (!chk) return;
+    let allSelectedCount = 0;
+    for (let i=0;i<30;i++) {
+      allSelectedCount += allDaysSlots[i].filter(x=>x.status==='selected'||x.status==='partial-selected').length;
+    }
+    if (allSelectedCount > 0 && confirmSelectedSlotIds.size === allSelectedCount) {
+      chk.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-white"></i>';
+      chk.className = 'w-5 h-5 rounded border bg-[#125dcd] border-[#125dcd] flex items-center justify-center cursor-pointer';
+    } else {
+      chk.innerHTML = '';
+      chk.className = 'w-5 h-5 rounded border border-[#d7d7d7] flex items-center justify-center cursor-pointer';
+    }
+    const bulkBtn = document.getElementById('confirm-edit-price-btn');
+    if (bulkBtn) {
+      if (confirmSelectedSlotIds.size > 0) {
+        bulkBtn.style.opacity = '1';
+        bulkBtn.disabled = false;
+      } else {
+        bulkBtn.style.opacity = '0.5';
+        bulkBtn.disabled = true;
+      }
+    }
+  }
+
+  function toggleConfirmSlotSelect(id) {
+    if (confirmSelectedSlotIds.has(id)) {
+      confirmSelectedSlotIds.delete(id);
+    } else {
+      confirmSelectedSlotIds.add(id);
+    }
+    renderConfirm();
+  }
+
   function renderConfirm() {
     const list=document.getElementById('confirm-list');
     list.innerHTML='';
@@ -909,12 +984,42 @@
       const d=calendarDates[i];
       allDaysSlots[i].filter(x=>x.status==='selected'||x.status==='partial-selected').forEach((s,idx)=>{
         const row=document.createElement('div');
-        row.className='px-4 py-2 border-b border-container-border flex flex-col gap-1';
-        const dateStr = d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-        row.innerHTML=`<div class="flex justify-between items-center"><span class="text-sm font-medium text-text-heading">${s.time}</span><span class="text-[10px] font-semibold uppercase" style="color:var(--primary-blue);">${dateStr}</span></div><span class="text-xs text-text-body">${selectedSquad} (Half ${idx%2+1})</span>`;
+        row.className='px-4 py-3 border-b border-container-border flex items-center justify-between gap-2';
+        
+        const dateStr = d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}).toUpperCase();
+        
+        let leftSide = '';
+        if (isEditingPricing) {
+          const isChecked = confirmSelectedSlotIds.has(s.id);
+          const chkClass = isChecked ? 'bg-[#125dcd] border-[#125dcd]' : 'border-[#d7d7d7]';
+          const icon = isChecked ? '<i data-lucide="check" class="w-4 h-4 text-white"></i>' : '';
+          leftSide = `
+            <div class="w-5 h-5 rounded border ${chkClass} flex items-center justify-center shrink-0 cursor-pointer" onclick="toggleConfirmSlotSelect(${s.id})">
+              ${icon}
+            </div>
+          `;
+        }
+        
+        row.innerHTML=`
+          <div class="flex items-center gap-3">
+             ${leftSide}
+             <div class="flex flex-col">
+               <span class="text-sm font-medium text-text-heading">${dateStr} | ${s.time}</span>
+               <span class="text-xs text-text-body">${selectedSquad} (Half ${idx%2+1})</span>
+             </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-semibold text-text-heading">₹${s.price}</span>
+            <button onclick="openSingleEditPrice(${s.id}, ${i})" class="w-7 h-7 flex items-center justify-center rounded bg-[#f5f5f5]">
+              <i data-lucide="pencil" class="w-4 h-4 text-text-body"></i>
+            </button>
+          </div>
+        `;
         list.appendChild(row);
       });
     }
+    lucide.createIcons();
+    updateSelectAllCheckbox();
   }
 
   /* ── Filter ── */

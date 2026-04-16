@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Invoice Details - Fabzia Turf</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="utility.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    body {
+      background-color: #f3f4f6; /* bg-gray-100 */
+      font-family: 'Inter', 'Lato', sans-serif;
+      margin: 0; padding: 0;
+      display: flex; justify-content: center;
+    }
+    .mobile-container {
+      width: 100%; max-width: 430px;
+      height: 100dvh;
+      overflow: hidden;
+      background-color: #f9fafb; /* bg-gray-50 */
+      position: relative;
+      display: flex; flex-direction: column;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Bottom Sheets */
+    .sheet-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 50;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .sheet-backdrop.open { display: block; opacity: 1; }
+
+    .bottom-sheet {
+      display: flex; position: fixed;
+      left: 50%; bottom: 0;
+      transform: translateX(-50%) translateY(100%);
+      width: 100%; max-width: 430px;
+      z-index: 60;
+      flex-direction: column;
+      transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+    }
+    .bottom-sheet.open {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .dropdown-content {
+      display: none;
+    }
+    .dropdown-content.open {
+      display: block;
+      animation: fadeIn 0.2s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fadeIn 0.15s ease-out forwards; }
+  </style>
+</head>
+<body class="text-[#1a1a1a]">
+  <div class="mobile-container">
+    
+    <!-- Top Nav -->
+    <header class="sticky top-0 z-30 bg-white flex items-center gap-3 px-2 py-2 border-b border-[#f1f5f9]">
+      <button onclick="history.back()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-700 transition-colors">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <h1 class="text-[17px] font-medium tracking-tight flex-1">Generate Invoice</h1>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 px-4 pt-6 pb-28 space-y-6 overflow-y-auto no-scrollbar">
+      
+      <!-- Search -->
+      <div>
+        <div class="flex items-center gap-3 px-4 py-3 bg-white border border-[#d1d5db] rounded-lg text-sm transition-colors focus-within:border-[var(--primary-blue)]">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="flex-shrink-0 text-gray-400">
+            <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <input type="text" placeholder="Search for Booking id" class="bg-transparent outline-none w-full text-[#1a1a1a] placeholder:text-gray-500 font-medium">
+        </div>
+      </div>
+
+      <!-- Select Turf -->
+      <div class="relative" id="turf-container">
+        <label class="block text-[14px] font-semibold text-gray-900 mb-2">Select Turf</label>
+        <button id="turf-btn" onclick="toggleDropdown('turf')" class="w-full flex items-center justify-between gap-3 px-4 py-3.5 bg-white border border-[#d1d5db] rounded-lg text-sm transition-all duration-150 focus:border-[var(--primary-blue)]">
+          <span id="turf-val" class="text-gray-600">Select Turf</span>
+          <svg id="turf-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" class="flex-shrink-0 transition-transform duration-200">
+            <path d="M5 7.5L10 12.5L15 7.5" stroke="#4b5563" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <div id="turf-list" class="dropdown-content absolute top-full left-0 right-0 mt-1 bg-white border border-[#d1d5db] rounded-lg shadow-xl z-20 overflow-hidden">
+        </div>
+      </div>
+
+      <!-- Select Booking -->
+      <div class="relative" id="booking-container">
+        <label class="block text-[14px] font-semibold text-gray-900 mb-2">Select Booking</label>
+        <button id="booking-btn" onclick="toggleDropdown('booking')" class="w-full flex items-center justify-between gap-3 px-4 py-3.5 bg-white border border-[#d1d5db] rounded-lg text-sm transition-all duration-150 focus:border-[var(--primary-blue)]">
+          <span id="booking-val" class="text-gray-600">Select Booking</span>
+          <svg id="booking-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" class="flex-shrink-0 transition-transform duration-200">
+            <path d="M5 7.5L10 12.5L15 7.5" stroke="#4b5563" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <div id="booking-list" class="dropdown-content absolute top-full left-0 right-0 mt-1 bg-white border border-[#d1d5db] rounded-lg shadow-xl z-20 overflow-hidden">
+        </div>
+      </div>
+
+      <!-- Date -->
+      <div>
+        <label class="block text-[14px] font-semibold text-gray-900 mb-2">Select date</label>
+        <button onclick="openDatePicker()" class="w-full flex items-center justify-between gap-3 px-4 py-3.5 bg-white border border-[#d1d5db] rounded-lg text-sm transition-colors focus:border-[var(--primary-blue)]">
+          <span id="date-val" class="text-gray-600">Date</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="flex-shrink-0">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="#4b5563" stroke-width="1.5" />
+            <path d="M16 2v4M8 2v4M3 10h18" stroke="#4b5563" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- GTS Number -->
+      <div class="space-y-4">
+        <label class="flex items-center gap-3 cursor-pointer select-none" onclick="toggleGts(event)">
+          <div id="gts-check" class="w-[18px] h-[18px] rounded-[3px] border-2 border-[#4b5563] bg-white flex items-center justify-center flex-shrink-0 transition-all duration-150">
+            <svg id="gts-icon" width="10" height="10" viewBox="0 0 12 12" fill="none" class="hidden">
+              <path d="M2 6.5L4.5 9L10 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <span class="text-[14px] text-gray-700">I have GST number <span class="text-gray-500">(optional)</span></span>
+        </label>
+        
+        <!-- GST Fields (Hidden by default) -->
+        <div id="gst-fields" class="hidden flex-col gap-3" onclick="event.stopPropagation()">
+          <input type="text" placeholder="Registration Number" class="w-full px-4 py-3.5 bg-white border border-[#d1d5db] rounded-lg text-sm outline-none focus:border-[var(--primary-blue)] transition-colors placeholder:text-gray-400">
+          <input type="text" placeholder="Company Name" class="w-full px-4 py-3.5 bg-white border border-[#d1d5db] rounded-lg text-sm outline-none focus:border-[var(--primary-blue)] transition-colors placeholder:text-gray-400">
+          <input type="text" placeholder="Address" class="w-full px-4 py-3.5 bg-white border border-[#d1d5db] rounded-lg text-sm outline-none focus:border-[var(--primary-blue)] transition-colors placeholder:text-gray-400">
+        </div>
+      </div>
+    </main>
+
+    <!-- Sticky Bottom Nav -->
+    <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-transparent px-4 pt-3 pb-6 z-30">
+      <button onclick="openInvoice()" class="w-full bg-[#1a62c6] text-white font-semibold py-3.5 rounded-lg text-base hover:opacity-90 active:opacity-80 transition-opacity">
+        Generate Invoice
+      </button>
+    </div>
+
+    <!-- Backdrops -->
+    <div id="backdrop" class="sheet-backdrop" onclick="closeAllSheets()"></div>
+    <div id="overlay-backdrop" class="sheet-backdrop bg-black/60 z-[75]" onclick="askDiscard('backdrop')"></div>
+    <div id="discard-backdrop" class="sheet-backdrop bg-black/40 z-[85]" onclick="confirmDiscard()"></div>
+
+    <!-- Date Picker Bottom Sheet -->
+    <div id="date-picker-sheet" class="bottom-sheet">
+      <div class="bg-[#F5F5F5] rounded-t-2xl overflow-hidden mt-2 border border-[#e2e8f0] shadow-2xl">
+        <!-- Month and Year nav -->
+        <div class="flex items-center justify-between h-16 px-1">
+          <div class="flex items-center">
+            <button onclick="changeMonth(-1)" class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-black/5 active:bg-black/10 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14 18L8 12L14 6L15.4 7.4L10.8 12L15.4 16.6L14 18Z" fill="#49454F"/></svg></button>
+            <div class="relative flex items-center gap-1.5 px-1 py-2 cursor-pointer rounded-full hover:bg-black/5 font-medium text-sm text-[#49454F]">
+              <select id="dp-month-select" onchange="jumpToMonth(this.value)" class="absolute inset-0 opacity-0 cursor-pointer w-full"></select>
+              <span id="dp-month" class="min-w-[28px]">Jan</span>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 11.25L5.25 7.5H12.75L9 11.25Z" fill="#49454F" /></svg>
+            </div>
+            <button onclick="changeMonth(1)" class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-black/5 active:bg-black/10 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12.6 12L8 7.4L9.4 6L15.4 12L9.4 18L8 16.6L12.6 12Z" fill="#49454F"/></svg></button>
+          </div>
+          <div class="flex items-center">
+            <button onclick="changeYear(-1)" class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-black/5 active:bg-black/10 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14 18L8 12L14 6L15.4 7.4L10.8 12L15.4 16.6L14 18Z" fill="#49454F"/></svg></button>
+            <div class="relative flex items-center gap-1.5 px-1 py-2 cursor-pointer rounded-full hover:bg-black/5 font-medium text-sm text-[#49454F]">
+              <select id="dp-year-select" onchange="jumpToYear(this.value)" class="absolute inset-0 opacity-0 cursor-pointer w-full"></select>
+              <span id="dp-year" class="min-w-[36px]">2026</span>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 11.25L5.25 7.5H12.75L9 11.25Z" fill="#49454F" /></svg>
+            </div>
+            <button onclick="changeYear(1)" class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-black/5 active:bg-black/10 transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12.6 12L8 7.4L9.4 6L15.4 12L9.4 18L8 16.6L12.6 12Z" fill="#49454F"/></svg></button>
+          </div>
+        </div>
+        
+        <!-- Grid -->
+        <div class="px-3 pb-1 pt-1">
+          <div class="grid grid-cols-7 text-center text-base font-normal text-[#1D1B20]">
+            <div class="h-12 flex items-center justify-center">S</div>
+            <div class="h-12 flex items-center justify-center">M</div>
+            <div class="h-12 flex items-center justify-center">T</div>
+            <div class="h-12 flex items-center justify-center">W</div>
+            <div class="h-12 flex items-center justify-center">T</div>
+            <div class="h-12 flex items-center justify-center">F</div>
+            <div class="h-12 flex items-center justify-center">S</div>
+          </div>
+          <div id="dp-grid" class="grid grid-cols-7 text-center"></div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="flex justify-end gap-1 px-3 pb-4 pt-1">
+          <button onclick="closeAllSheets()" class="px-4 py-3 text-sm font-medium text-[#1a62c6] rounded-full hover:bg-[#1a62c6] hover:text-white transition-colors">Cancel</button>
+          <button onclick="confirmDate()" class="px-4 py-3 text-sm font-medium text-[#1a62c6] rounded-full hover:bg-[#1a62c6] hover:text-white transition-colors">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Details Sheet -->
+    <div id="edit-details-sheet" class="bottom-sheet z-[80]">
+      <div class="bg-white rounded-t-2xl shadow-2xl pb-6">
+        <div class="flex items-center justify-between px-5 pt-5 pb-3">
+          <h2 class="text-[18px] font-bold text-gray-900">Edit Details</h2>
+          <button onclick="askDiscard('edit')" class="text-gray-500 hover:text-gray-900">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="px-5 space-y-4">
+          <div>
+            <label class="block text-[14px] font-semibold text-gray-900 mb-1.5">Vendor Name</label>
+            <div class="relative">
+              <input id="edit-vendor" type="text" class="w-full px-4 py-3 bg-white border border-[#d1d5db] rounded-lg text-sm text-gray-900 focus:border-[#1a62c6] outline-none">
+              <svg class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[14px] font-semibold text-gray-900 mb-1.5">User Name</label>
+            <div class="relative">
+              <input id="edit-user" type="text" class="w-full px-4 py-3 bg-white border border-[#d1d5db] rounded-lg text-sm text-gray-900 focus:border-[#1a62c6] outline-none">
+              <svg class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[14px] font-semibold text-gray-900 mb-1.5">Quantity</label>
+            <div class="relative">
+              <input id="edit-qty" type="number" class="w-full px-4 py-3 bg-white border border-[#d1d5db] rounded-lg text-sm text-gray-900 focus:border-[#1a62c6] outline-none">
+              <svg class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[14px] font-semibold text-gray-900 mb-1.5">Rate per Slot</label>
+            <div class="relative flex items-center">
+              <span class="absolute left-4 text-gray-500 font-medium">₹</span>
+              <input id="edit-rate" type="number" class="w-full pl-8 pr-12 py-3 bg-white border border-[#d1d5db] rounded-lg text-sm text-gray-900 focus:border-[#1a62c6] outline-none">
+              <svg class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-3 px-5 pt-6">
+          <button onclick="askDiscard('edit')" class="flex-1 py-3.5 border border-[#e5e7eb] text-[#1a1a1a] rounded-lg font-bold text-[15px] hover:bg-gray-50 transition-colors">Cancel</button>
+          <button onclick="updateEditDetails()" class="flex-1 py-3.5 bg-[#1a62c6] text-white rounded-lg font-bold text-[15px] hover:opacity-90 transition-colors">Update</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add New Field Sheet -->
+    <div id="add-field-sheet" class="bottom-sheet z-[80]">
+      <div class="bg-white rounded-t-2xl shadow-2xl pb-6 max-h-[90dvh] flex flex-col overflow-y-auto no-scrollbar">
+        <div class="flex items-center justify-between px-5 pt-5 pb-3 sticky top-0 bg-white z-10 shrink-0">
+          <h2 class="text-[18px] font-bold text-gray-900">Add New Field</h2>
+          <button onclick="askDiscard('add')" class="text-gray-500 hover:text-gray-900">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="px-5 shrink-0 flex-1">
+          <!-- Draft list -->
+          <div id="draft-fields-list" class="mb-4"></div>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-[14px] font-bold text-gray-900 mb-1.5">Field Name</label>
+              <input id="add-field-name" type="text" placeholder="Name" class="w-full px-4 py-3 bg-white border border-[#d1d5db] rounded-lg text-sm text-gray-900 focus:border-[#1a62c6] outline-none placeholder:text-gray-400">
+            </div>
+            <div>
+              <label class="block text-[14px] font-bold text-gray-900 mb-1.5">Value</label>
+              <input id="add-field-value" type="text" placeholder="Value" class="w-full px-4 py-3 bg-white border border-[#d1d5db] rounded-lg text-sm text-gray-900 focus:border-[#1a62c6] outline-none placeholder:text-gray-400">
+            </div>
+            <button onclick="handleAddDraftField()" class="w-full py-3.5 bg-[#f3f4f6] border border-[#e5e7eb] text-gray-800 rounded-lg font-medium text-[14px] flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Add more Field
+            </button>
+          </div>
+        </div>
+        <div class="flex gap-3 px-5 pt-6 sticky bottom-0 bg-white z-10 shrink-0">
+          <button onclick="askDiscard('add')" class="flex-1 py-3.5 border border-[#e5e7eb] text-[#1a1a1a] rounded-lg font-bold text-[15px] hover:bg-gray-50 transition-colors">Cancel</button>
+          <button onclick="updateCustomFields()" class="flex-1 py-3.5 bg-[#1a62c6] text-white rounded-lg font-bold text-[15px] hover:opacity-90 transition-colors">Update</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Discard Confirmation Sheet -->
+    <div id="discard-sheet" class="bottom-sheet z-[90]">
+      <div class="bg-white rounded-t-2xl shadow-inner border-t border-gray-100 pb-6">
+        <div class="flex justify-end px-5 pt-5 pb-2">
+          <button onclick="closeSheet('discard-sheet')" class="text-gray-500 hover:text-gray-900">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="px-5">
+          <h2 class="text-[20px] font-bold text-gray-900 leading-tight pr-4">Do you want to update your<br/>Changes ?</h2>
+        </div>
+        <div class="flex gap-3 px-5 pt-8">
+          <button onclick="confirmDiscard()" class="flex-1 py-3.5 border border-[#e5e7eb] text-[#1a1a1a] rounded-lg font-semibold text-[15px] hover:bg-gray-50 transition-colors">Cancel</button>
+          <button onclick="confirmUpdateFromDiscard()" class="flex-1 py-3.5 bg-[#1a62c6] text-white rounded-lg font-semibold text-[15px] hover:opacity-90 transition-colors">Update</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invoice Confirmation Overlay Bottom Sheet -->
+    <div id="invoice-sheet" class="fixed inset-x-0 bottom-0 z-[70] bg-white max-h-[95dvh] w-full max-w-[430px] mx-auto transform translate-y-full transition-transform duration-300 ease-in-out flex flex-col pt-6 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] rounded-t-3xl">
+      
+      <div class="overflow-y-auto no-scrollbar w-full px-5 flex flex-col">
+        <!-- Close button -->
+        <div class="w-full flex justify-end shrink-0">
+          <button onclick="closeAllSheets()" class="text-[#1D1B20] hover:bg-gray-100 rounded-full p-2 transition-colors">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Check Icon -->
+        <div class="relative flex items-center justify-center mt-2 shrink-0">
+          <div class="w-[100px] h-[100px] bg-gray-100/50 rounded-full flex items-center justify-center relative">
+              <div class="w-[60px] h-[60px] bg-[#1a62c6] rounded-full flex items-center justify-center shadow-[0_4px_14px_rgba(26,98,198,0.3)]">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                      <path d="M20 6L9 17L4 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+              </div>
+              <!-- decorative dots -->
+              <div class="absolute -top-1 right-2 w-[10px] h-[10px] bg-[#e5e7eb] rounded-full"></div>
+              <div class="absolute top-6 -left-3 w-2 h-2 bg-[#f3f4f6] rounded-full"></div>
+          </div>
+        </div>
+        
+        <!-- Texts -->
+        <h2 class="text-[20px] font-bold text-gray-900 mt-5 text-center shrink-0">Hurray Anand!</h2>
+        <p class="text-[14px] text-[#4b5563] font-medium mt-1 text-center shrink-0">Invoice Generated Successfully</p>
+        
+        <!-- Card -->
+        <div class="w-full bg-[#f9fafb] border border-gray-100 rounded-[16px] p-5 mt-6 mb-4 relative shadow-sm shrink-0">
+           <!-- 3 dots -->
+           <button onclick="toggleDotsMenu()" class="absolute top-5 right-4 text-gray-900">
+             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+               <circle cx="12" cy="5" r="1.5" fill="currentColor"/>
+               <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+               <circle cx="12" cy="19" r="1.5" fill="currentColor"/>
+             </svg>
+           </button>
+           <!-- Dots menu -->
+           <div id="dots-menu" class="hidden absolute right-4 top-12 bg-white rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-50 overflow-hidden z-20 min-w-[100px] animate-fade-in">
+           <button onclick="openEditDetails()" class="w-full flex items-center justify-center px-4 py-2.5 text-[15px] text-gray-800 hover:bg-gray-50 border-b border-gray-100 transition-colors">
+             Edit
+           </button>
+           <button onclick="openAddField()" class="w-full flex items-center justify-center px-4 py-2.5 text-[15px] text-gray-800 hover:bg-gray-50 transition-colors">
+             Add
+           </button>
+           </div>
+  
+           <h3 id="inv-turf" class="text-[17px] font-bold text-[#1a1a1a]">Fabzia Arena</h3>
+           <p id="inv-date" class="text-[13px] text-[#4b5563] mt-1 mb-6">12 Jan 2026 • 11.02 Pm</p>
+  
+           <div class="space-y-[14px]">
+              <div class="flex items-center justify-between">
+                <span class="text-[14px] text-[#4b5563]">Vendor Name</span>
+                <span id="inv-vendor" class="text-[14px] font-medium text-[#1a1a1a]">Ankur</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-[14px] text-[#4b5563]">User Name</span>
+                <span id="inv-user" class="text-[14px] font-medium text-[#1a1a1a]">Anand</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-[14px] text-[#4b5563]">Hsn Code</span>
+                <span class="text-[14px] font-medium text-[#1a1a1a]">30C7</span>
+              </div>
+              
+              <div id="invoice-custom-fields" class="contents"></div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-[14px] text-[#4b5563]">Quantity</span>
+                <span id="inv-qty" class="text-[14px] font-medium text-[#1a1a1a]">20</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-[14px] text-[#4b5563]">Rate</span>
+                <span class="text-[14px] font-medium text-[#1a1a1a]">₹<span id="inv-rate">750</span>/per</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-[14px] text-[#4b5563]">Gst (18%)</span>
+                <span id="inv-gst" class="text-[14px] font-medium text-[#1a1a1a]">₹2,700</span>
+              </div>
+              <div class="border-t border-gray-200 my-4"></div>
+              <div class="flex items-center justify-between pt-1">
+                <span class="text-[15px] font-bold text-[#1a1a1a]">Total</span>
+                <span id="inv-total" class="text-[16px] font-bold text-[#1a1a1a]">₹ 17,700</span>
+              </div>
+           </div>
+        </div>
+      </div>
+      
+      <!-- Sticky Button Container -->
+      <div class="w-full px-5 pt-4 border-t border-gray-50 bg-white shrink-0">
+        <button onclick="closeAllSheets()" class="w-full bg-[#1a62c6] text-white font-semibold py-3.5 rounded-lg text-base shadow-sm hover:opacity-90 transition-opacity">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const turfs = ["Green Valley Turf", "City Sports Arena", "Sunrise Football Ground", "Victory Sports Complex", "Champions Turf Club"];
+    const bookings = ["BK-001 · Morning Slot (6AM–9AM)", "BK-002 · Evening Slot (5PM–8PM)", "BK-003 · Weekend Special (All Day)", "BK-004 · Weekday Package (10AM–1PM)", "BK-005 · Night Slot (8PM–11PM)"];
+
+    let selectedTurf = "";
+    let selectedBooking = "";
+    let selectedDate = null;
+    let gtsChecked = false;
+    let showDotsMenu = false;
+
+    const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+    let tempSelectedDate = null;
+
+    function renderDropdowns() {
+      const tList = document.getElementById('turf-list');
+      tList.innerHTML = turfs.map(t => `
+        <button onclick="handleTurfSelect('${t}')" class="w-full flex items-center gap-3 text-left px-4 py-3.5 text-sm border-b border-gray-50 last:border-0 transition-colors ${selectedTurf === t ? 'bg-blue-50 text-[var(--primary-blue)] font-semibold' : 'text-gray-800 hover:bg-gray-50'}">
+          ${selectedTurf === t ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="flex-shrink-0"><path d="M5 13l4 4L19 7" stroke="var(--primary-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '<div class="w-4 flex-shrink-0"></div>'}
+          <span>${t}</span>
+        </button>
+      `).join('');
+
+      const bList = document.getElementById('booking-list');
+      bList.innerHTML = bookings.map(b => `
+        <button onclick="handleBookingSelect('${b}')" class="w-full flex items-center gap-3 text-left px-4 py-3.5 text-sm border-b border-gray-50 last:border-0 transition-colors ${selectedBooking === b ? 'bg-blue-50 text-[var(--primary-blue)] font-semibold' : 'text-gray-800 hover:bg-gray-50'}">
+          ${selectedBooking === b ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="flex-shrink-0"><path d="M5 13l4 4L19 7" stroke="var(--primary-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '<div class="w-4 flex-shrink-0"></div>'}
+          <span>${b}</span>
+        </button>
+      `).join('');
+    }
+
+    function toggleDropdown(type, forceClose = null) {
+      const list = document.getElementById(type + '-list');
+      const btn = document.getElementById(type + '-btn');
+      const icon = document.getElementById(type + '-icon');
+      
+      const isOpen = list.classList.contains('open');
+      const shouldOpen = forceClose !== null ? !forceClose : !isOpen;
+
+      if (shouldOpen) {
+        if (type === 'turf') toggleDropdown('booking', true);
+        else toggleDropdown('turf', true);
+      }
+
+      if (shouldOpen) {
+        list.classList.add('open');
+        btn.classList.add('border-[var(--primary-blue)]', 'border-2');
+        btn.classList.remove('border-[#e2e8f0]', 'border');
+        icon.classList.add('rotate-180', 'stroke-[var(--primary-blue)]');
+      } else {
+        list.classList.remove('open');
+        btn.classList.remove('border-[var(--primary-blue)]', 'border-2');
+        btn.classList.add('border-[#e2e8f0]', 'border');
+        icon.classList.remove('rotate-180', 'stroke-[var(--primary-blue)]');
+      }
+    }
+
+    function handleTurfSelect(t) {
+      selectedTurf = t;
+      const val = document.getElementById('turf-val');
+      val.textContent = t;
+      val.className = 'text-gray-900 font-medium';
+      toggleDropdown('turf', true);
+      renderDropdowns();
+    }
+
+    function handleBookingSelect(b) {
+      selectedBooking = b;
+      const val = document.getElementById('booking-val');
+      val.textContent = b;
+      val.className = 'text-gray-900 font-medium';
+      toggleDropdown('booking', true);
+      renderDropdowns();
+    }
+
+    function toggleGts(e) {
+      // Prevent label click from firing twice if it happens
+      if(e) e.preventDefault();
+      
+      gtsChecked = !gtsChecked;
+      const box = document.getElementById('gts-check');
+      const icon = document.getElementById('gts-icon');
+      const fields = document.getElementById('gst-fields');
+      if (gtsChecked) {
+        box.classList.remove('border-[#4b5563]', 'bg-white');
+        box.classList.add('border-[#1a62c6]', 'bg-[#1a62c6]');
+        icon.classList.remove('hidden');
+        fields.classList.remove('hidden');
+        fields.classList.add('flex');
+      } else {
+        box.classList.add('border-[#4b5563]', 'bg-white');
+        box.classList.remove('border-[#1a62c6]', 'bg-[#1a62c6]');
+        icon.classList.add('hidden');
+        fields.classList.add('hidden');
+        fields.classList.remove('flex');
+      }
+    }
+
+    document.addEventListener('mousedown', (e) => {
+      const ts = document.getElementById('turf-container');
+      const bs = document.getElementById('booking-container');
+      if (ts && !ts.contains(e.target)) toggleDropdown('turf', true);
+      if (bs && !bs.contains(e.target)) toggleDropdown('booking', true);
+
+      const menu = document.getElementById('dots-menu');
+      if (menu && !menu.contains(e.target) && !e.target.closest('button[onclick="toggleDotsMenu()"]')) {
+        menu.classList.add('hidden');
+        showDotsMenu = false;
+      }
+    });
+
+    function openDatePicker() {
+      toggleDropdown('turf', true);
+      toggleDropdown('booking', true);
+      tempSelectedDate = selectedDate || new Date(); 
+      currentMonth = tempSelectedDate.getMonth();
+      currentYear = tempSelectedDate.getFullYear();
+      renderCalendar();
+      openSheet('date-picker-sheet');
+    }
+
+    function changeMonth(dir) {
+      currentMonth += dir;
+      if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+      else if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+      renderCalendar();
+    }
+    
+    function changeYear(dir) {
+      currentYear += dir;
+      renderCalendar();
+    }
+    
+    function jumpToMonth(mIndex) {
+      currentMonth = parseInt(mIndex);
+      renderCalendar();
+    }
+
+    function jumpToYear(y) {
+      currentYear = parseInt(y);
+      renderCalendar();
+    }
+
+    function formatDisplayDate(d) {
+      if (!d) return '';
+      return d.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
+    }
+    
+    function formatInvoiceDate(d) {
+      if (!d) return '12 Jan 2026 • 11.02 Pm'; // Default fallback matched to Figma design
+      const datePart = d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+      const timePart = new Date().toLocaleTimeString("en-IN", { hour: '2-digit', minute: '2-digit', hour12: true });
+      return `${datePart} • ${timePart}`;
+    }
+
+    function setTempDate(y, m, d) {
+      tempSelectedDate = new Date(y, m, d);
+      renderCalendar();
+    }
+
+    function confirmDate() {
+      selectedDate = tempSelectedDate;
+      if (selectedDate) {
+        const val = document.getElementById('date-val');
+        val.textContent = formatDisplayDate(selectedDate);
+        val.className = 'text-gray-900 font-medium';
+      }
+      closeAllSheets();
+    }
+
+    function renderCalendar() {
+      // Update Month UI
+      document.getElementById('dp-month').textContent = MONTHS[currentMonth];
+      const mSelect = document.getElementById('dp-month-select');
+      mSelect.innerHTML = MONTHS.map((m, i) => `<option value="${i}" ${i === currentMonth ? 'selected' : ''}>${m}</option>`).join('');
+
+      // Update Year UI
+      document.getElementById('dp-year').textContent = currentYear;
+      const ySelect = document.getElementById('dp-year-select');
+      let yOptions = '';
+      for(let y = today.getFullYear() - 5; y <= today.getFullYear() + 5; y++) {
+        yOptions += `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`;
+      }
+      ySelect.innerHTML = yOptions;
+      
+      const grid = document.getElementById('dp-grid');
+      const firstD = new Date(currentYear, currentMonth, 1).getDay();
+      const daysM = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const prevM = new Date(currentYear, currentMonth, 0).getDate();
+
+      let html = '';
+      for (let i = firstD - 1; i >= 0; i--) {
+        html += `<div class="h-12 flex items-center justify-center"><div class="w-10 h-10 flex items-center justify-center text-[#49454F] opacity-40 leading-6">${prevM - i}</div></div>`;
+      }
+      for (let i = 1; i <= daysM; i++) {
+        const isSel = tempSelectedDate && tempSelectedDate.getDate() === i && tempSelectedDate.getMonth() === currentMonth && tempSelectedDate.getFullYear() === currentYear;
+        const isTod = today.getDate() === i && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+        
+        let cls = "text-[#1D1B20]";
+        if (isSel) cls = "text-white font-medium";
+        else if (isTod) cls = "text-[var(--primary-blue)] font-semibold";
+
+        let bg = isSel ? "bg-[var(--primary-blue)]" : "hover:bg-black/5 cursor-pointer";
+        
+        html += `<div class="h-12 flex items-center justify-center" onclick="setTempDate(${currentYear}, ${currentMonth}, ${i})"><div class="w-10 h-10 flex items-center justify-center rounded-full transition-colors ${bg}"><span class="leading-6 ${cls}">${i}</span></div></div>`;
+      }
+      
+      const rem = 42 - (firstD + daysM);
+      for (let i = 1; i <= rem; i++) {
+        html += `<div class="h-12 flex items-center justify-center"><div class="w-10 h-10 flex items-center justify-center text-[#49454F] opacity-40 leading-6">${i}</div></div>`;
+      }
+      grid.innerHTML = html;
+    }
+
+    function genInvNum() {
+      const d = new Date();
+      return `INV-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${String(d.getMinutes()).padStart(3,'0')}`;
+    }
+
+    function openInvoice() {
+      document.getElementById('inv-turf').textContent = selectedTurf || "Fabzia Arena";
+      document.getElementById('inv-date').textContent = formatInvoiceDate(selectedDate);
+      openSheet('invoice-sheet');
+    }
+
+    function toggleDotsMenu() {
+      showDotsMenu = !showDotsMenu;
+      const menu = document.getElementById('dots-menu');
+      if (showDotsMenu) menu.classList.remove('hidden');
+      else menu.classList.add('hidden');
+    }
+
+    let customFields = [];
+    let draftCustomFields = [];
+    let activeEditMode = null;
+    let initialEditState = {};
+    let initialDraftLength = 0;
+
+    function openEditDetails() {
+      toggleDotsMenu();
+      const vendor = document.getElementById('inv-vendor').textContent;
+      const user = document.getElementById('inv-user').textContent;
+      const qty = document.getElementById('inv-qty').textContent;
+      const rate = document.getElementById('inv-rate').textContent;
+      
+      document.getElementById('edit-vendor').value = vendor;
+      document.getElementById('edit-user').value = user;
+      document.getElementById('edit-qty').value = qty;
+      document.getElementById('edit-rate').value = rate;
+
+      initialEditState = { vendor, user, qty, rate };
+      activeEditMode = 'edit';
+      
+      document.getElementById('overlay-backdrop').classList.add('open');
+      openSheet('edit-details-sheet');
+    }
+
+    function updateEditDetails() {
+      document.getElementById('inv-vendor').textContent = document.getElementById('edit-vendor').value || '—';
+      document.getElementById('inv-user').textContent = document.getElementById('edit-user').value || '—';
+      
+      const newQty = parseInt(document.getElementById('edit-qty').value) || 0;
+      const newRate = parseInt(document.getElementById('edit-rate').value) || 0;
+      
+      document.getElementById('inv-qty').textContent = newQty;
+      document.getElementById('inv-rate').textContent = newRate;
+      
+      const amount = newQty * newRate;
+      const gst = amount * 0.18;
+      const total = amount + gst;
+      
+      document.getElementById('inv-gst').textContent = '₹' + gst.toLocaleString('en-IN');
+      document.getElementById('inv-total').textContent = '₹ ' + total.toLocaleString('en-IN');
+      
+      closeSheet('edit-details-sheet');
+      document.getElementById('overlay-backdrop').classList.remove('open');
+      activeEditMode = null;
+    }
+
+    function openAddField() {
+      toggleDotsMenu();
+      document.getElementById('add-field-name').value = '';
+      document.getElementById('add-field-value').value = '';
+      draftCustomFields = [...customFields];
+      initialDraftLength = customFields.length;
+      activeEditMode = 'add';
+      renderDraftFields();
+      
+      document.getElementById('overlay-backdrop').classList.add('open');
+      openSheet('add-field-sheet');
+    }
+
+    function askDiscard(modeFrom) {
+      // modeFrom can be 'backdrop'
+      const mode = modeFrom === 'backdrop' ? activeEditMode : modeFrom;
+      if(!mode) {
+        document.getElementById('overlay-backdrop').classList.remove('open');
+        return;
+      }
+
+      let hasChanges = false;
+      if (mode === 'edit') {
+        const v = document.getElementById('edit-vendor').value;
+        const u = document.getElementById('edit-user').value;
+        const q = document.getElementById('edit-qty').value;
+        const r = document.getElementById('edit-rate').value;
+        hasChanges = v !== initialEditState.vendor || u !== initialEditState.user || q !== initialEditState.qty || r !== initialEditState.rate;
+      } else if (mode === 'add') {
+        const tempName = document.getElementById('add-field-name').value.trim();
+        const tempVal = document.getElementById('add-field-value').value.trim();
+        const hasInputs = tempName.length > 0 || tempVal.length > 0;
+        hasChanges = hasInputs || (draftCustomFields.length !== initialDraftLength);
+      }
+
+      if (hasChanges) {
+        // Show discard sheet without closing others, it stacks on top
+        document.getElementById('discard-backdrop').classList.add('open');
+        openSheet('discard-sheet');
+      } else {
+        closeSheet('edit-details-sheet');
+        closeSheet('add-field-sheet');
+        document.getElementById('overlay-backdrop').classList.remove('open');
+        activeEditMode = null;
+      }
+    }
+
+    function confirmDiscard() {
+      // Discard changes by just closing all
+      closeSheet('discard-sheet');
+      document.getElementById('discard-backdrop').classList.remove('open');
+      closeSheet('edit-details-sheet');
+      closeSheet('add-field-sheet');
+      document.getElementById('overlay-backdrop').classList.remove('open');
+      activeEditMode = null;
+    }
+
+    function confirmUpdateFromDiscard() {
+      closeSheet('discard-sheet');
+      document.getElementById('discard-backdrop').classList.remove('open');
+      if (activeEditMode === 'edit') {
+        updateEditDetails();
+      } else if (activeEditMode === 'add') {
+        updateCustomFields();
+      }
+    }
+
+    function handleAddDraftField() {
+      const name = document.getElementById('add-field-name').value.trim();
+      const value = document.getElementById('add-field-value').value.trim();
+      if(name && value) {
+        draftCustomFields.push({ name, value });
+        document.getElementById('add-field-name').value = '';
+        document.getElementById('add-field-value').value = '';
+        renderDraftFields();
+      }
+    }
+
+    function removeDraftField(index) {
+      draftCustomFields.splice(index, 1);
+      renderDraftFields();
+    }
+
+    function renderDraftFields() {
+      const list = document.getElementById('draft-fields-list');
+      if (draftCustomFields.length === 0) {
+        list.innerHTML = '';
+        return;
+      }
+      
+      let html = '';
+      draftCustomFields.forEach((item, i) => {
+        html += `
+          <div class="flex items-center justify-between py-3 mb-2 border-b border-gray-100">
+            <span class="text-[14px] text-gray-500">${item.name}</span>
+            <div class="flex items-center gap-3">
+              <span class="text-[14px] font-medium text-gray-900">${item.value}</span>
+              <button onclick="removeDraftField(${i})" class="text-gray-400 hover:text-gray-900">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+      list.innerHTML = html;
+    }
+
+    function updateCustomFields() {
+      // If there's unsaved text in inputs, automatically push it to draft first
+      const name = document.getElementById('add-field-name').value.trim();
+      const value = document.getElementById('add-field-value').value.trim();
+      if(name && value) {
+        draftCustomFields.push({ name, value });
+      }
+
+      customFields = [...draftCustomFields];
+      const container = document.getElementById('invoice-custom-fields');
+      let html = '';
+      customFields.forEach(item => {
+        html += `
+          <div class="flex items-center justify-between">
+            <span class="text-[14px] text-[#4b5563]">${item.name}</span>
+            <span class="text-[14px] font-medium text-[#1a1a1a]">${item.value}</span>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+      closeSheet('add-field-sheet');
+      document.getElementById('overlay-backdrop').classList.remove('open');
+      activeEditMode = null;
+    }
+
+    function closeSheet(id) {
+       document.getElementById(id).classList.remove('open');
+    }
+
+    function openSheet(id) {
+      if (id !== 'invoice-sheet') {
+        document.getElementById('backdrop').classList.add('open');
+        document.getElementById(id).classList.add('open');
+        // Because invoice-sheet is z-70, edit sheet must be z-80 to appear on top. Handled in HTML.
+      } else {
+        document.getElementById('backdrop').classList.add('open');
+        // trigger animation for full screen sliding sheet
+        setTimeout(() => {
+          document.getElementById(id).classList.remove('translate-y-full');
+        }, 10);
+      }
+    }
+    
+    function closeAllSheets() {
+      const bd = document.getElementById('backdrop');
+      if (bd) bd.classList.remove('open');
+      
+      const ov = document.getElementById('overlay-backdrop');
+      if (ov) ov.classList.remove('open');
+
+      const db = document.getElementById('discard-backdrop');
+      if (db) db.classList.remove('open');
+
+      ['date-picker-sheet', 'edit-details-sheet', 'add-field-sheet', 'discard-sheet'].forEach(id => {
+         const sheet = document.getElementById(id);
+         if(sheet) sheet.classList.remove('open');
+      });
+
+      const inv = document.getElementById('invoice-sheet');
+      if (inv) {
+        inv.classList.add('translate-y-full');
+      }
+      activeEditMode = null;
+    }
+
+    renderDropdowns();
+  </script>
+</body>
+</html>
