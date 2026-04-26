@@ -230,12 +230,11 @@
 <div id="bs-booked" class="bs-overlay" onclick="closeBS('booked')">
   <div class="bs-panel" onclick="event.stopPropagation()">
     <div style="padding:20px 20px 0;">
-      <!-- header row: X left, Edit right -->
-      <div class="flex items-center justify-between mb-3">
+      <!-- header row: X right -->
+      <div class="flex justify-end mb-3">
         <button onclick="closeBS('booked')" class="w-8 h-8 flex items-center justify-center">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
-        <button onclick="openEditFromBooked()" class="text-sm underline text-text-body">Edit</button>
       </div>
       <!-- Title + booking id -->
       <div class="flex items-center justify-between mb-1">
@@ -257,8 +256,7 @@
     </div>
     <!-- Action buttons -->
     <div class="flex flex-col gap-2 px-5 pt-4 pb-6">
-      <button onclick="openReschedule()" class="w-full h-[52px] rounded-lg text-base font-semibold text-white" style="background:#125dcd;">Reschedule</button>
-      <button onclick="openCancelFromBooked()" class="w-full h-[52px] flex items-center justify-center text-base font-medium underline text-text-heading">Cancel Slot</button>
+      <button onclick="openCancelFromBooked()" class="w-full h-[52px] flex items-center justify-center rounded-lg text-base font-medium border border-[#d7d7d7] bg-[#f5f5f5] text-text-heading hover:bg-[#ebebeb] transition-colors">Cancel Slot</button>
     </div>
   </div>
 </div>
@@ -271,6 +269,14 @@
     </div>
     <h2 class="text-[20px] font-semibold text-text-heading leading-[28px] mb-1">Are you Sure you want to<br>Cancel Slot?</h2>
     <p class="text-sm text-[#4d4d4d] mb-4" id="cancel-meta">12 Jan 2026 • 5-6pm • 5v5</p>
+
+    <div class="mb-4">
+      <label class="text-sm font-semibold text-text-heading block mb-2">Amount refunded</label>
+      <div class="slot-input-wrap">
+        <span class="slot-input-symbol">₹</span>
+        <input id="cancel-refund-amount" type="number" min="1" placeholder="Enter Amount">
+      </div>
+    </div>
 
     <div class="mb-6">
       <label class="text-sm font-semibold text-text-heading block mb-2">Reason for Cancellation</label>

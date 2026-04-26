@@ -88,27 +88,31 @@
             <!-- Tabs -->
             <div class="flex bg-[var(--white-pure)] border-b border-[var(--bg-container)] px-4 pt-1">
                 <button class="flex-1 py-3 text-[14px] font-medium font-inter tab-active transition-colors">
-                    Today
+                    Upcoming
                 </button>
                 <button class="flex-1 py-3 text-[14px] font-medium font-inter tab-inactive hover:bg-gray-50 transition-colors">
                     Previous
                 </button>
             </div>
 
-            <!-- Search and Filter -->
-            <div class="px-4 py-4 bg-[var(--white-pure)] flex gap-2 items-center relative z-20">
+            <!-- Turf Selection Dropdown Below Tabs -->
+            <div class="bg-[var(--white-pure)] px-4 py-2.5 flex items-center justify-center border-b border-[var(--bg-container)] cursor-pointer hover:bg-gray-50 transition-colors" onclick="openTurfSelect()">
+                <div class="flex items-center gap-1.5 max-w-[200px]">
+                    <span id="selectedTurfText" class="text-[13px] font-semibold text-[var(--primary-blue)] font-inter tracking-wide truncate">The Multi-Sports Turf</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-[var(--primary-blue)] flex-shrink-0 mt-0.5">
+                        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Search User ID and Filter -->
+            <div class="px-4 py-4 bg-[var(--white-pure)] flex gap-3 items-center relative z-20 shadow-sm border-b border-gray-100">
                 <div class="flex-1 relative flex items-center px-3 py-2.5 bg-white border border-[var(--border-light)] rounded-lg focus-within:border-[var(--primary-blue)] transition-colors shadow-sm">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" id="searchInput" placeholder="Search for turf" class="flex-1 bg-transparent border-none outline-none ml-2 text-[14px] text-[var(--text-heading)] font-inter" autocomplete="off">
-                    
-                    <!-- Autocomplete Dropdown -->
-                    <div id="searchDropdown" class="absolute top-full left-0 right-0 mt-1 bg-white border border-[var(--border-light)] rounded-lg shadow-lg z-30 hidden max-h-40 overflow-y-auto custom-scroll">
-                        <div class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-[14px] text-[var(--text-heading)] border-b border-gray-100 search-option">12VB - The Multi-Sports Turf (7v7)</div>
-                        <div class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-[14px] text-[var(--text-heading)] search-option">45XY - Play Field Turf</div>
-                    </div>
+                    <input type="text" id="searchInput" placeholder="Search user ID" class="flex-1 bg-transparent border-none outline-none ml-2 text-[14px] text-[var(--text-heading)] font-inter" autocomplete="off">
                 </div>
                 
                 <button onclick="openFilter()" class="w-11 h-11 flex-shrink-0 flex items-center justify-center border border-[var(--border-light)] rounded-lg bg-white shadow-sm hover:bg-gray-50 transition-colors">
@@ -122,23 +126,21 @@
         <!-- Cards Container -->
         <div id="cardsContainer" class="flex-1 overflow-y-auto px-4 py-2 flex flex-col gap-4 pb-20 no-scrollbar relative z-0">
             
-            <!-- Booking Card 1 -->
-            <div class="bg-[var(--white-pure)] rounded-xl p-4 pr-[70px] shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-1">
+            <!-- Booking Card 1: Pending -->
+            <div class="bg-[var(--white-pure)] rounded-xl p-4 pr-[70px] shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-1" data-total="1000" data-paid="200" data-status="pending">
                 <!-- Right corner actions -->
                 <div class="absolute right-4 top-3 bottom-0 pb-3 flex flex-col items-end justify-between z-10">
                     <button class="w-[24px] h-[24px] rounded-full flex items-center justify-center hover:bg-gray-100 relative" onclick="toggleMenu('menu-1')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-gray-700">
-                            <circle cx="5" cy="12" r="2"></circle>
-                            <circle cx="12" cy="12" r="2"></circle>
-                            <circle cx="19" cy="12" r="2"></circle>
+                            <circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle>
                         </svg>
                     </button>
                     <!-- Dropdown Menu -->
                     <div id="menu-1" class="three-dots-menu absolute top-8 right-0 w-36 bg-white rounded-lg shadow-lg border border-[var(--border-light)] py-1 z-20">
-                        <button onclick="openEditModal('card-1')" class="w-full text-left px-4 py-2 text-[14px] text-[var(--text-heading)] hover:bg-gray-50 transition-colors">Edit</button>
+                        <button onclick="openPayDueModal('card-1')" class="w-full text-left px-4 py-2 text-[14px] text-[var(--primary-blue)] hover:bg-gray-50 transition-colors font-medium">Pay Due</button>
                         <button onclick="openCancelModal('card-1')" class="w-full text-left px-4 py-2 text-[14px] text-red-600 hover:bg-red-50 transition-colors">Cancel Booking</button>
                     </div>
-                    <span class="bg-[#2c7a3f] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">Booked</span>
+                    <span class="status-badge bg-[#f59e0b] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">Pending</span>
                 </div>
 
                 <div class="flex justify-start items-start mb-1">
@@ -146,40 +148,33 @@
                 </div>
 
                 <div class="flex justify-start items-center mb-1">
-                    <h3 class="text-[15px] font-semibold text-[var(--text-heading)] font-inter truncate pr-2">The Multi-Sports Turf (7v7)</h3>
+                    <h3 class="text-[15px] font-semibold text-[var(--text-heading)] font-inter truncate pr-2">The Multi-Sports Turf</h3>
                 </div>
 
                 <div class="text-[13px] text-[var(--text-body)] font-inter mb-3 flex items-center gap-1 flex-wrap pr-2">
-                    <span>Anand</span>
-                    <span class="text-[10px] text-gray-300">•</span>
-                    <span>12 Jan 2026</span>
-                    <span class="text-[10px] text-gray-300">•</span>
-                    <span>5-6pm</span>
+                    <span>Anand</span><span class="text-[10px] text-gray-300">•</span><span>12 Jan 2026</span><span class="text-[10px] text-gray-300">•</span><span>5-6pm</span>
                 </div>
 
-                <div class="border-t border-[var(--bg-container)] pt-3 flex justify-start items-center text-[13px] font-inter pr-2 gap-2">
-                    <span class="text-[var(--text-body)]">Paid/Total:</span>
-                    <span class="text-[var(--text-heading)] font-medium">₹<span class="advance-amt">200</span> / 1000</span>
+                <div class="border-t border-gray-100 pt-3 flex justify-start items-center text-[13px] font-inter pr-2 gap-2">
+                    <span class="text-[var(--text-body)]">Paid:</span>
+                    <span class="text-[var(--text-heading)] font-medium">₹<span class="advance-amt">200</span> / <span class="total-amt">1000</span></span>
                 </div>
             </div>
 
-            <!-- Booking Card 2 -->
-            <div class="bg-[var(--white-pure)] rounded-xl p-4 pr-[70px] shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-2">
+            <!-- Booking Card 2: Booked -->
+            <div class="bg-[var(--white-pure)] rounded-xl p-4 pr-[70px] shadow-sm border border-[var(--border-light)] relative booking-card" data-id="card-2" data-total="800" data-paid="800" data-status="booked">
                 <!-- Right corner actions -->
                 <div class="absolute right-4 top-3 bottom-0 pb-3 flex flex-col items-end justify-between z-10">
                     <button class="w-[24px] h-[24px] rounded-full flex items-center justify-center hover:bg-gray-100 relative" onclick="toggleMenu('menu-2')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-gray-700">
-                            <circle cx="5" cy="12" r="2"></circle>
-                            <circle cx="12" cy="12" r="2"></circle>
-                            <circle cx="19" cy="12" r="2"></circle>
+                            <circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle>
                         </svg>
                     </button>
                     <!-- Dropdown Menu -->
                     <div id="menu-2" class="three-dots-menu absolute top-8 right-0 w-36 bg-white rounded-lg shadow-lg border border-[var(--border-light)] py-1 z-20">
-                        <button onclick="openEditModal('card-2')" class="w-full text-left px-4 py-2 text-[14px] text-[var(--text-heading)] hover:bg-gray-50 transition-colors">Edit</button>
                         <button onclick="openCancelModal('card-2')" class="w-full text-left px-4 py-2 text-[14px] text-red-600 hover:bg-red-50 transition-colors">Cancel Booking</button>
                     </div>
-                    <span class="bg-[#2c7a3f] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">Booked</span>
+                    <span class="status-badge bg-[#2c7a3f] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">Booked</span>
                 </div>
 
                 <div class="flex justify-start items-start mb-1">
@@ -191,23 +186,39 @@
                 </div>
 
                 <div class="text-[13px] text-[var(--text-body)] font-inter mb-3 flex items-center gap-1 flex-wrap pr-2">
-                    <span>Rahul</span>
-                    <span class="text-[10px] text-gray-300">•</span>
-                    <span>13 Jan 2026</span>
-                    <span class="text-[10px] text-gray-300">•</span>
-                    <span>6-7pm</span>
+                    <span>Rahul</span><span class="text-[10px] text-gray-300">•</span><span>13 Jan 2026</span><span class="text-[10px] text-gray-300">•</span><span>6-7pm</span>
                 </div>
 
-                <div class="border-t border-[var(--bg-container)] pt-3 flex justify-start items-center text-[13px] font-inter pr-2 gap-2">
-                    <span class="text-[var(--text-body)]">Paid/Total:</span>
-                    <span class="text-[var(--text-heading)] font-medium">₹<span class="advance-amt">400</span> / 800</span>
+                <div class="border-t border-gray-100 pt-3 flex justify-start items-center text-[13px] font-inter pr-2 gap-2">
+                    <span class="text-[var(--text-body)]">Paid:</span>
+                    <span class="text-[var(--text-heading)] font-medium">₹<span class="advance-amt">800</span> / <span class="total-amt">800</span></span>
                 </div>
             </div>
 
+            <!-- Booking Card 3: Cancelled -->
+            <div class="bg-[var(--white-pure)] rounded-xl p-4 pr-[70px] shadow-sm border border-[var(--border-light)] relative booking-card opacity-60" data-id="card-3">
+                <div class="absolute right-4 top-3 bottom-0 pb-3 flex flex-col items-end justify-between z-10">
+                    <span class="status-badge bg-[#dc2626] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full mt-auto mb-1">Cancelled</span>
+                </div>
+                <div class="flex justify-start items-start mb-1">
+                    <div class="text-gray-500 font-bold text-[14px] font-inter">98XZ</div>
+                </div>
+                <div class="flex justify-start items-center mb-1">
+                    <h3 class="text-[15px] font-semibold text-gray-600 font-inter truncate pr-2">Olympia Arena</h3>
+                </div>
+                <div class="text-[13px] text-gray-500 font-inter mb-3 flex items-center gap-1 flex-wrap pr-2">
+                    <span>Vikas</span><span class="text-[10px] text-gray-300">•</span><span>14 Jan 2026</span><span class="text-[10px] text-gray-300">•</span><span>8-9pm</span>
+                </div>
+                <div class="border-t border-gray-100 pt-3 flex justify-start items-center text-[13px] font-inter pr-2 gap-2 text-gray-500">
+                    Refunded: ₹300
+                </div>
+            </div>
+            
+            </div>
         </div>
 
         <!-- Bottom Navigation -->
-        <nav class="absolute bottom-0 left-0 bg-white border-t border-[#d7d7d7] w-full z-40 h-[64px]">
+        <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 bg-white border-t border-[#d7d7d7] w-full max-w-[430px] z-40 h-[64px]">
             <div class="w-full h-full flex items-center justify-between px-2">
 
                 <!-- Home -->
@@ -326,24 +337,6 @@
             <!-- Sheet Content -->
             <div class="p-5 overflow-y-auto flex-1 flex flex-col gap-6">
                 
-                <!-- Turf Selection -->
-                <div class="flex flex-col gap-2">
-                    <label class="text-[14px] font-semibold text-[var(--text-heading)] font-inter">Select Your Turf</label>
-                    <div class="relative">
-                        <select class="w-full bg-white border border-[var(--border-light)] rounded-lg px-4 py-3 outline-none focus:border-[var(--primary-blue)] appearance-none font-inter text-[15px] text-[var(--text-heading)] pr-10">
-                            <option>Select</option>
-                            <option>The Multi-Sports Turf</option>
-                            <option>Play Field Turf</option>
-                            <option>Olympia Arena</option>
-                        </select>
-                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Date Picker -->
                 <div class="relative bg-white border border-[var(--border-light)] rounded-lg px-4 py-2 flex items-center gap-3">
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-600 pointer-events-none">
@@ -403,6 +396,7 @@
                         <button class="px-4 py-2 bg-white border border-[var(--border-light)] rounded-lg text-[13px] font-medium font-inter hover:bg-gray-50 filter-chip">Booked</button>
                         <button class="px-4 py-2 bg-white border border-[var(--border-light)] rounded-lg text-[13px] font-medium font-inter hover:bg-gray-50 filter-chip">Cancelled</button>
                         <button class="px-4 py-2 bg-white border border-[var(--border-light)] rounded-lg text-[13px] font-medium font-inter hover:bg-gray-50 filter-chip">Pending</button>
+                        <button class="px-4 py-2 bg-white border border-[var(--border-light)] rounded-lg text-[13px] font-medium font-inter hover:bg-gray-50 filter-chip">No Show</button>
                     </div>
                 </div>
 
@@ -421,6 +415,89 @@
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
             </svg>
             <span id="toastMsg">Slot has been Cancelled Successfully</span>
+        </div>
+
+        <!-- Turf Select Bottom Sheet -->
+        <div id="turfSelectOverlay" class="fixed inset-0 bg-black/40 z-[80] modal-overlay" onclick="closeTurfSelect()"></div>
+        <div id="turfSelectSheet" class="fixed bottom-0 left-1/2 -translate-x-1/2 translate-y-[100%] transition-transform duration-300 ease-out w-full max-w-[430px] bg-[#f9f9f9] rounded-t-[20px] z-[90] flex flex-col h-[75vh] shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+            <div class="px-5 py-4 border-b border-[var(--border-light)] bg-white rounded-t-[20px] shrink-0 flex justify-between items-center">
+                <h2 class="text-[18px] font-medium text-[var(--text-heading)] font-inter">Select Turf</h2>
+                <button onclick="closeTurfSelect()" class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="px-5 py-3 bg-white border-b border-gray-100 shrink-0">
+                <div class="flex items-center px-4 py-3 bg-[#f5f5f5] border border-[var(--border-light)] rounded-lg focus-within:border-[var(--primary-blue)] transition-colors">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-400">
+                        <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="turfSearchInput" placeholder="Search turf..." class="flex-1 bg-transparent border-none outline-none ml-2 text-[14px] font-inter" oninput="filterTurfs(this.value)">
+                </div>
+            </div>
+
+            <div class="p-0 overflow-y-auto flex-1 flex flex-col bg-white">
+                <div class="px-5 py-3 bg-gray-50 text-[12px] font-bold text-gray-400 font-inter tracking-wider uppercase">Frequently Searched</div>
+                <div class="turf-list-item px-5 py-3.5 border-b border-gray-50 text-[15px] text-[var(--text-heading)] font-medium bg-white hover:bg-gray-50 cursor-pointer font-inter flex items-center justify-between" onclick="selectTurf('The Multi-Sports Turf')">
+                    The Multi-Sports Turf
+                    <svg class="turf-check hidden w-5 h-5 text-[var(--primary-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="turf-list-item px-5 py-3.5 border-b border-gray-50 text-[15px] text-[var(--text-heading)] font-medium bg-white hover:bg-gray-50 cursor-pointer font-inter flex items-center justify-between" onclick="selectTurf('Play Field Turf')">
+                    Play Field Turf
+                    <svg class="turf-check hidden w-5 h-5 text-[var(--primary-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                
+                <div class="px-5 py-3 bg-gray-50 text-[12px] font-bold text-gray-400 font-inter tracking-wider uppercase">All Turfs</div>
+                <div id="allTurfsList">
+                    <div class="turf-list-item px-5 py-3.5 border-b border-gray-50 text-[15px] text-[var(--text-heading)] font-medium bg-white hover:bg-gray-50 cursor-pointer font-inter flex items-center justify-between" onclick="selectTurf('Alpha Turf')">Alpha Turf<svg class="turf-check hidden w-5 h-5 text-[var(--primary-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                    <div class="turf-list-item px-5 py-3.5 border-b border-gray-50 text-[15px] text-[var(--text-heading)] font-medium bg-white hover:bg-gray-50 cursor-pointer font-inter flex items-center justify-between" onclick="selectTurf('Beta Sports')">Beta Sports<svg class="turf-check hidden w-5 h-5 text-[var(--primary-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                    <div class="turf-list-item px-5 py-3.5 border-b border-gray-50 text-[15px] text-[var(--text-heading)] font-medium bg-white hover:bg-gray-50 cursor-pointer font-inter flex items-center justify-between" onclick="selectTurf('Olympia Arena')">Olympia Arena<svg class="turf-check hidden w-5 h-5 text-[var(--primary-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                    <div class="turf-list-item px-5 py-3.5 border-b border-gray-50 text-[15px] text-[var(--text-heading)] font-medium bg-white hover:bg-gray-50 cursor-pointer font-inter flex items-center justify-between" onclick="selectTurf('Play Field Turf')">Play Field Turf<svg class="turf-check hidden w-5 h-5 text-[var(--primary-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                    <div class="turf-list-item px-5 py-3.5 border-b border-gray-50 text-[15px] text-[var(--text-heading)] font-medium bg-white hover:bg-gray-50 cursor-pointer font-inter flex items-center justify-between" onclick="selectTurf('The Multi-Sports Turf')">The Multi-Sports Turf<svg class="turf-check hidden w-5 h-5 text-[var(--primary-blue)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pay Due Bottom Sheet -->
+        <div id="payDueOverlay" class="fixed inset-0 bg-black/40 z-[80] modal-overlay" onclick="closePayDueModal()"></div>
+        <div id="payDueSheet" class="fixed bottom-0 left-1/2 -translate-x-1/2 translate-y-[100%] transition-transform duration-300 ease-out w-full max-w-[430px] bg-[#f9f9f9] rounded-t-[20px] z-[90] flex flex-col p-5 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+            <div class="flex justify-between items-start w-full mb-4">
+                <h3 class="text-[20px] font-semibold text-[var(--text-heading)] font-inter leading-[28px]">Pay Due <span id="dueAmountInfo" class="text-[14px] text-gray-500 font-normal ml-2">(Due: ₹500)</span></h3>
+                <button onclick="closePayDueModal()" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <label class="block text-[14px] text-[var(--text-heading)] mb-2 font-semibold font-inter">Payment Type</label>
+            <div class="grid grid-cols-2 gap-3 mb-5">
+                <label class="relative flex items-center justify-center p-3 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-50 transition-colors payment-type-label">
+                    <input type="radio" name="paymentType" value="Cash" class="peer hidden" checked>
+                    <div class="peer-checked:border-[var(--primary-blue)] shadow-sm peer-checked:bg-blue-50 absolute inset-0 border rounded-lg"></div>
+                    <span class="z-10 text-[14.5px] font-medium text-gray-700 peer-checked:text-[var(--primary-blue)] font-inter">Cash</span>
+                </label>
+                <label class="relative flex items-center justify-center p-3 border border-gray-200 bg-white rounded-lg cursor-pointer hover:bg-gray-50 transition-colors payment-type-label">
+                    <input type="radio" name="paymentType" value="UPI" class="peer hidden">
+                    <div class="peer-checked:border-[var(--primary-blue)] shadow-sm peer-checked:bg-blue-50 absolute inset-0 border rounded-lg"></div>
+                    <span class="z-10 text-[14.5px] font-medium text-gray-700 peer-checked:text-[var(--primary-blue)] font-inter">UPI</span>
+                </label>
+            </div>
+
+            <label class="block text-[14px] text-[var(--text-heading)] mb-2 font-semibold font-inter">Enter Amount</label>
+            <div class="relative flex items-center bg-white border border-[#d7d7d7] rounded-[8px] h-[52px] px-3 mb-2 focus-within:border-[var(--primary-blue)] transition-colors shadow-sm">
+                <span class="text-[16px] text-[#3d3d3d] font-inter mr-2">₹</span>
+                <input type="number" id="payAmountInput" inputmode="numeric" class="flex-1 w-full bg-transparent outline-none font-semibold font-inter text-[16px] text-[#4d4d4d]" oninput="validatePayAmount()">
+            </div>
+            <p id="payAmountError" class="text-[12px] text-red-500 hidden mb-1">Amount cannot exceed due amount</p>
+
+            <div class="flex gap-2 mt-5">
+                <button onclick="submitPayDue()" id="btnSubmitPay" class="w-full h-[52px] rounded-[8px] bg-[var(--primary-blue)] text-white font-semibold hover:bg-blue-700 transition-colors font-inter text-[16px] shadow-sm">
+                    Update Payment
+                </button>
+            </div>
         </div>
     </div>
 
@@ -505,33 +582,10 @@
 
         // Search Input Logic
         const searchInput = document.getElementById('searchInput');
-        const searchDropdown = document.getElementById('searchDropdown');
         
-        searchInput.addEventListener('focus', () => {
-            if(searchInput.value) searchDropdown.classList.remove('hidden');
-        });
-        
-        searchInput.addEventListener('input', () => {
-            if(searchInput.value) {
-                searchDropdown.classList.remove('hidden');
-            } else {
-                searchDropdown.classList.add('hidden');
-            }
-        });
+        // Removed searchDropdown logic as there is no dropdown for user search
 
-        document.querySelectorAll('.search-option').forEach(opt => {
-            opt.addEventListener('click', (e) => {
-                searchInput.value = e.target.innerText;
-                searchDropdown.classList.add('hidden');
-            });
-        });
 
-        // Click outside search
-        document.addEventListener('click', (e) => {
-            if(!e.target.closest('.relative.flex.items-center')) {
-                searchDropdown.classList.add('hidden');
-            }
-        });
 
         // Helper to extract turf info from card
         function extractTurfInfo(cardId) {
@@ -557,6 +611,8 @@
                 details: `${dateStr}  •  ${timeStr}  •  ${squadSize}`
             };
         }
+
+        let currentDue = 0;
 
         // Modals Logic
         function openEditModal(cardId) {
@@ -602,6 +658,88 @@
                 document.querySelector(`[data-id="${currentCardId}"] .advance-amt`).innerText = newVal;
             }
             closeEditModal();
+        }
+
+        function openPayDueModal(cardId) {
+            currentCardId = cardId;
+            const card = document.querySelector(`[data-id="${cardId}"]`);
+            if (card) card.querySelector('.three-dots-menu').classList.remove('show');
+            
+            const totalAmt = parseInt(card.getAttribute('data-total') || 0);
+            const paidAmt = parseInt(card.getAttribute('data-paid') || 0);
+            currentDue = totalAmt - paidAmt;
+            
+            document.getElementById('dueAmountInfo').innerText = `(Due: ₹${currentDue})`;
+            document.getElementById('payAmountInput').value = currentDue;
+            validatePayAmount(); // clear any previous errors
+            
+            document.getElementById('payDueOverlay').classList.add('open');
+            document.getElementById('payDueSheet').classList.remove('translate-y-[100%]');
+            document.getElementById('payDueSheet').classList.add('translate-y-0');
+        }
+
+        function closePayDueModal() {
+            document.getElementById('payDueOverlay').classList.remove('open');
+            document.getElementById('payDueSheet').classList.remove('translate-y-0');
+            document.getElementById('payDueSheet').classList.add('translate-y-[100%]');
+        }
+
+        function validatePayAmount() {
+            const input = document.getElementById('payAmountInput');
+            const btn = document.getElementById('btnSubmitPay');
+            const error = document.getElementById('payAmountError');
+            
+            const val = parseInt(input.value || 0);
+            if(val > currentDue) {
+                error.classList.remove('hidden');
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                error.classList.add('hidden');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function submitPayDue() {
+            const val = parseInt(document.getElementById('payAmountInput').value || 0);
+            if(val <= 0 || val > currentDue) return;
+            
+            if(currentCardId) {
+                const card = document.querySelector(`[data-id="${currentCardId}"]`);
+                let totalAmt = parseInt(card.getAttribute('data-total') || 0);
+                let paidAmt = parseInt(card.getAttribute('data-paid') || 0);
+                
+                paidAmt += val;
+                card.setAttribute('data-paid', paidAmt);
+                
+                const advEl = card.querySelector('.advance-amt');
+                if(advEl) advEl.innerText = paidAmt;
+                
+                const dueTxtEl = card.querySelector('.due-txt');
+                const badgeEl = card.querySelector('.status-badge');
+                
+                if (paidAmt >= totalAmt) {
+                    card.setAttribute('data-status', 'booked');
+                    if(dueTxtEl) {
+                        dueTxtEl.className = 'ml-auto text-[#2c7a3f] font-medium due-txt';
+                        dueTxtEl.innerText = '0 Due';
+                    }
+                    if(badgeEl) {
+                        badgeEl.className = 'status-badge bg-[#2c7a3f] text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full';
+                        badgeEl.innerText = 'Booked';
+                    }
+                    // Remove Pay Due button
+                    const payBtn = card.querySelector('.three-dots-menu button:first-child');
+                    if(payBtn && payBtn.innerText.includes('Pay Due')) payBtn.remove();
+                } else {
+                    if(dueTxtEl) dueTxtEl.innerText = `Due: ₹${totalAmt - paidAmt}`;
+                }
+                
+                document.getElementById('toastMsg').innerText = "Payment Updated Successfully";
+                showToaster();
+            }
+            closePayDueModal();
         }
 
         function openCancelModal(cardId) {
@@ -702,6 +840,44 @@
                 this.classList.toggle('hover:bg-gray-50');
             });
         });
+
+        // Turf Selection Logic
+        function openTurfSelect() {
+            document.getElementById('turfSelectOverlay').classList.add('open');
+            document.getElementById('turfSelectSheet').classList.remove('translate-y-[100%]');
+            document.getElementById('turfSelectSheet').classList.add('translate-y-0');
+            
+            // Update checkmarks
+            const curVal = document.getElementById('selectedTurfText').innerText.trim();
+            document.querySelectorAll('.turf-list-item').forEach(el => {
+                const txt = el.innerText.trim();
+                const check = el.querySelector('.turf-check');
+                if(txt === curVal) check.classList.remove('hidden');
+                else check.classList.add('hidden');
+            });
+        }
+
+        function closeTurfSelect() {
+            document.getElementById('turfSelectOverlay').classList.remove('open');
+            document.getElementById('turfSelectSheet').classList.add('translate-y-[100%]');
+            document.getElementById('turfSelectSheet').classList.remove('translate-y-0');
+        }
+
+        function filterTurfs(val) {
+            const search = val.toLowerCase();
+            document.querySelectorAll('#allTurfsList .turf-list-item').forEach(el => {
+                const txt = el.innerText.toLowerCase();
+                if(txt.includes(search)) el.style.display = 'flex';
+                else el.style.display = 'none';
+            });
+        }
+
+        function selectTurf(name) {
+            document.getElementById('selectedTurfText').innerText = name;
+            closeTurfSelect();
+            document.getElementById('toastMsg').innerText = `Turf Changed to ${name}`;
+            showToaster();
+        }
 
     </script>
 </body>

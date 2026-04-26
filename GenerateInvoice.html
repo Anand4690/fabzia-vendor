@@ -102,16 +102,12 @@
         </div>
       </div>
 
-      <!-- Select Booking -->
-      <div class="relative" id="booking-container">
-        <label class="block text-[14px] font-semibold text-gray-900 mb-2">Select Booking</label>
-        <button id="booking-btn" onclick="toggleDropdown('booking')" class="w-full flex items-center justify-between gap-3 px-4 py-3.5 bg-white border border-[#d1d5db] rounded-lg text-sm transition-all duration-150 focus:border-[var(--primary-blue)]">
-          <span id="booking-val" class="text-gray-600">Select Booking</span>
-          <svg id="booking-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" class="flex-shrink-0 transition-transform duration-200">
-            <path d="M5 7.5L10 12.5L15 7.5" stroke="#4b5563" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-        <div id="booking-list" class="dropdown-content absolute top-full left-0 right-0 mt-1 bg-white border border-[#d1d5db] rounded-lg shadow-xl z-20 overflow-hidden">
+      <!-- User Email -->
+      <div>
+        <label class="block text-[14px] font-semibold text-gray-900 mb-2">User Email</label>
+        <div class="relative">
+          <input type="email" id="user-email" placeholder="Enter user Email id" class="w-full px-4 py-3.5 bg-white border border-[#d1d5db] rounded-lg text-sm outline-none transition-colors placeholder:text-gray-400 focus:border-[var(--primary-blue)]" oninput="validateEmail()">
+          <p id="email-error" class="hidden text-red-500 text-[12px] mt-1.5 ml-1">Please enter a valid email address.</p>
         </div>
       </div>
 
@@ -339,24 +335,6 @@
         
         <!-- Card -->
         <div class="w-full bg-[#f9fafb] border border-gray-100 rounded-[16px] p-5 mt-6 mb-4 relative shadow-sm shrink-0">
-           <!-- 3 dots -->
-           <button onclick="toggleDotsMenu()" class="absolute top-5 right-4 text-gray-900">
-             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-               <circle cx="12" cy="5" r="1.5" fill="currentColor"/>
-               <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
-               <circle cx="12" cy="19" r="1.5" fill="currentColor"/>
-             </svg>
-           </button>
-           <!-- Dots menu -->
-           <div id="dots-menu" class="hidden absolute right-4 top-12 bg-white rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-50 overflow-hidden z-20 min-w-[100px] animate-fade-in">
-           <button onclick="openEditDetails()" class="w-full flex items-center justify-center px-4 py-2.5 text-[15px] text-gray-800 hover:bg-gray-50 border-b border-gray-100 transition-colors">
-             Edit
-           </button>
-           <button onclick="openAddField()" class="w-full flex items-center justify-center px-4 py-2.5 text-[15px] text-gray-800 hover:bg-gray-50 transition-colors">
-             Add
-           </button>
-           </div>
-  
            <h3 id="inv-turf" class="text-[17px] font-bold text-[#1a1a1a]">Fabzia Arena</h3>
            <p id="inv-date" class="text-[13px] text-[#4b5563] mt-1 mb-6">12 Jan 2026 • 11.02 Pm</p>
   
@@ -399,19 +377,25 @@
       
       <!-- Sticky Button Container -->
       <div class="w-full px-5 pt-4 border-t border-gray-50 bg-white shrink-0">
-        <button onclick="closeAllSheets()" class="w-full bg-[#1a62c6] text-white font-semibold py-3.5 rounded-lg text-base shadow-sm hover:opacity-90 transition-opacity">
-          Done
+        <button onclick="sendMail()" class="w-full bg-[#1a62c6] text-white font-semibold py-3.5 rounded-lg text-base shadow-sm hover:opacity-90 transition-opacity">
+          Send to Mail
         </button>
       </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-[#effdf5] border border-[#bbf7d0] text-[#166534] px-4 py-3 rounded-lg text-[14px] font-medium transition-all duration-300 opacity-0 translate-y-8 z-[100] pointer-events-none whitespace-nowrap shadow-lg flex items-center gap-2">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="flex-shrink-0 text-[#16a34a]">
+        <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span id="toast-msg"></span>
     </div>
   </div>
 
   <script>
     const turfs = ["Green Valley Turf", "City Sports Arena", "Sunrise Football Ground", "Victory Sports Complex", "Champions Turf Club"];
-    const bookings = ["BK-001 · Morning Slot (6AM–9AM)", "BK-002 · Evening Slot (5PM–8PM)", "BK-003 · Weekend Special (All Day)", "BK-004 · Weekday Package (10AM–1PM)", "BK-005 · Night Slot (8PM–11PM)"];
 
     let selectedTurf = "";
-    let selectedBooking = "";
     let selectedDate = null;
     let gtsChecked = false;
     let showDotsMenu = false;
@@ -430,14 +414,6 @@
           <span>${t}</span>
         </button>
       `).join('');
-
-      const bList = document.getElementById('booking-list');
-      bList.innerHTML = bookings.map(b => `
-        <button onclick="handleBookingSelect('${b}')" class="w-full flex items-center gap-3 text-left px-4 py-3.5 text-sm border-b border-gray-50 last:border-0 transition-colors ${selectedBooking === b ? 'bg-blue-50 text-[var(--primary-blue)] font-semibold' : 'text-gray-800 hover:bg-gray-50'}">
-          ${selectedBooking === b ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="flex-shrink-0"><path d="M5 13l4 4L19 7" stroke="var(--primary-blue)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '<div class="w-4 flex-shrink-0"></div>'}
-          <span>${b}</span>
-        </button>
-      `).join('');
     }
 
     function toggleDropdown(type, forceClose = null) {
@@ -449,8 +425,7 @@
       const shouldOpen = forceClose !== null ? !forceClose : !isOpen;
 
       if (shouldOpen) {
-        if (type === 'turf') toggleDropdown('booking', true);
-        else toggleDropdown('turf', true);
+        // If there were other dropdowns, close them here. For now, no others to close.
       }
 
       if (shouldOpen) {
@@ -472,15 +447,6 @@
       val.textContent = t;
       val.className = 'text-gray-900 font-medium';
       toggleDropdown('turf', true);
-      renderDropdowns();
-    }
-
-    function handleBookingSelect(b) {
-      selectedBooking = b;
-      const val = document.getElementById('booking-val');
-      val.textContent = b;
-      val.className = 'text-gray-900 font-medium';
-      toggleDropdown('booking', true);
       renderDropdowns();
     }
 
@@ -509,12 +475,10 @@
 
     document.addEventListener('mousedown', (e) => {
       const ts = document.getElementById('turf-container');
-      const bs = document.getElementById('booking-container');
       if (ts && !ts.contains(e.target)) toggleDropdown('turf', true);
-      if (bs && !bs.contains(e.target)) toggleDropdown('booking', true);
 
       const menu = document.getElementById('dots-menu');
-      if (menu && !menu.contains(e.target) && !e.target.closest('button[onclick="toggleDotsMenu()"]')) {
+      if (menu && !menu.contains(e.target) && (!e.target.closest('button') || e.target.closest('button').getAttribute('onclick') !== 'toggleDotsMenu()')) {
         menu.classList.add('hidden');
         showDotsMenu = false;
       }
@@ -522,7 +486,6 @@
 
     function openDatePicker() {
       toggleDropdown('turf', true);
-      toggleDropdown('booking', true);
       tempSelectedDate = selectedDate || new Date(); 
       currentMonth = tempSelectedDate.getMonth();
       currentYear = tempSelectedDate.getFullYear();
@@ -628,10 +591,59 @@
       return `INV-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${String(d.getMinutes()).padStart(3,'0')}`;
     }
 
+    function validateEmail() {
+      const emailInput = document.getElementById('user-email');
+      const emailError = document.getElementById('email-error');
+      const email = emailInput.value.trim();
+      
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
+      if (email.length > 0 && !regex.test(email)) {
+        emailInput.classList.remove('border-[#d1d5db]', 'focus:border-[var(--primary-blue)]');
+        emailInput.classList.add('border-red-500', 'focus:border-red-500');
+        emailError.classList.remove('hidden');
+        return false;
+      } else {
+        emailInput.classList.add('border-[#d1d5db]', 'focus:border-[var(--primary-blue)]');
+        emailInput.classList.remove('border-red-500', 'focus:border-red-500');
+        emailError.classList.add('hidden');
+        return true;
+      }
+    }
+
     function openInvoice() {
+      const emailInput = document.getElementById('user-email');
+      if(emailInput.value.trim() === '' || !validateEmail()) {
+         emailInput.classList.remove('border-[#d1d5db]', 'focus:border-[var(--primary-blue)]');
+         emailInput.classList.add('border-red-500', 'focus:border-red-500');
+         document.getElementById('email-error').classList.remove('hidden');
+         // Automatically scroll to the top so user can see it or emphasize
+         return;
+      }
+      
       document.getElementById('inv-turf').textContent = selectedTurf || "Fabzia Arena";
       document.getElementById('inv-date').textContent = formatInvoiceDate(selectedDate);
       openSheet('invoice-sheet');
+    }
+
+    function sendMail() {
+      const email = document.getElementById('user-email').value.trim();
+      let truncEmail = email;
+      if (email.includes('@')) {
+        const parts = email.split('@');
+        truncEmail = parts[0].substring(0, 3) + '@...';
+      }
+      
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = `Invoice is Successfully Mailed to ${truncEmail}`;
+      toast.classList.remove('opacity-0', 'translate-y-8');
+      
+      closeAllSheets();
+      
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-8');
+        history.back();
+      }, 2000);
     }
 
     function toggleDotsMenu() {
