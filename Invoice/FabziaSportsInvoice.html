@@ -4,13 +4,86 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Invoice Clone</title>
+<style>
+    @page {
+        size: A4 portrait;
+        margin: 10mm;
+    }
+
+    @media print {
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #fff !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .invoice-wrapper {
+            width: 190mm !important;
+            max-width: 190mm !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+            box-sizing: border-box;
+        }
+
+        /* Scale down header padding proportionally for narrower width */
+        .invoice-header-cell {
+            padding-left: 170px !important;
+        }
+
+        /* Scale header text */
+        .invoice-title {
+            font-size: 26px !important;
+            margin-bottom: 14px !important;
+        }
+
+        .company-name {
+            font-size: 28px !important;
+        }
+
+        .company-details {
+            font-size: 12px !important;
+        }
+
+        /* Tighten table cell padding and font sizes */
+        .invoice-wrapper td {
+            font-size: 13px !important;
+            padding: 5px 6px !important;
+        }
+
+        /* QR code sizing */
+        .qr-code-img {
+            width: 100px !important;
+            height: 100px !important;
+        }
+
+        .qr-col {
+            width: 115px !important;
+        }
+
+        .bank-detail-text {
+            font-size: 13px !important;
+        }
+
+        /* Signature sizing */
+        .signature-text {
+            font-size: 40px !important;
+        }
+
+        .signatory-label {
+            font-size: 16px !important;
+        }
+
+    }
+</style>
 </head>
 
 <body style="margin:0; background:#ffffff; font-family: Arial, Helvetica, sans-serif; color:#000;">
 
-<div style="width:910px; margin:20px auto; padding:0; box-sizing:border-box;">
+<div class="invoice-wrapper" style="width:910px; margin:20px auto; padding:0; box-sizing:border-box;">
 
-    <div style="text-align:center; font-size:32px; font-weight:700; margin-bottom:18px; color:#000;">
+    <div class="invoice-title" style="text-align:center; font-size:32px; font-weight:700; margin-bottom:18px; color:#000;">
         Tax Invoice
     </div>
 
@@ -18,13 +91,13 @@
         <tr>
             
 
-            <td style="width:100%; padding:12px 18px 10px 250px; vertical-align:top;">
+            <td class="invoice-header-cell" style="width:100%; padding:12px 18px 10px 250px; vertical-align:top;">
 
-                <div style="font-size:36px; font-weight:700; line-height:1; margin-bottom:10px; color:#000; text-align:left;">
+                <div class="company-name" style="font-size:36px; font-weight:700; line-height:1; margin-bottom:10px; color:#000; text-align:left;">
                     Fabzia Sports
                 </div>
 
-                <div style="font-size:15px; margin-bottom:4px; color:#000; text-align:left; line-height:1.5; ">
+                <div class="company-details" style="font-size:15px; margin-bottom:4px; color:#000; text-align:left; line-height:1.5; ">
                     A-23, Jai Dwarika Chs, Adukia Road, Kandivali West, Mumbai 400067, Maharashtra 
 
                     <div style="display:flex; justify-content:space-between; padding-right:12.5%;">
@@ -231,9 +304,9 @@
 
                 <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
                     <tr>
-                        <td style="width:135px; vertical-align:top;">
+                        <td class="qr-col" style="width:135px; vertical-align:top;">
 
-                            <img src="qr.png" alt="QR Code" style="width:120px; height:120px; border:2px solid #000; display:block;">
+                            <img src="qr.png" alt="QR Code" class="qr-code-img" style="width:120px; height:120px; border:2px solid #000; display:block;">
 
                             <div style="margin-top:4px; display:inline-flex; align-items:center; font-size:11px; font-weight:700; gap:4px;">
                                 <img src="upiLogo.webp" alt="UPI" style="height:40px; width:auto;">
@@ -244,22 +317,22 @@
 
                         <td style="vertical-align:top; padding-left:10px;">
 
-                            <div style="font-size:16px; line-height:1.45; margin-bottom:10px;">
+                            <div class="bank-detail-text" style="font-size:16px; line-height:1.45; margin-bottom:10px;">
                                 Name :
                                 <span style="font-weight:700;">BANDHAN BANK LIMITED,<br>KANDIVALI</span>
                             </div>
 
-                            <div style="font-size:16px; line-height:1.45; margin-bottom:10px;">
+                            <div class="bank-detail-text" style="font-size:16px; line-height:1.45; margin-bottom:10px;">
                                 Account No. :
                                 <span style="font-weight:700;">20100031600080</span>
                             </div>
 
-                            <div style="font-size:16px; line-height:1.45; margin-bottom:10px;">
+                            <div class="bank-detail-text" style="font-size:16px; line-height:1.45; margin-bottom:10px;">
                                 IFSC code :
                                 <span style="font-weight:700;">BDBL0001583</span>
                             </div>
 
-                            <div style="font-size:16px; line-height:1.45;">
+                            <div class="bank-detail-text" style="font-size:16px; line-height:1.45;">
                                 Account holder's name : <span style="font-weight:700; white-space:nowrap;">Fabzia Sports</span>
                             </div>
 
@@ -272,12 +345,12 @@
             <td style="padding:10px 8px; vertical-align:top; text-align:center;">
 
                 <div style="height:95px; display:flex; align-items:center; justify-content:center;">
-                    <div style="font-size:54px; font-family:cursive; transform:rotate(-8deg); color:#000;">
+                    <div class="signature-text" style="font-size:54px; font-family:cursive; transform:rotate(-8deg); color:#000;">
                         Pruthvi
                     </div>
                 </div>
 
-                <div style="font-size:20px; margin-top:10px;">
+                <div class="signatory-label" style="font-size:20px; margin-top:10px;">
                     Authorized Signatory
                 </div>
 
